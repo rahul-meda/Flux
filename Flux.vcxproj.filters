@@ -12,6 +12,14 @@
     <ClCompile Include="Graphics\Graphics.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Graphics\Shader.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Texture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -29,6 +37,9 @@
     <ClInclude Include="Graphics\Graphics.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\Texture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -37,9 +48,16 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{46f73892-3f99-4f68-82ee-b18b029db26d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{82b8abae-7506-48b7-93a4-c1d360a02fd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\FragmentShader.fs" />
-    <None Include="..\Resources\VertexShader.vs" />
+    <None Include="Resources\VertexShader.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\FragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

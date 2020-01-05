@@ -3,6 +3,7 @@
 #include <vector>
 
 class Model;
+struct TextureInfo;
 
 class Graphics
 {
