@@ -4,6 +4,19 @@
 #include <map>
 #include <utility>
 #include "../Graphics/Texture.h"
+#include "../Graphics/Camera.h"
+
+struct MouseInfo
+{
+	double prevX;
+	double prevY;
+	double lateral;
+	double vertical;
+
+	MouseInfo()
+		: prevX(0.0), prevY(0.0), lateral(0.0), vertical(0.0)
+	{}
+};
 
 class Simulation
 {
@@ -16,6 +29,8 @@ private:
 
 	unsigned int m_shaderID;
 
+	double prevFrame;
+
 public:
 	static Simulation& GetInstance();
 
@@ -24,6 +39,10 @@ public:
 	std::map<int, std::pair<int, int>> bufferIDmap;
 
 	TextureInfo textureData;
+
+	Camera camera;
+
+	MouseInfo mouseData;
 
 	void Update();
 };

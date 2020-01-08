@@ -10,5 +10,5 @@ uniform sampler2D smileyTexture;
 
 void main()
 {
-    outColor = mix(texture(woodTexture, fragTexCoord), texture(smileyTexture, fragTexCoord), 0.2f);
+    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);//mix(texture(woodTexture, fragTexCoord), texture(smileyTexture, fragTexCoord), 0.2f);
 }

@@ -7,9 +7,11 @@ layout (location = 2) in vec2 texCoord;
 out vec3 fragColor;
 out vec2 fragTexCoord;
 
+uniform mat4 MVP;
+
 void main()
 {
-    gl_Position = vec4(vertPos, 1.0f);
+    gl_Position = MVP * vec4(vertPos, 1.0f);
 	fragColor = vertColor;
 	fragTexCoord = vec2(texCoord.x, texCoord.y);
 }

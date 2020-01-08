@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Graphics\Model.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Model.h" />
     <ClInclude Include="Graphics\Shader.h" />
@@ -37,6 +39,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Simulation\HelloTriangle.h" />
     <ClInclude Include="Simulation\Simulation.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
