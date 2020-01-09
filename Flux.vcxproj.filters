@@ -47,6 +47,10 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Components\Transform.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -58,12 +62,18 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{82b8abae-7506-48b7-93a4-c1d360a02fd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{e42ab297-acc5-44cb-b1ff-95a575da32bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\VertexShader.vert">
       <Filter>Resources</Filter>
     </None>
     <None Include="Resources\FragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\PointLight.frag">
       <Filter>Resources</Filter>
     </None>
   </ItemGroup>

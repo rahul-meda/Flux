@@ -50,9 +50,9 @@ void Texture::AddUniformLoc(char* loc, TextureInfo& textureData)
 void Texture::SetUniforms(unsigned int shaderID, TextureInfo& textureData)
 {
 	glUseProgram(shaderID);
-
 	for (int i = 0; i < textureData.uniformLocs.size(); i++)
 	{
 		glUniform1i(glGetUniformLocation(shaderID, textureData.uniformLocs[i]), i);
 	}
+	glUseProgram(0);
 }

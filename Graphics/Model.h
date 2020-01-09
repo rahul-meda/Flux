@@ -9,19 +9,16 @@ struct ModelDef
 	std::vector<glm::vec3> colors;
 	std::vector<glm::vec2> textureCoords;
 	std::vector<unsigned int> indices;
-	unsigned int textureID;
 };
 
 class Model
 {
 public:
-	Model(const ModelDef& modelDef);
+	Model(unsigned int vaoID, unsigned int nIndices);
 
 	~Model();
 
-	unsigned int m_VAO;
+	unsigned int VAO;
 
-	unsigned int m_nIndices;
-
-	unsigned int m_texture;
+	unsigned int nIndices;
 };

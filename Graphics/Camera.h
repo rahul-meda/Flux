@@ -4,7 +4,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#define CAM_SPEED 1.0f
+#define CAM_SPEED 3.0f
 
 class Camera
 {

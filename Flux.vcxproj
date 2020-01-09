@@ -31,6 +31,8 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Components\Transform.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Model.h" />
@@ -44,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FragmentShader.frag" />
+    <None Include="Resources\PointLight.frag" />
     <None Include="Resources\VertexShader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
