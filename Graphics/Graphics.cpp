@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Graphics.h"
-#include "Model.h"
 #include <iostream>
 #include "Texture.h"
 #include "../Simulation/Simulation.h"
@@ -12,6 +11,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include "../GameObject.h"
 #include "../Components/Transform.h"
+#include "../Components/Model.h"
 
 Graphics::Graphics()
 {

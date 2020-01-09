@@ -1,7 +1,5 @@
 #include "Model.h"
-#include "glad/glad.h"
 #include "../Simulation/Simulation.h"
-#include "Graphics.h"
 
 Model::Model(unsigned int vaoID, unsigned int nIndices)
 	: VAO(vaoID), nIndices(nIndices)

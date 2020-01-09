@@ -2,7 +2,7 @@
 #include "Simulation.h"
 #include "../input.h"
 #include "../Graphics/Graphics.h"
-#include "../Graphics/Model.h"
+#include "../Components/Model.h"
 #include "../Graphics/Shader.h"
 
 Simulation::Simulation()
