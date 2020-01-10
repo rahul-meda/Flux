@@ -25,20 +25,60 @@ void Simulation::Init(GLFWwindow* window)
 	glfwSetFramebufferSizeCallback(window, InputEvent::OnWindowResize);
 	glfwSetCursorPosCallback(window, InputEvent::OnMouseMove);
 
-	camera = Camera(glm::vec3(0.0f, 3.0f, 7.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	ModelDef box;
 
+	// front, back, right, left, bot, top
 	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
 	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
 	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
 	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
 	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
 	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
 	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
 	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
 
-	box.indices = {0,1,2,2,3,0,4,5,6,6,7,4,1,5,6,6,2,1,0,4,7,7,3,0,0,1,5,5,4,0,3,2,6,6,7,3};
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+	for (int i = 0; i < 6; i++)
+		box.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
 
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
@@ -55,9 +95,9 @@ void Simulation::Init(GLFWwindow* window)
 
 	Texture::SetUniforms(Graphics::GetInstance().worldShader, Simulation::GetInstance().textureData);
 
-	transforms.push_back(Transform(glm::vec3(-3.0f, 0.0f, 0.0f), glm::identity<glm::quat>()));
+	transforms.push_back(Transform(glm::vec3(-5.0f, 0.0f, 0.0f), glm::identity<glm::quat>()));
 	gameObjects.push_back(GameObject(boxModel, transforms.size() - 1));
-	transforms.push_back(Transform(glm::vec3(3.0f, 0.0f, 0.0f), glm::identity<glm::quat>()));
+	transforms.push_back(Transform(glm::vec3(5.0f, 0.0f, 0.0f), glm::identity<glm::quat>()));
 	gameObjects.push_back(GameObject(boxModel, transforms.size() - 1));
 
 	glUseProgram(Graphics::GetInstance().worldShader);
@@ -67,7 +107,7 @@ void Simulation::Init(GLFWwindow* window)
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",
 															   "Resources/PointLight.frag");
-	Graphics::GetInstance().lightPos.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(10.0f, 0.0f, 0.0f));
 	Graphics::GetInstance().lightModelID = boxModel;
 }
 

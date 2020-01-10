@@ -8,7 +8,7 @@ GLFWwindow * Window::CreateWindow(const int width, const int height, const char 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	auto window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), nullptr);
+	auto window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
 	if (!window)
 	{
