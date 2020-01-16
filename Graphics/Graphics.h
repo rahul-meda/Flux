@@ -20,6 +20,8 @@ public:
 
 	std::vector<Model> models;
 
+	std::vector<glm::vec3> scales;
+
 	unsigned int worldShader;
 
 	unsigned int lightShader;

@@ -23,6 +23,12 @@
     <ClCompile Include="Components\Model.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\Physics.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\Body.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -51,6 +57,12 @@
     <ClInclude Include="Components\Model.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Components\Body.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Physics.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -64,6 +76,9 @@
     </Filter>
     <Filter Include="Components">
       <UniqueIdentifier>{e42ab297-acc5-44cb-b1ff-95a575da32bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{566e1432-55ef-4c21-84c4-e38cc47846cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

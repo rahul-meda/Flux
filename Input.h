@@ -6,7 +6,7 @@ struct MouseInfo;
 
 namespace InputEvent
 {
-	void HandleKeyInput(GLFWwindow* window, double dt);
+	void HandleKeyInput(GLFWwindow* window, bool displayDebug, double dt);
 	
 	void OnWindowResize(GLFWwindow* window, int width, int height);
 

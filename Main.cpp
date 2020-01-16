@@ -6,7 +6,7 @@
 
 int main()
 {
-	GLFWwindow* window =  Window::CreateWindow(1920, 1080, "Flux");
+	GLFWwindow* window =  Window::CreateWindow(1024, 768, "Flux");
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "Failed to initialize GLAD" << std::endl;

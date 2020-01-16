@@ -16,7 +16,7 @@ uniform vec3 eyePos;
 
 void main()
 {
-	float ambientStr = 0.1f;
+	float ambientStr = 0.3f;
 	vec3 ambient = ambientStr * lightColor;
 
 	vec3 lightDir = normalize(vPosW - lightPos);

@@ -2,8 +2,9 @@
 #include "Input.h"
 #include "Graphics/Camera.h"
 #include "Simulation/Simulation.h"
+#include "Physics/Physics.h"
 
-void InputEvent::HandleKeyInput(GLFWwindow* window, double dt)
+void InputEvent::HandleKeyInput(GLFWwindow* window, bool displayDebug, double dt)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -20,6 +21,24 @@ void InputEvent::HandleKeyInput(GLFWwindow* window, double dt)
 		Simulation::GetInstance().camera.Translate(Camera::UP, dt);
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 		Simulation::GetInstance().camera.Translate(Camera::DOWN, dt);
+
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+		Simulation::GetInstance().displayDebug = !(Simulation::GetInstance().displayDebug);
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		Body* b = &Physics::GetInstance().bodies[0];
+		glm::vec3 v = b->GetVelocity();
+		v += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
+		b->SetVelocity(v);
+	}
+	if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+	{
+		Body* b = &Physics::GetInstance().bodies[1];
+		glm::vec3 w = b->GetAngularVelocity();
+		w += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
+		b->SetAngularVelocity(w);
+	}
 }
 
 void InputEvent::OnWindowResize(GLFWwindow* window, int width, int height)
@@ -57,11 +76,11 @@ void InputEvent::OnMouseMove(GLFWwindow* window, double x, double y)
 
 	if (x < 20.0f)
 		md.pan = MouseInfo::PAN_LEFT;
-	else if (x > 1900.0f)
+	else if (x > 1000.0)
 		md.pan = MouseInfo::PAN_RIGHT;
 	else if (y < 20.0f)
 		md.pan = MouseInfo::PAN_DOWN;
-	else if (y > 1060.f)
+	else if (y > 750.0)
 		md.pan = MouseInfo::PAN_UP;
 	else
 		md.pan = MouseInfo::NORMAL;

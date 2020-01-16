@@ -3,11 +3,11 @@
 class GameObject
 {
 public:
-	GameObject(unsigned int modelID, unsigned int txID)
-		: modelID(modelID), txID(txID)
+	GameObject(unsigned int modelID, unsigned int bodyID)
+		: modelID(modelID), bodyID(bodyID)
 	{}
 
 	unsigned int modelID;
 
-	unsigned int txID;
+	unsigned int bodyID;	// is it better to store pointers?
 };

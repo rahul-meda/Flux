@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Texture.h"
 #include "../Simulation/Simulation.h"
+#include "../Physics/Physics.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,7 +17,7 @@
 
 Graphics::Graphics()
 {
-	P = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
+	P = glm::perspective(glm::radians(45.0f), 1024.0f / 768.0f, 0.1f, 100.0f);
 }
 
 Graphics& Graphics::GetInstance()
@@ -96,13 +97,13 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	unsigned int eyeLoc = glGetUniformLocation(worldShader, "eyePos");
 	glUniform3fv(eyeLoc, 1, glm::value_ptr(Simulation::GetInstance().camera.position));
 
-	for (int i = 0; i < objects.size(); i++)
+	auto N = objects.size();
+	for (int i = 0; i < N; i++)
 	{
-		tx = Simulation::GetInstance().transforms[i];
 		//tx.orientation = glm::normalize(glm::angleAxis((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f)));
-		T = glm::translate(glm::mat4(1.0f), tx.position);
-		R = glm::toMat4(tx.orientation);
-		S = glm::scale(glm::vec3(5.0f));
+		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().positions[i].p);
+		R = glm::toMat4(Physics::GetInstance().positions[i].q);
+		S = glm::scale(scales[i]);
 		M = T * R * S;
 		MVP = VP * M;
 

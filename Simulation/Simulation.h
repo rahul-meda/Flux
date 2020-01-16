@@ -47,7 +47,7 @@ public:
 
 	std::vector<GameObject> gameObjects;
 
-	std::vector<Transform> transforms;
-
 	void Update(GLFWwindow* window);
+
+	bool displayDebug;
 };
