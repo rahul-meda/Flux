@@ -8,8 +8,10 @@
 #include "../Components/Model.h"
 #include "../Components/Body.h"
 
+#define MARGIN 20
+
 Simulation::Simulation()
-	: prevFrame(0.0), displayDebug(false)
+	: prevFrame(0.0)
 {}
 
 Simulation::~Simulation()
@@ -23,15 +25,19 @@ Simulation& Simulation::GetInstance()
 	return instance;
 }
 
-void Simulation::Init(GLFWwindow* window)
+void Simulation::Init(GLFWwindow* window, int w, int h)
 {
-	glfwSetFramebufferSizeCallback(window, InputEvent::OnWindowResize);
-	glfwSetCursorPosCallback(window, InputEvent::OnMouseMove);
+	glfwSetFramebufferSizeCallback(window, InputEvent::WindowResizeCallback);
+	glfwSetKeyCallback(window, InputEvent::KeyboardCallback);
+	glfwSetCursorPosCallback(window, InputEvent::MouseMoveCallback);
 
+	width = w;
+	height = h;
+	glViewport(0, 0, width, height);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	ModelDef box;
-
 	// front, back, right, left, bot, top
 	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
 	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
@@ -98,8 +104,7 @@ void Simulation::Init(GLFWwindow* window)
 
 	Transform tx;
 	BodyDef bd;
-	unsigned int bID;
-	unsigned int tID = 0;
+	unsigned int bID = 0;
 
 	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f));
 	bd.tx = tx;
@@ -130,18 +135,100 @@ void Simulation::Init(GLFWwindow* window)
 	Graphics::GetInstance().lightModelID = boxModel;
 }
 
+void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+void Simulation::OnKeyPressHold(GLFWwindow* window)
+{
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::FWD);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::REV);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::LEFT);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::RIGHT);
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::UP);
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		Simulation::GetInstance().camera.Translate(Camera::DOWN);
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		Body* b = &Physics::GetInstance().bodies[0];
+		glm::vec3 v = b->GetVelocity();
+		v += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
+		b->SetVelocity(v);
+	}
+	if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+	{
+		Body* b = &Physics::GetInstance().bodies[1];
+		glm::vec3 w = b->GetAngularVelocity();
+		w += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
+		b->SetAngularVelocity(w);
+	}
+}
+
+void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
+{
+	width = w;
+	height = h;
+	glViewport(0, 0, width, height);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+}
+
+void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
+{
+	static bool firstMouse = true;
+	if (firstMouse)
+	{
+		mouseData.prevX = x;
+		mouseData.prevY = y;
+		firstMouse = false;
+	}
+
+	float dx = x - mouseData.prevX;
+	float dy = mouseData.prevY - y;
+	mouseData.prevX = x;
+	mouseData.prevY = y;
+
+	dx *= mouseData.sensitivity;
+	dy *= mouseData.sensitivity;
+
+	mouseData.lateral += dx;
+	mouseData.vertical += dy;
+
+	if (mouseData.vertical > 89.0f)
+		mouseData.vertical = 89.0f;
+	if (mouseData.vertical < -89.0f)
+		mouseData.vertical = -89.0f;
+
+	if (x < MARGIN)
+		mouseData.pan = MouseInfo::PAN_LEFT;
+	else if (x > width - MARGIN)
+		mouseData.pan = MouseInfo::PAN_RIGHT;
+	else if (y < MARGIN)
+		mouseData.pan = MouseInfo::PAN_DOWN;
+	else if (y > height - MARGIN)
+		mouseData.pan = MouseInfo::PAN_UP;
+	else
+		mouseData.pan = MouseInfo::NORMAL;
+
+	camera.Rotate(mouseData.lateral, mouseData.vertical);
+}
+
 void Simulation::Update(GLFWwindow* window)
 {
 	double currFrame = glfwGetTime();
 	double delta = currFrame - prevFrame;
 	prevFrame = currFrame;
 
-	if (displayDebug)
-		std::cout << delta << std::endl;
-
 	static const float dt = 1.0f / 60.0f;
 
-	InputEvent::HandleKeyInput(window, displayDebug, dt);
+	OnKeyPressHold(window);
 
 	Graphics::GetInstance().Update(gameObjects);
 

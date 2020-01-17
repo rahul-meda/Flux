@@ -16,9 +16,7 @@
 #include "../Components/Model.h"
 
 Graphics::Graphics()
-{
-	P = glm::perspective(glm::radians(45.0f), 1024.0f / 768.0f, 0.1f, 100.0f);
-}
+{}
 
 Graphics& Graphics::GetInstance()
 {
@@ -89,7 +87,6 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	}
 
 	glm::mat4 T, R, S, M, VP, MVP;
-	Transform tx;
 	VP = P * Simulation::GetInstance().camera.ViewSpace();
 	glUseProgram(worldShader);
 	unsigned int mvpLoc = glGetUniformLocation(worldShader, "MVP");

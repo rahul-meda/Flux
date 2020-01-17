@@ -4,8 +4,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#define CAM_SPEED 5.0f
-
 class Camera
 {
 public:
@@ -23,7 +21,7 @@ public:
 
 	glm::mat4 ViewSpace();
 
-	void Translate(DIR mode, double dt);
+	void Translate(DIR mode);
 
 	void Rotate(float yaw, float pitch);
 };

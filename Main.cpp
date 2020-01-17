@@ -6,14 +6,15 @@
 
 int main()
 {
-	GLFWwindow* window =  Window::CreateWindow(1024, 768, "Flux");
+	int width, height;
+	GLFWwindow* window =  Window::CreateWindow(width, height);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "Failed to initialize GLAD" << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
 
-	Simulation::GetInstance().Init(window);
+	Simulation::GetInstance().Init(window, width, height);
 
 	while (!glfwWindowShouldClose(window))
 	{

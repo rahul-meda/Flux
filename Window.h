@@ -5,5 +5,5 @@
 
 namespace Window
 {
-	GLFWwindow* CreateWindow(const int width, const int height, const char* title);
+	GLFWwindow* CreateWindow(int& width, int& height);
 }

@@ -35,7 +35,20 @@ private:
 public:
 	static Simulation& GetInstance();
 
-	void Init(GLFWwindow* window);
+	void Init(GLFWwindow* window, int width, int height);
+
+	void OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods);	// single key press
+
+	void OnKeyPressHold(GLFWwindow* window);
+
+	void OnWindowResize(GLFWwindow* window, int width, int height);
+
+	void OnMouseMove(GLFWwindow* window, double x, double y);
+
+	void Update(GLFWwindow* window);
+
+	int width;
+	int height;
 
 	std::map<int, std::pair<int, int>> bufferIDmap;
 
@@ -46,8 +59,4 @@ public:
 	MouseInfo mouseData;
 
 	std::vector<GameObject> gameObjects;
-
-	void Update(GLFWwindow* window);
-
-	bool displayDebug;
 };

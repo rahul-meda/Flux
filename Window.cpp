@@ -1,14 +1,19 @@
 #include "Window.h"
 #include <iostream>
 
-GLFWwindow * Window::CreateWindow(const int width, const int height, const char * title)
+#define WIDTH 1024
+#define HEIGHT 768
+
+GLFWwindow * Window::CreateWindow(int&width, int& height)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	auto window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	width = WIDTH;
+	height = HEIGHT;
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", nullptr, nullptr);
 
 	if (!window)
 	{
