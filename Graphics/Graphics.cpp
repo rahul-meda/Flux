@@ -35,7 +35,8 @@ unsigned int Graphics::CreateModel(const ModelDef& modelDef)
 	glBindVertexArray(VAO);
 
 	std::vector<glm::vec3> vData;
-	for(int i = 0; i < modelDef.vertices.size(); i++)
+	int n = modelDef.vertices.size();
+	for(int i = 0; i < n; ++i)
 	{
 		vData.push_back(modelDef.vertices[i]);
 		vData.push_back(modelDef.normals[i]);
@@ -98,7 +99,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	for (int i = 0; i < N; i++)
 	{
 		//tx.orientation = glm::normalize(glm::angleAxis((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f)));
-		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().positions[i].p);
+		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().positions[i].c);
 		R = glm::toMat4(Physics::GetInstance().positions[i].q);
 		S = glm::scale(scales[i]);
 		M = T * R * S;
@@ -107,7 +108,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 
-		Model m = models[objects[i].modelID];	//cache friendly? probably need a better way to retrieve model data
+		Model m = models[objects[i].modelID];	//cache friendly? ToDo: try storing pointers to model in GO
 		glBindVertexArray(m.VAO);
 		//glDrawElements(GL_TRIANGLES, m.nIndices, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);

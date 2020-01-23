@@ -7,6 +7,7 @@
 #include "../Graphics/Texture.h"
 #include "../Components/Transform.h"
 #include "../GameObject.h"
+#include "../Physics/BroadPhase.h"
 
 struct MouseInfo
 {
@@ -58,5 +59,8 @@ public:
 
 	MouseInfo mouseData;
 
+	BroadPhase bp;
+
+	std::vector<Collider*> colliders;
 	std::vector<GameObject> gameObjects;
 };

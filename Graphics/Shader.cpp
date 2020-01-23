@@ -33,7 +33,7 @@ std::string Shader::ReadFile(const std::string& file)
 		ifs.open(file);
 
 		std::stringstream stream;
-
+		
 		stream << ifs.rdbuf();
 		ifs.close();
 

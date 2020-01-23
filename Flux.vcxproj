@@ -28,6 +28,11 @@
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mesh\Mesh.cpp" />
+    <ClCompile Include="Mesh\ObjParser.cpp" />
+    <ClCompile Include="Physics\BroadPhase.cpp" />
+    <ClCompile Include="Physics\Collision.cpp" />
+    <ClCompile Include="Physics\HullCollider.cpp" />
     <ClCompile Include="Physics\Physics.cpp" />
     <ClCompile Include="Simulation\Simulation.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -42,6 +47,12 @@
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Mesh\Mesh.h" />
+    <ClInclude Include="Mesh\ObjParser.h" />
+    <ClInclude Include="Physics\BroadPhase.h" />
+    <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\Collision.h" />
+    <ClInclude Include="Physics\HullCollider.h" />
     <ClInclude Include="Physics\Physics.h" />
     <ClInclude Include="Simulation\HelloTriangle.h" />
     <ClInclude Include="Simulation\Simulation.h" />

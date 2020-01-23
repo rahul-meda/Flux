@@ -7,10 +7,10 @@
 
 struct Position
 {
-	Position(glm::vec3 p, glm::quat q)
-		: p(p), q(q)
+	Position(glm::vec3 c, glm::quat q)
+		: c(c), q(q)
 	{}
-	glm::vec3 p;
+	glm::vec3 c;
 	glm::quat q;
 };
 
@@ -28,6 +28,8 @@ class Physics
 private:
 	Physics();
 
+	~Physics();
+
 public:
 	static Physics& GetInstance();
 
@@ -37,7 +39,7 @@ public:
 
 	bool singleStep;
 
-	std::vector<Body> bodies;
+	std::vector<Body*> bodies;
 
 	std::vector<Position> positions;
 

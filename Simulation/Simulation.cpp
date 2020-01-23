@@ -5,8 +5,10 @@
 #include "../Graphics/Graphics.h"
 #include "../Graphics/Shader.h"
 #include "../Physics/Physics.h"
+#include "../Physics/HullCollider.h"
 #include "../Components/Model.h"
 #include "../Components/Body.h"
+#include "../Mesh/ObjParser.h"
 
 #define MARGIN 20
 
@@ -38,57 +40,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	ModelDef box;
-	// front, back, right, left, bot, top
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
-	box.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
-
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
-	for (int i = 0; i < 6; i++)
-		box.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
-
+	HMesh mesh;
+	ParseObj("Resources/Models/Box.obj", mesh);
+	mesh.GetModelData(box);
+	
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
 	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert", 
@@ -109,18 +64,33 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f));
 	bd.tx = tx;
 	bID = Physics::GetInstance().AddBody(bd);
+	HullCollider* boxCollider = new HullCollider();
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(tx.scale);
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
 	tx = Transform(glm::vec3(5.0f, 3.0f, 0.0f));
 	bd.tx = tx;
 	bID = Physics::GetInstance().AddBody(bd);
+	boxCollider = new HullCollider();
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(tx.scale);
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
 	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>(), glm::vec3(10.0f, 0.5f, 10.0f));
 	bd.tx = tx;
 	bID = Physics::GetInstance().AddBody(bd);
+	boxCollider = new HullCollider();
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(tx.scale);
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
@@ -133,6 +103,11 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 															   "Resources/PointLight.frag");
 	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 10.0f));
 	Graphics::GetInstance().lightModelID = boxModel;
+
+	for (Collider* c : colliders)
+		bp.Add(c);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -158,14 +133,14 @@ void Simulation::OnKeyPressHold(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		Body* b = &Physics::GetInstance().bodies[0];
+		Body* b = Physics::GetInstance().bodies[0];
 		glm::vec3 v = b->GetVelocity();
 		v += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
 		b->SetVelocity(v);
 	}
 	if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
 	{
-		Body* b = &Physics::GetInstance().bodies[1];
+		Body* b = Physics::GetInstance().bodies[1];
 		glm::vec3 w = b->GetAngularVelocity();
 		w += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
 		b->SetAngularVelocity(w);
@@ -229,6 +204,8 @@ void Simulation::Update(GLFWwindow* window)
 	static const float dt = 1.0f / 60.0f;
 
 	OnKeyPressHold(window);
+
+	bp.Update();
 
 	Graphics::GetInstance().Update(gameObjects);
 

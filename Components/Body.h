@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Simulation/Simulation.h"
+#include <vector>
+#include "Transform.h"
 
 struct BodyDef
 {
@@ -16,6 +17,7 @@ struct BodyDef
 	glm::vec3 angularVelocity;
 };
 
+class Collider;
 // ToDo: store IDs which will be indices into containers?
 class Body
 {
@@ -24,7 +26,10 @@ private:
 	glm::mat3 iitL;
 	glm::mat3 iitW;
 
-	Transform tx;	
+	glm::vec3 comL;
+	glm::vec3 comW;
+	glm::quat orientation;
+	Transform tx;
 
 	glm::vec3 velocity;
 	glm::vec3 angularVelocity;
@@ -32,17 +37,25 @@ private:
 	glm::vec3 force;
 	glm::vec3 torque;
 
+	std::vector<Collider*> colliders;
+
 public:
 	Body(const BodyDef& bd);
 
 	const glm::vec3& GetPosition() const;
 	const glm::quat& GetOrientation() const;
+	const glm::vec3& GetCentroid() const;
 	void SetVelocity(const glm::vec3& v);
 	const glm::vec3& GetVelocity() const;
 	void SetAngularVelocity(const glm::vec3& w);
 	const glm::vec3& GetAngularVelocity() const;
 
+	void AddCollider(Collider* collider);
+
+	void SynchronizeTransform();
+
 	friend class Physics;
+	friend class HullCollider;
 };
 
 inline const glm::vec3& Body::GetPosition() const
@@ -52,7 +65,12 @@ inline const glm::vec3& Body::GetPosition() const
 
 inline const glm::quat& Body::GetOrientation() const
 {
-	return tx.orientation;
+	return orientation;
+}
+
+inline const glm::vec3& Body::GetCentroid() const
+{
+	return comW;
 }
 
 inline void Body::SetVelocity(const glm::vec3& v)
