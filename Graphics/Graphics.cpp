@@ -77,7 +77,6 @@ void Graphics::AddPointLight(glm::vec3 pos)
 
 void Graphics::Update(const std::vector<GameObject>& objects)
 {
-	//glClearColor(0.4f, 0.6f, 0.8f, 1.0f);
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -93,13 +92,13 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	unsigned int mvpLoc = glGetUniformLocation(worldShader, "MVP");
 	unsigned int mLoc = glGetUniformLocation(worldShader, "M");
 	unsigned int eyeLoc = glGetUniformLocation(worldShader, "eyePos");
-	glUniform3fv(eyeLoc, 1, glm::value_ptr(Simulation::GetInstance().camera.position));
+	glm::vec3 eye = Simulation::GetInstance().camera.position;
+	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
 
 	auto N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
-		//tx.orientation = glm::normalize(glm::angleAxis((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f)));
-		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().positions[i].c);
+		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().bodies[i]->GetPosition());
 		R = glm::toMat4(Physics::GetInstance().positions[i].q);
 		S = glm::scale(scales[i]);
 		M = T * R * S;

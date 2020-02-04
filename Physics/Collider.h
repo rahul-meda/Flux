@@ -1,9 +1,20 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "../Components/Body.h"
 
-class Body;
+struct MassData
+{
+	MassData()
+		: inertia(0.0f), com(0.0f), mass(0.0f){}
+	glm::mat3 inertia;
+	glm::vec3 com;	// body space
+	float mass;
+};
+
 struct AABB;
+// ToDo: Collider has a lot of 'cold' data which is never accessed
+// after initilization. Separate the 'hot' and 'cold' parts to optimize cache
 class Collider
 {
 public:
@@ -17,9 +28,7 @@ public:
 		nShapes
 	};
 
-	virtual ~Collider() {}
-
-	virtual Collider* Clone() const = 0;
+	virtual ~Collider() { delete massData; }
 
 	virtual void ComputeAABB(AABB* aabb) const = 0;
 
@@ -27,16 +36,32 @@ public:
 
 	Type GetType() const;
 
-	Type type;
+	Body* GetBody();
+	const Body* GetBody() const;
 
-	float mass;
+	MassData* massData;
 	float density;
-	glm::vec3 com;	// body space
-	glm::mat3 inertia;
+	float restitution;
+	float friction;
 	Body* body;
+	Type type;
+	float radius;
+	friend class Contact;
+	friend class Body;
+	friend class ContactSolver;
 };
 
 inline Collider::Type Collider::GetType() const
 {
 	return type;
+}
+
+inline Body* Collider::GetBody()
+{
+	return body;
+}
+
+inline const Body* Collider::GetBody() const
+{
+	return body;
 }

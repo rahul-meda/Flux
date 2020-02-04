@@ -4,13 +4,15 @@
 #include "../input.h"
 #include "../Graphics/Graphics.h"
 #include "../Graphics/Shader.h"
-#include "../Physics/Physics.h"
-#include "../Physics/HullCollider.h"
 #include "../Components/Model.h"
-#include "../Components/Body.h"
+#include "../Mesh/SphereModel.h"
 #include "../Mesh/ObjParser.h"
+#include "../Physics/Physics.h"
+#include "../Components/Body.h"
+#include "../Physics/HullCollider.h"
+#include "../Physics/SphereCollider.h"
 
-#define MARGIN 20
+#define MARGIN 30
 
 Simulation::Simulation()
 	: prevFrame(0.0)
@@ -37,25 +39,21 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	height = h;
 	glViewport(0, 0, width, height);
 	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera = Camera(glm::vec3(30.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	ModelDef box;
-	HMesh mesh;
-	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
-
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert", 
-															   "Resources/FragmentShader.frag");
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert",                                                                                        "Resources/FragmentShader.frag");
 
 	Texture::CreateTexture(Texture::TextureType::WOOD, "resources/textures/container.jpg", false, textureData);
 	Texture::CreateTexture(Texture::TextureType::SMILEY, "resources/textures/awesomeface.png", true, textureData);
-
 	Texture::AddUniformLoc("woodTexture", textureData);
 	Texture::AddUniformLoc("smileyTexture", textureData);
-
 	Texture::SetUniforms(Graphics::GetInstance().worldShader, textureData);
+
+	ModelDef box, sphere;
+	HMesh mesh;
+	ParseObj("Resources/Models/Box.obj", mesh);
+	mesh.GetModelData(box);
+	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
 	Transform tx;
 	BodyDef bd;
@@ -63,39 +61,65 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f));
 	bd.tx = tx;
+	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	HullCollider* boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(tx.scale);
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
 	tx = Transform(glm::vec3(5.0f, 3.0f, 0.0f));
 	bd.tx = tx;
+	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(tx.scale);
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
 	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>(), glm::vec3(10.0f, 0.5f, 10.0f));
 	bd.tx = tx;
+	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(tx.scale);
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	colliders.push_back(boxCollider);
 	Graphics::GetInstance().scales.push_back(tx.scale);
 	gameObjects.push_back(GameObject(boxModel, bID));
 
+	CreateSphere(sphere);
+	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
+
+	for (int i = 0; i < 9; ++i)
+	{
+		tx = Transform(glm::vec3(30.0f, 7.0f + (float)i*3.0f, 0.0f));
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		SphereCollider* sphereCollider = new SphereCollider();
+		sphereCollider->Scale(1.0f);
+		Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
+		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
+		gameObjects.push_back(GameObject(sphereModel, bID));
+	}
+
+	tx = Transform(glm::vec3(30.0f, 0.0f, 0.0f));
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	SphereCollider* sphereCollider = new SphereCollider();
+	sphereCollider->Scale(5.0f);
+	Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
+	Graphics::GetInstance().scales.push_back(glm::vec3(5.0f));
+	gameObjects.push_back(GameObject(sphereModel, bID));
+
 	glUseProgram(Graphics::GetInstance().worldShader);
-	glUniform3f(glGetUniformLocation(Graphics::GetInstance().worldShader, "objColor"), 1.0f, 0.5f, 0.3f);
+	glUniform3f(glGetUniformLocation(Graphics::GetInstance().worldShader, "objColor"), 0.9f, 0.5f, 0.3f);
 	glUniform3f(glGetUniformLocation(Graphics::GetInstance().worldShader, "lightColor"), 1.0f, 1.0f, 1.0f);
 	glUseProgram(0);
 
@@ -104,8 +128,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 10.0f));
 	Graphics::GetInstance().lightModelID = boxModel;
 
-	for (Collider* c : colliders)
-		bp.Add(c);
+	Physics::GetInstance().Initialize();
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -114,6 +137,10 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+		Physics::GetInstance().pause = !(Physics::GetInstance().pause);
+	if (key == GLFW_KEY_N && action == GLFW_PRESS)
+		Physics::GetInstance().singleStep = true;
 }
 
 void Simulation::OnKeyPressHold(GLFWwindow* window)
@@ -152,7 +179,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f,100.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
@@ -205,10 +232,6 @@ void Simulation::Update(GLFWwindow* window)
 
 	OnKeyPressHold(window);
 
-	bp.Update();
-
-	Graphics::GetInstance().Update(gameObjects);
-
 	Physics::GetInstance().Update(dt);
 
 	switch (mouseData.pan)
@@ -230,6 +253,8 @@ void Simulation::Update(GLFWwindow* window)
 		camera.Rotate(mouseData.lateral, mouseData.vertical);
 		break;
 	}
+
+	Graphics::GetInstance().Update(gameObjects);
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

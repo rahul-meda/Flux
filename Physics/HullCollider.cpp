@@ -1,3 +1,4 @@
+
 #include "HullCollider.h"
 #include "Collision.h"
 #include "../Components/Body.h"
@@ -32,14 +33,13 @@ void Face::CalculateNormal()
 HullCollider::HullCollider()
 {
 	type = ConvexHull;
+	radius = hullRadius;
+	massData = new MassData();
 	density = 1.0f;
+	restitution = 0.8f;
+	friction = 0.4f;
 	txB.position = glm::vec3(0.0f);
 	txB.R = glm::mat3(1.0f);
-}
-
-Collider* HullCollider::Clone() const
-{
-	return (new HullCollider());
 }
 
 void HullCollider::Scale(const glm::vec3& s)
@@ -74,12 +74,13 @@ void HullCollider::ComputeAABB(AABB* aabb) const
 
 void HullCollider::ComputeMass()
 {
+	// ToDo: check if local vertices are relative to (0,0,0)
 	glm::vec3 diag(0.0f);
 	glm::vec3 offDiag(0.0f);
 	float volume = 0.0f;
-	com = glm::vec3(0.0f);
-	mass = 0.0f;
-	inertia = glm::mat3(0.0f);
+	massData->com = glm::vec3(0.0f);
+	massData->mass = 0.0f;
+	massData->inertia = glm::mat3(0.0f);
 
 	for (int i = 0; i < faces.size(); i++)
 	{
@@ -95,7 +96,7 @@ void HullCollider::ComputeMass()
 
 			float currentVolume = glm::dot(u, glm::cross(v, w));
 			volume += currentVolume;
-			com += (u + v + w) * currentVolume;
+			massData->com += (u + v + w) * currentVolume;
 
 			for (int j = 0; j < 3; ++j)
 			{
@@ -117,19 +118,19 @@ void HullCollider::ComputeMass()
 		}
 	}
 
-	com /= (volume * 4.0f);
-	com = txB.position + (txB.R * com);
+	massData->com /= (volume * 4.0f);
+	massData->com = txB.position + (txB.R * massData->com);
 
 	volume *= (1.0f / 6.0f);
 	diag /= volume * 60.0f;
 	offDiag /= volume * 120.0f;
-	mass = density * volume;
+	massData->mass = density * volume;
 
-	inertia[0] = glm::vec3(diag.y + diag.z, -offDiag.z,		 -offDiag.y);
-	inertia[1] = glm::vec3(-offDiag.z,		diag.x + diag.z, -offDiag.x);
-	inertia[2] = glm::vec3(-offDiag.y,		-offDiag.x,		 diag.x + diag.y);
+	massData->inertia[0] = glm::vec3(diag.y + diag.z, -offDiag.z,		 -offDiag.y);
+	massData->inertia[1] = glm::vec3(-offDiag.z,		diag.x + diag.z, -offDiag.x);
+	massData->inertia[2] = glm::vec3(-offDiag.y,		-offDiag.x,		 diag.x + diag.y);
 
-	inertia *= mass;
+	massData->inertia *= massData->mass;
 }
 
 HullCollider::~HullCollider()

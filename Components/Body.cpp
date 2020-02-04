@@ -3,14 +3,15 @@
 
 Body::Body(const BodyDef& bd)
 {
+	isStatic = bd.isStatic;
 	invMass = 0.0f;
 	iitL = glm::mat3(0.0f);
 	iitW = glm::mat3(0.0f);
 
-	comL = glm::vec3(0.0f);
-	comW = glm::vec3(0.0f);
-	orientation = glm::quat_cast(tx.R);
 	tx = bd.tx;
+	comL = glm::vec3(0.0f);
+	comW = tx.position;
+	orientation = glm::quat_cast(tx.R);
 	velocity = bd.velocity;
 	angularVelocity = bd.angularVelocity;
 
@@ -30,8 +31,8 @@ void Body::AddCollider(Collider* collider)
 	collider->body = this;
 	colliders.push_back(collider);
 
-	/*if (invMass == 0.0f)
-		return;*/
+	if (isStatic)
+		return;
 
 	collider->ComputeMass();
 
@@ -41,8 +42,9 @@ void Body::AddCollider(Collider* collider)
 
 	for (Collider* c : colliders)
 	{
-		mass += c->mass;
-		comL += c->mass * c->com;
+		MassData* md = c->massData;
+		mass += md->mass;
+		comL += md->mass * md->com;
 	}
 
 	assert(mass != 0, "ERROR::Body has invalid mass");
@@ -54,12 +56,13 @@ void Body::AddCollider(Collider* collider)
 	iitL = glm::mat3(0.0f);
 	for (Collider* c : colliders)
 	{
-		glm::vec3 r = comL - c->com;
+		MassData* md = c->massData;
+		glm::vec3 r = comL - md->com;
 		float rDotr = glm::dot(r, r);
 		glm::mat3 rOutr = glm::outerProduct(r, r);
 
 		// PAT
-		iitL += c->inertia + c->mass * (rDotr * glm::mat3(1.0f) - rOutr);
+		iitL += md->inertia + md->mass * (rDotr * glm::mat3(1.0f) - rOutr);
 	}
 	iitL = glm::inverse(iitL);
 	iitW = tx.R * iitL * glm::transpose(tx.R);

@@ -4,24 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "../Components/Body.h"
-
-struct Position
-{
-	Position(glm::vec3 c, glm::quat q)
-		: c(c), q(q)
-	{}
-	glm::vec3 c;
-	glm::quat q;
-};
-
-struct Velocity
-{
-	Velocity(glm::vec3 v, glm::vec3 w)
-		: v(v), w(w)
-	{}
-	glm::vec3 v;
-	glm::vec3 w;
-};
+#include "../Physics/BroadPhase.h"
+#include "../Physics/ContactManager.h"
 
 class Physics
 {
@@ -35,17 +19,20 @@ public:
 
 	unsigned int AddBody(const BodyDef& bd);
 
-	bool pause;
-
-	bool singleStep;
-
-	std::vector<Body*> bodies;
-
-	std::vector<Position> positions;
-
-	std::vector<Velocity> velocities;
+	void Initialize();
 
 	void Step(float dt);
 
 	void Update(float dt);
+
+	bool pause;
+	bool singleStep;
+
+	std::vector<Body*> bodies;
+	std::vector<Position> positions;
+	std::vector<Velocity> velocities;
+	std::vector<Collider*> colliders;
+
+	BroadPhase bp;
+	ContactManager contactManager;
 };

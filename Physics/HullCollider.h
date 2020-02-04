@@ -41,8 +41,6 @@ public:
 
 	~HullCollider();
 
-	Collider* Clone() const override;
-
 	void ComputeAABB(AABB* aabb) const override;
 
 	void ComputeMass() override;

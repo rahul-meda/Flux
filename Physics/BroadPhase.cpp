@@ -2,6 +2,12 @@
 #include "Collision.h"
 #include "Collider.h"
 
+BroadPhase::BroadPhase()
+{
+	aabbs.reserve(128);
+	pairs.reserve(128);
+}
+
 void BroadPhase::Add(AABB* aabb)
 {
 	aabbs.push_back(aabb);

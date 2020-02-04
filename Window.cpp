@@ -1,10 +1,10 @@
 #include "Window.h"
 #include <iostream>
 
-#define WIDTH 1024
-#define HEIGHT 768
+#define WIDTH 1920
+#define HEIGHT 1080
 
-GLFWwindow * Window::CreateWindow(int&width, int& height)
+GLFWwindow * Window::CreateWindow(int& width, int& height)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

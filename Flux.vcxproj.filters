@@ -35,14 +35,35 @@
     <ClCompile Include="Mesh\Mesh.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\HullCollider.cpp">
-      <Filter>Physics\Collision</Filter>
-    </ClCompile>
     <ClCompile Include="Physics\BroadPhase.cpp">
       <Filter>Physics\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Physics\Collision.cpp">
       <Filter>Physics\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\HullCollider.cpp">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\Contact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\SphereContact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\SphereCollider.cpp">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\ContactManager.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\NarrowPhase.cpp">
+      <Filter>Physics\Collision\NarrowPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CollideSphere.cpp">
+      <Filter>Physics\Collision\NarrowPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\ContactSolver.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,17 +105,41 @@
     <ClInclude Include="Mesh\Mesh.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\HullCollider.h">
-      <Filter>Physics\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\Collider.h">
-      <Filter>Physics\Collision</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\Collision.h">
       <Filter>Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="Physics\BroadPhase.h">
       <Filter>Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Settings.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Collider.h">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\HullCollider.h">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Contact.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\SphereContact.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\SphereCollider.h">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\ContactManager.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\NarrowPhase.h">
+      <Filter>Physics\Collision\NarrowPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh\SphereModel.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\ContactSolver.h">
+      <Filter>Physics\Collision\Contact</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +163,15 @@
     </Filter>
     <Filter Include="Physics\Collision">
       <UniqueIdentifier>{c398e004-8876-4ca7-b1bb-5e6d5b04b106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Collision\Collider">
+      <UniqueIdentifier>{0caeb281-8daf-4071-8592-ceef8b26a47e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Collision\Contact">
+      <UniqueIdentifier>{97420454-94be-49af-9107-b562f1f225a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Collision\NarrowPhase">
+      <UniqueIdentifier>{f7f0b5d9-cfe6-4c7e-895b-726ef96da6af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

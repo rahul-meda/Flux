@@ -11,6 +11,8 @@ struct AABB;
 class BroadPhase
 {
 public:
+	BroadPhase();
+
 	void Add(AABB* aabb);
 
 	void Add(Collider* collider);

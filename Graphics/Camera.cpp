@@ -1,5 +1,5 @@
+
 #include "Camera.h"
-#include "../Utils.h"
 
 #define CAM_SPEED 7.0f
 

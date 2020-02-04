@@ -31,9 +31,16 @@
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Mesh\ObjParser.cpp" />
     <ClCompile Include="Physics\BroadPhase.cpp" />
+    <ClCompile Include="Physics\CollideSphere.cpp" />
     <ClCompile Include="Physics\Collision.cpp" />
+    <ClCompile Include="Physics\Contact.cpp" />
+    <ClCompile Include="Physics\ContactManager.cpp" />
+    <ClCompile Include="Physics\ContactSolver.cpp" />
     <ClCompile Include="Physics\HullCollider.cpp" />
+    <ClCompile Include="Physics\NarrowPhase.cpp" />
     <ClCompile Include="Physics\Physics.cpp" />
+    <ClCompile Include="Physics\SphereCollider.cpp" />
+    <ClCompile Include="Physics\SphereContact.cpp" />
     <ClCompile Include="Simulation\Simulation.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -49,11 +56,19 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Mesh\ObjParser.h" />
+    <ClInclude Include="Mesh\SphereModel.h" />
     <ClInclude Include="Physics\BroadPhase.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\Collision.h" />
+    <ClInclude Include="Physics\Contact.h" />
+    <ClInclude Include="Physics\ContactManager.h" />
+    <ClInclude Include="Physics\ContactSolver.h" />
     <ClInclude Include="Physics\HullCollider.h" />
+    <ClInclude Include="Physics\NarrowPhase.h" />
     <ClInclude Include="Physics\Physics.h" />
+    <ClInclude Include="Physics\Settings.h" />
+    <ClInclude Include="Physics\SphereCollider.h" />
+    <ClInclude Include="Physics\SphereContact.h" />
     <ClInclude Include="Simulation\HelloTriangle.h" />
     <ClInclude Include="Simulation\Simulation.h" />
     <ClInclude Include="Utils.h" />
@@ -116,20 +131,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SolutionDir)\Include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SolutionDir)\Include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SolutionDir)\Include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SolutionDir)\Include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)\Lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
