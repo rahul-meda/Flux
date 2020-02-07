@@ -38,7 +38,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
 	camera = Camera(glm::vec3(30.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert",                                                                                        "Resources/FragmentShader.frag");
@@ -95,9 +95,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
 
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
-		tx = Transform(glm::vec3(30.0f, 7.0f + (float)i*3.0f, 0.0f));
+		tx = Transform(glm::vec3(27.0f, 7.0f + (float)i*3.0f, 0.0f));
 		bd.tx = tx;
 		bd.isStatic = false;
 		bID = Physics::GetInstance().AddBody(bd);
@@ -179,7 +179,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f,100.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f,1000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)

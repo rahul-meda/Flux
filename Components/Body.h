@@ -38,6 +38,7 @@ struct BodyDef
 };
 
 class Collider;
+struct ContactEdge;
 // ToDo: padding, and separation into 'cold' and 'hot' parts for cache - ref Orange book
 class Body
 {
@@ -57,10 +58,11 @@ private:
 	glm::vec3 force;
 	glm::vec3 torque;
 
-	bool isStatic;
-
 	std::vector<Collider*> colliders;
 
+	ContactEdge* edgeList;
+
+	bool isStatic;
 	int index;	// index in world body list
 
 public:
@@ -85,9 +87,12 @@ public:
 
 	void SynchronizeTransform();
 
+	bool ShouldCollide(Body* other) const;
+
 	friend class Physics;
 	friend class HullCollider;
 	friend class ContactSolver;
+	friend class ContactManager;
 };
 
 inline const glm::vec3& Body::GetPosition() const

@@ -4,8 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "../Components/Body.h"
-#include "../Physics/BroadPhase.h"
-#include "../Physics/ContactManager.h"
+#include "ContactManager.h"
 
 class Physics
 {
@@ -33,6 +32,5 @@ public:
 	std::vector<Velocity> velocities;
 	std::vector<Collider*> colliders;
 
-	BroadPhase bp;
 	ContactManager contactManager;
 };

@@ -13,11 +13,13 @@ public:
 
 	void AddPair(Collider* colliderA, Collider* colliderB);
 
-	void FindNewContacts(const std::vector<ColliderPair>& pairs);
+	void FindNewContacts();
 
 	void Collide();
 
-	void Destroy(Contact* contact);
+	void Destroy(Contact* contact, int i);
 
 	std::vector<Contact*> contacts;
+
+	BroadPhase bp;
 };

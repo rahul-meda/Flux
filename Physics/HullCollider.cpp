@@ -40,6 +40,7 @@ HullCollider::HullCollider()
 	friction = 0.4f;
 	txB.position = glm::vec3(0.0f);
 	txB.R = glm::mat3(1.0f);
+	aabbIndex = 0;
 }
 
 void HullCollider::Scale(const glm::vec3& s)

@@ -46,6 +46,8 @@ public:
 	Body* body;
 	Type type;
 	float radius;
+	int aabbIndex;	// index of corresponding AABB in broad-phase	
+
 	friend class Contact;
 	friend class Body;
 	friend class ContactSolver;

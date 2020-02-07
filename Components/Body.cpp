@@ -67,3 +67,9 @@ void Body::AddCollider(Collider* collider)
 	iitL = glm::inverse(iitL);
 	iitW = tx.R * iitL * glm::transpose(tx.R);
 }
+
+bool Body::ShouldCollide(Body* other) const
+{
+	if (isStatic && other->isStatic)
+		return false;
+}

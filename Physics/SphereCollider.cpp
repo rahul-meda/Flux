@@ -10,6 +10,7 @@ SphereCollider::SphereCollider()
 	friction = 0.4f;
 	position = glm::vec3(0.0f);
 	radius = 1.0f;
+	aabbIndex = 0;
 }
 
 void SphereCollider::ComputeAABB(AABB* aabb) const

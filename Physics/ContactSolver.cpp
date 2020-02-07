@@ -33,6 +33,9 @@ ContactSolver::ContactSolver(ContactSolverDef* def)
 	{
 		Contact* contact = (*contacts)[i];
 
+		if (contact->touching == false)
+			continue;
+
 		Collider* colliderA = contact->GetColliderA();
 		Collider* colliderB = contact->GetColliderB();
 		Body* bodyA = colliderA->GetBody();
@@ -102,12 +105,11 @@ ContactSolver::~ContactSolver()
 // Initialize position dependent portions of the velocity constraints.
 void ContactSolver::InitializeVelocityConstraints()
 {
-	int nContacts = (*contacts).size();
-	for (int i = 0; i < nContacts; ++i)
+	for (int i = 0; i < velocityConstraints.size(); ++i)
 	{
 		ContactVelocityConstraint* vc = &velocityConstraints[i];
 		ContactPositionConstraint* pc = &positionConstraints[i];
-
+		
 		Manifold* manifold = (*contacts)[vc->contactIndex]->GetManifold();
 
 		int indexA = vc->indexA;
@@ -184,11 +186,10 @@ void ContactSolver::InitializeVelocityConstraints()
 
 void ContactSolver::SolveVelocityConstraints()
 {
-	int nContacts = (*contacts).size();
-	for (int i = 0; i < nContacts; ++i)
+	for (int i = 0; i < velocityConstraints.size(); ++i)
 	{
 		ContactVelocityConstraint* vc = &velocityConstraints[i];
-
+		
 		int indexA = vc->indexA;
 		int indexB = vc->indexB;
 		float mA = vc->invMassA;

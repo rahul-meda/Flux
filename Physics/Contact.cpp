@@ -1,5 +1,22 @@
+
 #include "Contact.h"
 #include "NarrowPhase.h"
+
+Contact::Contact(Collider* colliderA, Collider* colliderB)
+	: colliderA(colliderA), colliderB(colliderB)
+{
+	touching = false;
+
+	edgeA.contact = nullptr;
+	edgeA.other = nullptr;
+	edgeA.prev = nullptr;
+	edgeA.next = nullptr;
+
+	edgeB.contact = nullptr;
+	edgeB.other = nullptr;
+	edgeB.prev = nullptr;
+	edgeB.next = nullptr;
+}
 
 Contact* Contact::Create(Collider* colliderA, Collider* colliderB)
 {
@@ -28,12 +45,7 @@ void Contact::Update()
 	Evaluate(&manifold, txA, txB);	// virtual call!! (why is box2D using virtual call?)
 
 	// set touching
-	bool touching = manifold.nPoints > 0;
-	if (!touching)
-	{
-		nuke = true;
-		Destroy(this);
-	}
+	touching = manifold.nPoints > 0;
 
 	// match old and new contacts
 

@@ -36,7 +36,7 @@ void Physics::Initialize()
 	}
 
 	for (Collider* c : colliders)
-		bp.Add(c);
+		contactManager.bp.Add(c);
 
 	NarrowPhase::InitializeTable();
 }
@@ -44,9 +44,9 @@ void Physics::Initialize()
 void Physics::Step(float dt)
 {
 	// detect collisions
-	bp.Update();
+	contactManager.bp.Update();
 
-	contactManager.FindNewContacts(bp.pairs);
+	contactManager.FindNewContacts();
 
 	contactManager.Collide();
 

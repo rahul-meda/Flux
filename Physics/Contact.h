@@ -19,8 +19,7 @@ public:
 	Contact()
 		: colliderA(nullptr), colliderB(nullptr) {}
 
-	Contact(Collider* colliderA, Collider* colliderB)
-		: colliderA(colliderA), colliderB(colliderB) {}
+	Contact(Collider* colliderA, Collider* colliderB);
 
 	virtual ~Contact() {}
 
@@ -47,12 +46,19 @@ public:
 
 	float GetFriction() const;
 
-	bool nuke;	// temp
 protected:
+	bool touching;
+
+	ContactEdge edgeA;
+	ContactEdge edgeB;
+
 	Collider* colliderA;
 	Collider* colliderB;
 
 	Manifold manifold;
+
+	friend class ContactManager;
+	friend class ContactSolver;
 };
 
 inline Manifold* Contact::GetManifold()
