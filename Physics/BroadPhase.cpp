@@ -19,6 +19,7 @@ void BroadPhase::Add(Collider* collider)
 	aabb->collider = collider;
 	aabb->collider->ComputeAABB(aabb);
 	aabbs.push_back(aabb);
+	collider->aabbIndex = aabbs.size() - 1;
 }
 
 void BroadPhase::ComputePairs()
