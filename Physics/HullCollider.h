@@ -47,6 +47,8 @@ public:
 
 	void Scale(const glm::vec3& s);
 
+	const glm::vec3 GetSupport(const glm::vec3& dir) const;
+
 	std::vector<Vertex*> vertices;
 	std::vector<Edge*> edges;
 	std::vector<Face*> faces;

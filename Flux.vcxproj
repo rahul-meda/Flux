@@ -28,15 +28,18 @@
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mesh\Geometry.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Mesh\ObjParser.cpp" />
     <ClCompile Include="Physics\BroadPhase.cpp" />
+    <ClCompile Include="Physics\CollideHull.cpp" />
     <ClCompile Include="Physics\CollideSphere.cpp" />
     <ClCompile Include="Physics\Collision.cpp" />
     <ClCompile Include="Physics\Contact.cpp" />
     <ClCompile Include="Physics\ContactManager.cpp" />
     <ClCompile Include="Physics\ContactSolver.cpp" />
     <ClCompile Include="Physics\HullCollider.cpp" />
+    <ClCompile Include="Physics\HullContact.cpp" />
     <ClCompile Include="Physics\NarrowPhase.cpp" />
     <ClCompile Include="Physics\Physics.cpp" />
     <ClCompile Include="Physics\SphereCollider.cpp" />
@@ -56,7 +59,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Mesh\ObjParser.h" />
-    <ClInclude Include="Mesh\SphereModel.h" />
+    <ClInclude Include="Mesh\Geometry.h" />
     <ClInclude Include="Physics\BroadPhase.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\Collision.h" />
@@ -64,6 +67,7 @@
     <ClInclude Include="Physics\ContactManager.h" />
     <ClInclude Include="Physics\ContactSolver.h" />
     <ClInclude Include="Physics\HullCollider.h" />
+    <ClInclude Include="Physics\HullContact.h" />
     <ClInclude Include="Physics\NarrowPhase.h" />
     <ClInclude Include="Physics\Physics.h" />
     <ClInclude Include="Physics\Settings.h" />
@@ -75,6 +79,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Components\Transform.inl" />
     <None Include="Resources\FragmentShader.frag" />
     <None Include="Resources\PointLight.frag" />
     <None Include="Resources\VertexShader.vert" />

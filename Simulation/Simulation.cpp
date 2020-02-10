@@ -1,3 +1,4 @@
+
 #include <glad/glad.h>
 #include <iostream>
 #include "Simulation.h"
@@ -5,7 +6,7 @@
 #include "../Graphics/Graphics.h"
 #include "../Graphics/Shader.h"
 #include "../Components/Model.h"
-#include "../Mesh/SphereModel.h"
+#include "../Mesh/Geometry.h"
 #include "../Mesh/ObjParser.h"
 #include "../Physics/Physics.h"
 #include "../Components/Body.h"
@@ -39,9 +40,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	height = h;
 	glViewport(0, 0, width, height);
 	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
-	camera = Camera(glm::vec3(30.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert",                                                                                        "Resources/FragmentShader.frag");
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert",                                                                             "Resources/FragmentShader.frag");
 
 	Texture::CreateTexture(Texture::TextureType::WOOD, "resources/textures/container.jpg", false, textureData);
 	Texture::CreateTexture(Texture::TextureType::SMILEY, "resources/textures/awesomeface.png", true, textureData);
@@ -49,55 +50,59 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Texture::AddUniformLoc("smileyTexture", textureData);
 	Texture::SetUniforms(Graphics::GetInstance().worldShader, textureData);
 
-	ModelDef box, sphere;
+	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
+	glm::vec3 sandy = glm::vec3(1.0f, 0.5f, 0.2f);
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 
-	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f));
+	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f), glm::angleAxis(0.75f, glm::vec3(0.0f, 0.0f, 1.0f)));
 	bd.tx = tx;
-	bd.isStatic = true;
+	bd.isStatic = false;
 	bID = Physics::GetInstance().AddBody(bd);
 	HullCollider* boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(tx.scale);
+	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(tx.scale);
+	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
 	gameObjects.push_back(GameObject(boxModel, bID));
 
-	tx = Transform(glm::vec3(5.0f, 3.0f, 0.0f));
+	for (int i = 0; i < 3; ++i)
+	{
+		tx = Transform(glm::vec3(5.0f, 2.0f + 3.0f * (float)i, 0.0f));
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(glm::vec3(1.0f));
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>());
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(tx.scale);
+	boxCollider->Scale(glm::vec3(10.0f, 0.5f, 10.0f));
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(tx.scale);
-	gameObjects.push_back(GameObject(boxModel, bID));
-
-	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>(), glm::vec3(10.0f, 0.5f, 10.0f));
-	bd.tx = tx;
-	bd.isStatic = true;
-	bID = Physics::GetInstance().AddBody(bd);
-	boxCollider = new HullCollider();
-	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(tx.scale);
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(tx.scale);
-	gameObjects.push_back(GameObject(boxModel, bID));
+	Graphics::GetInstance().scales.push_back(glm::vec3(10.0f, 0.5f, 10.0f));
+	gameObjects.push_back(GameObject(boxModel, bID, sandy));
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
-		tx = Transform(glm::vec3(27.0f, 7.0f + (float)i*3.0f, 0.0f));
+		tx = Transform(glm::vec3(30.0f, 11.0f + (float)i*3.0f, 0.0f));
 		bd.tx = tx;
 		bd.isStatic = false;
 		bID = Physics::GetInstance().AddBody(bd);
@@ -116,21 +121,19 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	sphereCollider->Scale(5.0f);
 	Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(5.0f));
-	gameObjects.push_back(GameObject(sphereModel, bID));
+	gameObjects.push_back(GameObject(sphereModel, bID, sandy));
 
-	glUseProgram(Graphics::GetInstance().worldShader);
-	glUniform3f(glGetUniformLocation(Graphics::GetInstance().worldShader, "objColor"), 0.9f, 0.5f, 0.3f);
-	glUniform3f(glGetUniformLocation(Graphics::GetInstance().worldShader, "lightColor"), 1.0f, 1.0f, 1.0f);
-	glUseProgram(0);
+	CreateLine(line);
+	unsigned int lineModel = Graphics::GetInstance().CreateModel(line);
+	Graphics::GetInstance().lineModelID = lineModel;
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",
 															   "Resources/PointLight.frag");
 	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 10.0f));
-	Graphics::GetInstance().lightModelID = boxModel;
+	Graphics::GetInstance().cubeModelID = boxModel;
 
+	Graphics::GetInstance().Initialize();
 	Physics::GetInstance().Initialize();
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -141,6 +144,12 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		Physics::GetInstance().pause = !(Physics::GetInstance().pause);
 	if (key == GLFW_KEY_N && action == GLFW_PRESS)
 		Physics::GetInstance().singleStep = true;
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
+	{
+		Physics::GetInstance().debugDraw = !(Physics::GetInstance().debugDraw);
+		Graphics::GetInstance().points.clear();
+		Graphics::GetInstance().lines.clear();
+	}
 }
 
 void Simulation::OnKeyPressHold(GLFWwindow* window)

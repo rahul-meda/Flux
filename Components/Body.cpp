@@ -72,4 +72,5 @@ bool Body::ShouldCollide(Body* other) const
 {
 	if (isStatic && other->isStatic)
 		return false;
+	return true;
 }

@@ -7,7 +7,7 @@
 #define GRAVITY 3.0f
 
 Physics::Physics()
-	: singleStep(false), pause(true)
+	: singleStep(false), pause(true), debugDraw(false)
 {}
 
 Physics& Physics::GetInstance()
@@ -60,9 +60,13 @@ void Physics::Step(float dt)
 
 		glm::vec3 v = b->velocity;
 		glm::vec3 w = b->angularVelocity;
+
+		b->iitW = b->tx.R * b->iitL * glm::transpose(b->tx.R);
 		
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
+		v *= 0.99f;
+		w *= 0.99f;
 
 		positions[i].c = b->GetCentroid();
 		positions[i].q = b->GetOrientation();
@@ -117,6 +121,11 @@ void Physics::Step(float dt)
 		bodies[i]->torque = glm::vec3(0.0f);
 
 		bodies[i]->SynchronizeTransform();
+	}
+
+	if (debugDraw)
+	{
+		contactManager.DebugDraw();
 	}
 }
 

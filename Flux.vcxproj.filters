@@ -65,6 +65,15 @@
     <ClCompile Include="Physics\ContactSolver.cpp">
       <Filter>Physics\Collision\Contact</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\CollideHull.cpp">
+      <Filter>Physics\Collision\NarrowPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\HullContact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh\Geometry.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -135,10 +144,13 @@
     <ClInclude Include="Physics\NarrowPhase.h">
       <Filter>Physics\Collision\NarrowPhase</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh\SphereModel.h">
+    <ClInclude Include="Physics\ContactSolver.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh\Geometry.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\ContactSolver.h">
+    <ClInclude Include="Physics\HullContact.h">
       <Filter>Physics\Collision\Contact</Filter>
     </ClInclude>
   </ItemGroup>
@@ -183,6 +195,9 @@
     </None>
     <None Include="Resources\PointLight.frag">
       <Filter>Resources</Filter>
+    </None>
+    <None Include="Components\Transform.inl">
+      <Filter>Components</Filter>
     </None>
   </ItemGroup>
 </Project>

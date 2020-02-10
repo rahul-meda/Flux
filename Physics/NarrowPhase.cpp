@@ -1,11 +1,14 @@
+
 #include "NarrowPhase.h"
 #include "SphereContact.h"
+#include "HullContact.h"
 
 CollisionTable NarrowPhase::collisionTable[Collider::nShapes][Collider::nShapes];
 
 void NarrowPhase::InitializeTable()
 {
 	AddType(SphereContact::Create, SphereContact::Destroy, Collider::Sphere, Collider::Sphere);
+	AddType(HullContact::Create, HullContact::Destroy, Collider::ConvexHull, Collider::ConvexHull);
 }
 
 void NarrowPhase::AddType(ContactCreateFn* createFn, ContactDestroyFn* destroyFn, 

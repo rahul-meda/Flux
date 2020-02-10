@@ -3,6 +3,7 @@
 #include "Collider.h"
 
 class SphereCollider;
+class HullCollider;
 class Manifold;
 
 typedef Contact* ContactCreateFn(Collider* colliderA, Collider* colliderB);
@@ -27,3 +28,6 @@ public:
 };
 
 void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB);
+
+void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
+								      const Transform& txA, const Transform& txB);

@@ -2,6 +2,26 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+struct R_Point
+{
+	R_Point(glm::vec3 pos, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f))
+		: pos(pos), color(color) {}
+
+	glm::vec3 pos;
+	glm::vec3 color;
+};
+
+struct R_Line
+{
+	R_Line(glm::vec3 pos, glm::quat rot, glm::vec3 color = glm::vec3(0.3f, 1.0f, 0.3f))
+		: pos(pos), rot(rot), color(color) {}
+
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::vec3 color;
+};
 
 class Model;
 struct TextureInfo;
@@ -16,23 +36,27 @@ private:
 public:
 	static Graphics& GetInstance();
 
+	void Initialize();
+
 	unsigned int CreateModel(const ModelDef& modelDef);
-
-	std::vector<Model> models;
-
-	std::vector<glm::vec3> scales;
-
-	unsigned int worldShader;
-
-	unsigned int lightShader;
-
-	std::vector<glm::vec3> lightPos;
-
-	unsigned int lightModelID;
 
 	void AddPointLight(glm::vec3 pos);
 
+	void Update(const std::vector<GameObject>& objects);
+
 	glm::mat4 P;
 
-	void Update(const std::vector<GameObject>& objects);
+	std::vector<Model> models;
+	std::vector<glm::vec3> scales;
+	std::vector<glm::vec3> lightPos;
+
+	// debug draw
+	std::vector<R_Point> points;
+	std::vector<R_Line> lines;
+
+	unsigned int worldShader;
+	unsigned int lightShader;
+
+	unsigned int cubeModelID;
+	unsigned int lineModelID;
 };

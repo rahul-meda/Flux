@@ -4,6 +4,7 @@
 #include "Contact.h"
 #include "Collider.h"
 #include "../Utils.h"
+#include <iostream>
 
 struct ContactPositionConstraint
 {
@@ -32,6 +33,8 @@ ContactSolver::ContactSolver(ContactSolverDef* def)
 	for (int i = 0; i < nContacts; ++i)
 	{
 		Contact* contact = (*contacts)[i];
+
+		std::cout << nContacts << std::endl;
 
 		if (contact->touching == false)
 			continue;
@@ -232,6 +235,7 @@ void ContactSolver::SolveVelocityConstraints()
 
 				// Apply contact impulse
 				glm::vec3 P = lambda[i] * tangent[i];
+				P = glm::vec3(0.0f);
 
 				vA -= mA * P;
 				wA -= iA * glm::cross(vcp->rA, P);

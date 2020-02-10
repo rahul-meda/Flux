@@ -7,8 +7,8 @@
 class Transform
 {
 public:
-	Transform(glm::vec3 pos, glm::quat q = glm::identity<glm::quat>(), glm::vec3 scale = glm::vec3(1.0))
-		: position(pos), scale(scale)
+	Transform(glm::vec3 pos, glm::quat q = glm::identity<glm::quat>())
+		: position(pos)
 	{
 		R = glm::toMat3(q);
 	}
@@ -17,5 +17,6 @@ public:
 
 	glm::vec3 position;
 	glm::mat3 R;
-	glm::vec3 scale;
 };
+
+#include "Transform.inl"

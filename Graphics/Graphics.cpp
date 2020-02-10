@@ -1,3 +1,4 @@
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Graphics.h"
@@ -22,6 +23,13 @@ Graphics& Graphics::GetInstance()
 {
 	static Graphics instance;
 	return instance;
+}
+
+void Graphics::Initialize()
+{
+	glUseProgram(worldShader);
+	glUniform3f(glGetUniformLocation(worldShader, "lightColor"), 1.0f, 1.0f, 1.0f);
+	glUseProgram(0);
 }
 
 unsigned int Graphics::CreateModel(const ModelDef& modelDef)
@@ -88,17 +96,26 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 
 	glm::mat4 T, R, S, M, VP, MVP;
 	VP = P * Simulation::GetInstance().camera.ViewSpace();
+
+	if (Physics::GetInstance().debugDraw)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glUseProgram(worldShader);
 	unsigned int mvpLoc = glGetUniformLocation(worldShader, "MVP");
 	unsigned int mLoc = glGetUniformLocation(worldShader, "M");
 	unsigned int eyeLoc = glGetUniformLocation(worldShader, "eyePos");
+	unsigned int colorLoc = glGetUniformLocation(worldShader, "objColor");
 	glm::vec3 eye = Simulation::GetInstance().camera.position;
 	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
 
-	auto N = objects.size();
+	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
-		T = glm::translate(glm::mat4(1.0), Physics::GetInstance().bodies[i]->GetPosition());
+		GameObject obj = objects[i];
+
+		T = glm::translate(glm::mat4(1.0f), Physics::GetInstance().bodies[i]->GetPosition());
 		R = glm::toMat4(Physics::GetInstance().positions[i].q);
 		S = glm::scale(scales[i]);
 		M = T * R * S;
@@ -106,18 +123,51 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(obj.color));
 
-		Model m = models[objects[i].modelID];	//cache friendly? ToDo: try storing pointers to model in GO
+		Model m = models[obj.modelID];	//cache friendly? ToDo: try storing pointers to model in GO
 		glBindVertexArray(m.VAO);
+		glLineWidth(2.0f);
 		//glDrawElements(GL_TRIANGLES, m.nIndices, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
+	}
+
+	N = points.size();
+	for (int i = 0; i < N; ++i)
+	{
+		R_Point p = points[i];
+		T = glm::translate(glm::mat4(1.0f), p.pos);
+		S = glm::scale(glm::vec3(0.1f));
+		M = T * S;
+		MVP = VP * M;
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(p.color));
+		Model m = models[cubeModelID];
+		glBindVertexArray(m.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
+	}
+
+	N = lines.size();
+	for (int i = 0; i < N; ++i)
+	{
+		R_Line l = lines[i];
+		T = glm::translate(glm::mat4(1.0f), l.pos);
+		R = glm::toMat4(l.rot);
+		M = T * R;
+		MVP = VP * M;
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(l.color));
+		Model m = models[lineModelID];
+		glBindVertexArray(m.VAO);
+		glLineWidth(5.0f);
+		glDrawArrays(GL_LINES, 0, m.nIndices);
 	}
 	glUseProgram(0);
 
 	glUseProgram(lightShader);
 	mvpLoc = glGetUniformLocation(lightShader, "MVP");
-	//lightPos[0].x = 10.0f * cos(glfwGetTime());
-	//lightPos[0].z = 10.0f * sin(glfwGetTime());
 	for (int i = 0; i < lightPos.size(); i++)
 	{
 		T = glm::translate(glm::mat4(1.0f), lightPos[i]);
@@ -132,7 +182,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glUseProgram(0);
 
 		glUseProgram(lightShader);
-		Model m = models[lightModelID];
+		Model m = models[cubeModelID];
 		glBindVertexArray(m.VAO);
 		//glDrawElements(GL_TRIANGLES, m.nIndices, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);

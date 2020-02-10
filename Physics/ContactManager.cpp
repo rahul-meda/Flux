@@ -2,6 +2,8 @@
 #include <iterator>
 #include "ContactManager.h"
 #include "Contact.h"
+#include "../Graphics/Graphics.h"
+#include <iostream>
 
 ContactManager::ContactManager()
 {
@@ -50,6 +52,8 @@ void ContactManager::AddPair(Collider* colliderA, Collider* colliderB)
 
 	// add to world
 	contacts.push_back(c);
+
+	std::cout << contacts.size() << std::endl;
 
 	// connect to island graph
 
@@ -166,4 +170,43 @@ void ContactManager::Destroy(Contact* nuke, int i)
 	contacts.pop_back();
 
 	Contact::Destroy(nuke);
+}
+
+void ContactManager::DebugDraw()
+{
+	Graphics::GetInstance().points.clear();
+	Graphics::GetInstance().lines.clear();
+
+	int N = contacts.size();
+	for (int i = 0; i < N; ++i)
+	{
+		Contact* c = contacts[i];
+		Manifold m = c->manifold;
+		Collider* cA = c->colliderA;
+		Collider* cB = c->colliderB;
+		Body* bA = cA->body;
+		Body* bB = cB->body;
+		Transform txA = bA->GetTransform();
+		Transform txB = bB->GetTransform();
+		WorldManifold wm;
+		wm.Initialize(&m, txA, txB, cA->radius, cB->radius);
+
+		for (int j = 0; j < m.nPoints; ++j)
+		{
+			Graphics::GetInstance().points.push_back(R_Point(wm.points[j]));
+
+			float angle = acosf(glm::dot(wm.normal, glm::vec3(1.0f, 0.0f, 0.0f)));
+			glm::vec3 axis = wm.tangent[0];
+			glm::quat q = glm::angleAxis(angle, axis);
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
+			angle = acosf(glm::dot(wm.tangent[0], glm::vec3(1.0f, 0.0f, 0.0f)));
+			axis = wm.normal;
+			q = glm::angleAxis(angle, axis);
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
+			angle = acosf(glm::dot(wm.tangent[1], glm::vec3(1.0f, 0.0f, 0.0f)));
+			axis = wm.normal;
+			q = glm::angleAxis(angle, axis);
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
+		}
+	}
 }

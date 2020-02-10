@@ -30,16 +30,10 @@ bool Overlap(AABB* A, AABB* B);
 ////////////////////////////////////////////////////////////////////////////////////////
 struct ContactFeature
 {
-	enum Type
-	{
-		edge = 0,
-		face = 1
-	};
-
-	unsigned char indexA;	// can't have more than 255 edges!!
-	unsigned char indexB;
-	unsigned char typeA;
-	unsigned char typeB;
+	unsigned char edgeA;	// can't have more than 255 edges!!
+	unsigned char faceA;
+	unsigned char edgeB;
+	unsigned char faceB;
 };
 
 union ContactID

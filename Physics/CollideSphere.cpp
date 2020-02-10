@@ -5,6 +5,8 @@
 
 void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB)
 {
+	manifold->nPoints = 0;
+
 	Body* bodyA = sphereA->GetBody();
 	Body* bodyB = sphereB->GetBody();
 	Transform txA = bodyA->GetTransform();

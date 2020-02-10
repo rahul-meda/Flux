@@ -6,7 +6,7 @@ SphereCollider::SphereCollider()
 	type = Sphere;
 	massData = new MassData();
 	density = 1.0f;
-	restitution = 0.7f;
+	restitution = 0.3f;
 	friction = 0.4f;
 	position = glm::vec3(0.0f);
 	radius = 1.0f;

@@ -19,6 +19,8 @@ public:
 
 	void Destroy(Contact* contact, int i);
 
+	void DebugDraw();
+
 	std::vector<Contact*> contacts;
 
 	BroadPhase bp;

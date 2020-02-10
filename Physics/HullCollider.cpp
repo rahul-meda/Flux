@@ -36,7 +36,7 @@ HullCollider::HullCollider()
 	radius = hullRadius;
 	massData = new MassData();
 	density = 1.0f;
-	restitution = 0.8f;
+	restitution = 0.2f;
 	friction = 0.4f;
 	txB.position = glm::vec3(0.0f);
 	txB.R = glm::mat3(1.0f);
@@ -51,6 +51,26 @@ void HullCollider::Scale(const glm::vec3& s)
 		v->position.y *= s.y;
 		v->position.z *= s.z;
 	}
+}
+
+// TODO: Hill-Climbing
+const glm::vec3 HullCollider::GetSupport(const glm::vec3 & dir) const
+{
+	int index = -1;
+	float maxDot = -FLT_MAX;
+	int N = vertices.size();
+
+	for (int i = 0; i < N; ++i)
+	{
+		float dot = glm::dot(vertices[i]->position, dir);
+		if (dot > maxDot)
+		{
+			index = i;
+			maxDot = dot;
+		}
+	}
+
+	return vertices[index]->position;
 }
 
 void HullCollider::ComputeAABB(AABB* aabb) const

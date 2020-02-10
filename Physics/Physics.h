@@ -26,6 +26,7 @@ public:
 
 	bool pause;
 	bool singleStep;
+	bool debugDraw;
 
 	std::vector<Body*> bodies;
 	std::vector<Position> positions;
