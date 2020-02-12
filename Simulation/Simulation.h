@@ -30,8 +30,6 @@ private:
 
 	~Simulation();
 
-	double prevFrame;
-
 public:
 	static Simulation& GetInstance();
 
@@ -49,6 +47,8 @@ public:
 
 	int width;
 	int height;
+
+	double prevFrame;
 
 	std::map<int, std::pair<int, int>> bufferIDmap;
 

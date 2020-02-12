@@ -15,11 +15,20 @@ struct R_Point
 
 struct R_Line
 {
-	R_Line(glm::vec3 pos, glm::quat rot, glm::vec3 color = glm::vec3(0.3f, 1.0f, 0.3f))
+	R_Line(glm::vec3 pos, glm::quat rot, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f))
 		: pos(pos), rot(rot), color(color) {}
 
 	glm::vec3 pos;
 	glm::quat rot;
+	glm::vec3 color;
+};
+
+struct R_aabb
+{
+	R_aabb(glm::vec3 min, glm::vec3 max, glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f))
+		: min(min), max(max), color(color) {}
+	glm::vec3 min;
+	glm::vec3 max;
 	glm::vec3 color;
 };
 
@@ -53,6 +62,7 @@ public:
 	// debug draw
 	std::vector<R_Point> points;
 	std::vector<R_Line> lines;
+	std::vector<R_aabb> aabbs;
 
 	unsigned int worldShader;
 	unsigned int lightShader;

@@ -44,7 +44,9 @@
     <ClCompile Include="Physics\Physics.cpp" />
     <ClCompile Include="Physics\SphereCollider.cpp" />
     <ClCompile Include="Physics\SphereContact.cpp" />
+    <ClCompile Include="Simulation\BoxStack.cpp" />
     <ClCompile Include="Simulation\Simulation.cpp" />
+    <ClCompile Include="Simulation\PlankStack.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -73,8 +75,10 @@
     <ClInclude Include="Physics\Settings.h" />
     <ClInclude Include="Physics\SphereCollider.h" />
     <ClInclude Include="Physics\SphereContact.h" />
-    <ClInclude Include="Simulation\HelloTriangle.h" />
+    <ClInclude Include="Simulation\BoxStack.h" />
     <ClInclude Include="Simulation\Simulation.h" />
+    <ClInclude Include="Simulation\PlankStack.h" />
+    <ClInclude Include="Simulation\Simulations.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

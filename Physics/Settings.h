@@ -6,6 +6,10 @@
 // max no.of contact points b/w 2 shapes
 #define maxManifoldPoints 4
 
+// fatten AABBs in broad-phase, so that small movement is allowed 
+// before ruling out contact persistence
+#define aabbExtension 0.05f
+
 // collision and constraint tolerance
 #define linearSlop 0.005f
 

@@ -74,6 +74,12 @@
     <ClCompile Include="Mesh\Geometry.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\PlankStack.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\BoxStack.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -84,7 +90,6 @@
       <Filter>Simulation</Filter>
     </ClInclude>
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Simulation\HelloTriangle.h" />
     <ClInclude Include="Graphics\Graphics.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -152,6 +157,15 @@
     </ClInclude>
     <ClInclude Include="Physics\HullContact.h">
       <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\PlankStack.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Simulations.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\BoxStack.h">
+      <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

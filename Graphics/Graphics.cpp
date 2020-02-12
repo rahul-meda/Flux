@@ -27,6 +27,9 @@ Graphics& Graphics::GetInstance()
 
 void Graphics::Initialize()
 {
+	// draw the pixel only if the object is closer to the viewer
+	glEnable(GL_DEPTH_TEST); // enables depth-testing
+	glDepthFunc(GL_LESS);    // interpret smaller values as closer
 	glUseProgram(worldShader);
 	glUniform3f(glGetUniformLocation(worldShader, "lightColor"), 1.0f, 1.0f, 1.0f);
 	glUseProgram(0);
@@ -98,7 +101,11 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	VP = P * Simulation::GetInstance().camera.ViewSpace();
 
 	if (Physics::GetInstance().debugDraw)
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1, 0);
+	}
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -164,6 +171,23 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glLineWidth(5.0f);
 		glDrawArrays(GL_LINES, 0, m.nIndices);
 	}
+
+	N = aabbs.size();
+	for (int i = 0; i < N; ++i)
+	{
+		R_aabb aabb = aabbs[i];
+		T = glm::translate(glm::mat4(1.0f), (aabb.min + aabb.max) * 0.5f);
+		S = glm::scale(glm::abs(aabb.max - aabb.min) * 0.5f);
+		M = T * S;
+		MVP = VP * M;
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(aabb.color));
+		Model m = models[cubeModelID];
+		glBindVertexArray(m.VAO);
+		glLineWidth(2.5f);
+		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
+	}
 	glUseProgram(0);
 
 	glUseProgram(lightShader);
@@ -177,8 +201,9 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUseProgram(0);
 
+		glm::vec3 lightPos = eye + glm::vec3(10.0f);
 		glUseProgram(worldShader);
-		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(eye));
+		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightPos));
 		glUseProgram(0);
 
 		glUseProgram(lightShader);

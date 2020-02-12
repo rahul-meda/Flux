@@ -90,7 +90,7 @@ void CreateSphere(ModelDef& md)
 void CreateLine(ModelDef& md)
 {
 	md.vertices.push_back(glm::vec3(0.0f));
-	md.normals.push_back(glm::vec3(0.0f));
+	md.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
 	md.vertices.push_back(glm::vec3(0.5f, 0.0f, 0.0f));
-	md.normals.push_back(glm::vec3(0.0f));
+	md.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
 }

@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Window.h"
-#include "Simulation/Simulation.h"
+#include "Simulation/Simulations.h"
 
 int main()
 {
@@ -13,6 +13,8 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
+
+	BoxStack::GetInstance().Init(Simulation::GetInstance().gameObjects);
 
 	Simulation::GetInstance().Init(window, width, height);
 

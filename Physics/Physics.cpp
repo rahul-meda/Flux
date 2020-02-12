@@ -85,7 +85,7 @@ void Physics::Step(float dt)
 
 	contactSolver.WarmStart();
 
-	int velocityIters = 8;
+	int velocityIters = 16;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		contactSolver.SolveVelocityConstraints();
