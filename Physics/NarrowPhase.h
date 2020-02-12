@@ -24,7 +24,7 @@ public:
 
 	static void InitializeTable();
 
-	static CollisionTable collisionTable[Collider::nShapes][Collider::nShapes];
+	static CollisionTable contactTable[Collider::nShapes][Collider::nShapes];
 };
 
 void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB);

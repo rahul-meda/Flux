@@ -34,8 +34,6 @@ ContactSolver::ContactSolver(ContactSolverDef* def)
 	{
 		Contact* contact = (*contacts)[i];
 
-		std::cout << nContacts << std::endl;
-
 		if (contact->touching == false)
 			continue;
 
@@ -83,8 +81,9 @@ ContactSolver::ContactSolver(ContactSolverDef* def)
 			ManifoldPoint* cp = manifold->points + j;
 			VelocityConstraintPoint* vcp = vc.points + j;
 
-			vcp->normalImpulse = 0.0f;
-			vcp->tangentImpulse = 0.0f;
+			vcp->normalImpulse = cp->normalImpulse;
+			vcp->tangentImpulse[0] = cp->tangentImpulse[0];
+			vcp->tangentImpulse[1] = cp->tangentImpulse[1];
 			vcp->rA = glm::vec3(0.0f);
 			vcp->rB = glm::vec3(0.0f);
 			vcp->normalMass = 0.0f;
@@ -147,6 +146,8 @@ void ContactSolver::InitializeVelocityConstraints()
 		worldManifold.Initialize(manifold, txA, txB, pc->radiusA, pc->radiusB);
 
 		vc->normal = worldManifold.normal;
+		vc->tangent[0] = worldManifold.tangent[0];
+		vc->tangent[1] = worldManifold.tangent[1];
 
 		int pointCount = vc->pointCount;
 		for (int j = 0; j < pointCount; ++j)
@@ -163,13 +164,13 @@ void ContactSolver::InitializeVelocityConstraints()
 
 			vcp->normalMass = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
 
-			glm::vec3 tangent[2];
-			ComputeBasis(vc->normal, &tangent[0], &tangent[1]);
+			//glm::vec3 tangent[2];
+			//ComputeBasis(vc->normal, &tangent[0], &tangent[1]);
 
 			for (int i = 0; i < 2; ++i)
 			{
-				glm::vec3 rtA = glm::cross(vcp->rA, tangent[i]);
-				glm::vec3 rtB = glm::cross(vcp->rB, tangent[i]);
+				glm::vec3 rtA = glm::cross(vcp->rA, vc->tangent[i]);
+				glm::vec3 rtB = glm::cross(vcp->rB, vc->tangent[i]);
 
 				float kTangent = mA + mB + glm::dot(iA * rtA, rtA) + glm::dot(iB * rtB, rtB);
 				vcp->tangentMass[i] = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
@@ -184,6 +185,49 @@ void ContactSolver::InitializeVelocityConstraints()
 			}
 			vcp->velocityBias += baumgarte * 60.0f * glm::max(-worldManifold.separations[0] - linearSlop, 0.0f);
 		}
+	}
+}
+
+void ContactSolver::WarmStart()
+{
+	// Warm start.
+	for (int i = 0; i < velocityConstraints.size(); ++i)
+	{
+		ContactVelocityConstraint* vc = &velocityConstraints[i];
+
+		int indexA = vc->indexA;
+		int indexB = vc->indexB;
+		float mA = vc->invMassA;
+		glm::mat3 iA = vc->invIA;
+		float mB = vc->invMassB;
+		glm::mat3 iB = vc->invIB;
+		int pointCount = vc->pointCount;
+
+		glm::vec3 vA = (*velocities)[indexA].v;
+		glm::vec3 wA = (*velocities)[indexA].w;
+		glm::vec3 vB = (*velocities)[indexB].v;
+		glm::vec3 wB = (*velocities)[indexB].w;
+
+		glm::vec3 normal = vc->normal;
+		//glm::vec3 tangent[2];
+		//ComputeBasis(vc->normal, &tangent[0], &tangent[1]);
+
+		for (int j = 0; j < pointCount; ++j)
+		{
+			VelocityConstraintPoint* vcp = vc->points + j;
+			glm::vec3 P = vcp->normalImpulse * normal + vcp->tangentImpulse[0] * vc->tangent[0];
+			P += vcp->tangentImpulse[1] * vc->tangent[1];
+			//P *= 0.3f;
+			wA -= iA * glm::cross(vcp->rA, P);
+			vA -= mA * P;
+			wB += iB * glm::cross(vcp->rB, P);
+			vB += mB * P;
+		}
+
+		(*velocities)[indexA].v = vA;
+		(*velocities)[indexA].w = wA;
+		(*velocities)[indexB].v = vB;
+		(*velocities)[indexB].w = wB;
 	}
 }
 
@@ -207,8 +251,8 @@ void ContactSolver::SolveVelocityConstraints()
 		glm::vec3 wB = (*velocities)[indexB].w;
 
 		glm::vec3 normal = vc->normal;
-		glm::vec3 tangent[2];
-		ComputeBasis(normal, &tangent[0], &tangent[1]);
+		//glm::vec3 tangent[2];
+		//ComputeBasis(normal, &tangent[0], &tangent[1]);
 		float friction = vc->friction;
 
 		// Solve tangent constraints first because non-penetration is more important
@@ -223,19 +267,18 @@ void ContactSolver::SolveVelocityConstraints()
 			for (int i = 0; i < 2; ++i)
 			{
 				// Compute tangent force
-				float vt = glm::dot(dv, tangent[i]);
+				float vt = glm::dot(dv, vc->tangent[i]);
 				float lambda[2];
 				lambda[i] = vcp->tangentMass[i] * (-vt);
 
 				// b2Clamp the accumulated force
 				float maxFriction = friction * vcp->normalImpulse;
-				float newImpulse = glm::clamp(vcp->tangentImpulse + lambda[i], -maxFriction, maxFriction);
-				lambda[i] = newImpulse - vcp->tangentImpulse;
-				vcp->tangentImpulse = newImpulse;
+				float newImpulse = glm::clamp(vcp->tangentImpulse[i] + lambda[i], -maxFriction, maxFriction);
+				lambda[i] = newImpulse - vcp->tangentImpulse[i];
+				vcp->tangentImpulse[i] = newImpulse;
 
 				// Apply contact impulse
-				glm::vec3 P = lambda[i] * tangent[i];
-				P = glm::vec3(0.0f);
+				glm::vec3 P = lambda[i] * vc->tangent[i];
 
 				vA -= mA * P;
 				wA -= iA * glm::cross(vcp->rA, P);
@@ -275,5 +318,21 @@ void ContactSolver::SolveVelocityConstraints()
 		(*velocities)[indexA].w = wA;
 		(*velocities)[indexB].v = vB;
 		(*velocities)[indexB].w = wB;
+	}
+}
+
+void ContactSolver::StoreImpulses()
+{
+	for (int i = 0; i < velocityConstraints.size(); ++i)
+	{
+		ContactVelocityConstraint* vc = &velocityConstraints[i];
+		Manifold* manifold = (*contacts)[vc->contactIndex]->GetManifold();
+
+		for (int j = 0; j < vc->pointCount; ++j)
+		{
+			manifold->points[j].normalImpulse = vc->points[j].normalImpulse;
+			manifold->points[j].tangentImpulse[0] = vc->points[j].tangentImpulse[0];
+			manifold->points[j].tangentImpulse[1] = vc->points[j].tangentImpulse[1];
+		}
 	}
 }

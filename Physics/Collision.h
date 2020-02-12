@@ -45,8 +45,8 @@ union ContactID
 struct ManifoldPoint
 {
 	glm::vec3 localPoint;
-	glm::vec3 normalImpulse;
-	glm::vec3 tangentImpulse;
+	float normalImpulse;
+	float tangentImpulse[2];
 	ContactID id;
 };
 
@@ -56,7 +56,8 @@ struct Manifold
 	{
 		spheres,
 		faceA,
-		faceB
+		faceB,
+		edges
 	};
 
 	ManifoldPoint points[maxManifoldPoints];

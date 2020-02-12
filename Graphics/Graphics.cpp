@@ -178,7 +178,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glUseProgram(0);
 
 		glUseProgram(worldShader);
-		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightPos[0]));
+		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(eye));
 		glUseProgram(0);
 
 		glUseProgram(lightShader);

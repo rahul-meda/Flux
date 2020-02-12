@@ -44,7 +44,7 @@ void Body::AddCollider(Collider* collider)
 	{
 		MassData* md = c->massData;
 		mass += md->mass;
-		comL += md->mass * md->com;
+		comL += md->mass * c->com;
 	}
 
 	assert(mass != 0, "ERROR::Body has invalid mass");
@@ -57,7 +57,7 @@ void Body::AddCollider(Collider* collider)
 	for (Collider* c : colliders)
 	{
 		MassData* md = c->massData;
-		glm::vec3 r = comL - md->com;
+		glm::vec3 r = comL - c->com;
 		float rDotr = glm::dot(r, r);
 		glm::mat3 rOutr = glm::outerProduct(r, r);
 

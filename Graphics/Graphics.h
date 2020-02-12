@@ -6,7 +6,7 @@
 
 struct R_Point
 {
-	R_Point(glm::vec3 pos, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f))
+	R_Point(glm::vec3 pos, glm::vec3 color = glm::vec3(1.0f, 1.0f, 0.3f))
 		: pos(pos), color(color) {}
 
 	glm::vec3 pos;

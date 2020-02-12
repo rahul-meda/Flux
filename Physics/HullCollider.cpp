@@ -35,7 +35,6 @@ HullCollider::HullCollider()
 	type = ConvexHull;
 	radius = hullRadius;
 	massData = new MassData();
-	density = 1.0f;
 	restitution = 0.2f;
 	friction = 0.4f;
 	txB.position = glm::vec3(0.0f);
@@ -99,7 +98,7 @@ void HullCollider::ComputeMass()
 	glm::vec3 diag(0.0f);
 	glm::vec3 offDiag(0.0f);
 	float volume = 0.0f;
-	massData->com = glm::vec3(0.0f);
+	com = glm::vec3(0.0f);
 	massData->mass = 0.0f;
 	massData->inertia = glm::mat3(0.0f);
 
@@ -117,7 +116,7 @@ void HullCollider::ComputeMass()
 
 			float currentVolume = glm::dot(u, glm::cross(v, w));
 			volume += currentVolume;
-			massData->com += (u + v + w) * currentVolume;
+			com += (u + v + w) * currentVolume;
 
 			for (int j = 0; j < 3; ++j)
 			{
@@ -139,13 +138,13 @@ void HullCollider::ComputeMass()
 		}
 	}
 
-	massData->com /= (volume * 4.0f);
-	massData->com = txB.position + (txB.R * massData->com);
+	com /= (volume * 4.0f);
+	com = txB.position + (txB.R * com);
 
 	volume *= (1.0f / 6.0f);
 	diag /= volume * 60.0f;
 	offDiag /= volume * 120.0f;
-	massData->mass = density * volume;
+	massData->mass = massData->density * volume;
 
 	massData->inertia[0] = glm::vec3(diag.y + diag.z, -offDiag.z,		 -offDiag.y);
 	massData->inertia[1] = glm::vec3(-offDiag.z,		diag.x + diag.z, -offDiag.x);

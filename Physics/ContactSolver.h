@@ -15,7 +15,7 @@ struct VelocityConstraintPoint
 	glm::vec3 rA;
 	glm::vec3 rB;
 	float normalImpulse;
-	float tangentImpulse;
+	float tangentImpulse[2];
 	float normalMass;
 	float tangentMass[2];
 	float velocityBias;
@@ -25,6 +25,7 @@ struct ContactVelocityConstraint
 {
 	VelocityConstraintPoint points[maxManifoldPoints];
 	glm::vec3 normal;
+	glm::vec3 tangent[2];
 	glm::mat3 normalMass;
 	glm::mat3 K;
 	int indexA, indexB;
@@ -50,6 +51,8 @@ public:
 	~ContactSolver();
 
 	void InitializeVelocityConstraints();
+
+	void WarmStart();
 
 	void SolveVelocityConstraints();
 	void StoreImpulses();

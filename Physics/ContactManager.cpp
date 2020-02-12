@@ -53,8 +53,6 @@ void ContactManager::AddPair(Collider* colliderA, Collider* colliderB)
 	// add to world
 	contacts.push_back(c);
 
-	std::cout << contacts.size() << std::endl;
-
 	// connect to island graph
 
 	// contact creation may swap colliders
@@ -202,11 +200,11 @@ void ContactManager::DebugDraw()
 			angle = acosf(glm::dot(wm.tangent[0], glm::vec3(1.0f, 0.0f, 0.0f)));
 			axis = wm.normal;
 			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(1.0f, 0.0f, 0.0f)));
 			angle = acosf(glm::dot(wm.tangent[1], glm::vec3(1.0f, 0.0f, 0.0f)));
 			axis = wm.normal;
 			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(1.0f, 0.0f, 0.0f)));
 		}
 	}
 }

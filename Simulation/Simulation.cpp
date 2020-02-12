@@ -55,36 +55,173 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	ParseObj("Resources/Models/Box.obj", mesh);
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
-	glm::vec3 sandy = glm::vec3(1.0f, 0.5f, 0.2f);
+	glm::vec3 sandy = glm::vec3(1.0f, 0.7f, 0.4f);
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
+	HullCollider* boxCollider;
 
-	tx = Transform(glm::vec3(-5.0f, 3.0f, 0.0f), glm::angleAxis(0.75f, glm::vec3(0.0f, 0.0f, 1.0f)));
-	bd.tx = tx;
-	bd.isStatic = false;
-	bID = Physics::GetInstance().AddBody(bd);
-	HullCollider* boxCollider = new HullCollider();
-	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(1.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID));
+	glm::vec3 s(1.0f, 0.5f, 0.2f);
 
-	for (int i = 0; i < 3; ++i)
+	int H = 5;
+
+	for (int k = 0; k < 2; ++k)
 	{
-		tx = Transform(glm::vec3(5.0f, 2.0f + 3.0f * (float)i, 0.0f));
+		for (int j = 0; j < 20; ++j)
+		{
+			for (int i = 0; i < H; ++i)
+			{
+				glm::vec3 p = glm::vec3(-20.0f + 2.0f * s.x * (float)j, 1.0f + 2.0f*(float)i, -2.0f * (float)k);
+				glm::quat q = glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+				tx = Transform(p, q);
+				bd.tx = tx;
+				bd.isStatic = false;
+				bID = Physics::GetInstance().AddBody(bd);
+				boxCollider = new HullCollider();
+				mesh.GetColliderData(boxCollider);
+				boxCollider->Scale(s);
+				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Graphics::GetInstance().scales.push_back(s);
+				gameObjects.push_back(GameObject(boxModel, bID));
+			}
+			for (int i = 0; i < H; ++i)
+			{
+				glm::vec3 p = glm::vec3(-19.0f + 2.0f * s.x * (float)j, 2.0f + 2.0f*(float)i, -2.0f * (float)k);
+				if (j % 2 == 0) p.z += 0.5f;
+				else p.z -= 0.5f;
+				glm::quat q = glm::identity<glm::quat>();
+				tx = Transform(p, q);
+				bd.tx = tx;
+				bd.isStatic = false;
+				bID = Physics::GetInstance().AddBody(bd);
+				boxCollider = new HullCollider();
+				mesh.GetColliderData(boxCollider);
+				boxCollider->Scale(s);
+				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Graphics::GetInstance().scales.push_back(s);
+				gameObjects.push_back(GameObject(boxModel, bID));
+			}
+		}
+	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(-19.0f, 2.0f + 2.0f*(float)i, -2.5f);
+		glm::quat q = glm::identity<glm::quat>();
+		tx = Transform(p, q);
 		bd.tx = tx;
 		bd.isStatic = false;
 		bID = Physics::GetInstance().AddBody(bd);
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
-		boxCollider->Scale(glm::vec3(1.0f));
+		boxCollider->Scale(s);
 		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
+		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(-19.0f, 2.0f + 2.0f*(float)i, -0.5f);
+		glm::quat q = glm::identity<glm::quat>();
+		tx = Transform(p, q);
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(s);
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(s);
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(19.0f, 2.0f + 2.0f*(float)i, 0.5f);
+		glm::quat q = glm::identity<glm::quat>();
+		tx = Transform(p, q);
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(s);
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(s);
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(19.0f, 2.0f + 2.0f*(float)i, -1.5f);
+		glm::quat q = glm::identity<glm::quat>();
+		tx = Transform(p, q);
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(s);
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(s);
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(20.0f, 1.0f + 2.0f*(float)i, 0.0f);
+		glm::quat q = glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+		tx = Transform(p, q);
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(s);
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(s);
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	for (int i = 0; i < H; ++i)
+	{
+		glm::vec3 p = glm::vec3(20.0f, 1.0f + 2.0f*(float)i, -2.0f);
+		glm::quat q = glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+		tx = Transform(p, q);
+		bd.tx = tx;
+		bd.isStatic = false;
+		bID = Physics::GetInstance().AddBody(bd);
+		boxCollider = new HullCollider();
+		mesh.GetColliderData(boxCollider);
+		boxCollider->Scale(s);
+		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Graphics::GetInstance().scales.push_back(s);
+		gameObjects.push_back(GameObject(boxModel, bID));
+	}
+
+	/*tx = Transform(glm::vec3(-20.75, 12.5f, -2.0f), glm::identity<glm::quat>());
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	boxCollider = new HullCollider();
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(glm::vec3(0.5f, 12.5f, 2.0f));
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f, 12.5f, 2.0f));
+	gameObjects.push_back(GameObject(boxModel, bID, sandy));
+
+	tx = Transform(glm::vec3(20.75, 12.5f, -2.0f), glm::identity<glm::quat>());
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	boxCollider = new HullCollider();
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(glm::vec3(0.5f, 12.5f, 2.0f));
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f, 12.5f, 2.0f));
+	gameObjects.push_back(GameObject(boxModel, bID, sandy));*/
 
 	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>());
 	bd.tx = tx;
@@ -92,9 +229,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(10.0f, 0.5f, 10.0f));
+	boxCollider->Scale(glm::vec3(25.0f, 0.5f, 25.0f));
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(10.0f, 0.5f, 10.0f));
+	Graphics::GetInstance().scales.push_back(glm::vec3(25.0f, 0.5f, 25.0f));
 	gameObjects.push_back(GameObject(boxModel, bID, sandy));
 
 	CreateSphere(sphere);
@@ -102,7 +239,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	for (int i = 0; i < 1; ++i)
 	{
-		tx = Transform(glm::vec3(30.0f, 11.0f + (float)i*3.0f, 0.0f));
+		tx = Transform(glm::vec3(50.0f, 11.0f + (float)i*3.0f, 0.0f));
 		bd.tx = tx;
 		bd.isStatic = false;
 		bID = Physics::GetInstance().AddBody(bd);
@@ -113,7 +250,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 		gameObjects.push_back(GameObject(sphereModel, bID));
 	}
 
-	tx = Transform(glm::vec3(30.0f, 0.0f, 0.0f));
+	tx = Transform(glm::vec3(50.0f, 0.0f, 0.0f));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
@@ -129,7 +266,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",
 															   "Resources/PointLight.frag");
-	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 10.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 20.0f, 20.0f));
 	Graphics::GetInstance().cubeModelID = boxModel;
 
 	Graphics::GetInstance().Initialize();
@@ -150,6 +287,13 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		Graphics::GetInstance().points.clear();
 		Graphics::GetInstance().lines.clear();
 	}
+	if (key == GLFW_KEY_SPACE)
+	{
+		Body* b = Physics::GetInstance().bodies[0];
+		glm::vec3 v = b->GetVelocity();
+		v = 25.0f * glm::vec3(1.0f, 0.0f, 0.0f);
+		b->SetVelocity(v);
+	}
 }
 
 void Simulation::OnKeyPressHold(GLFWwindow* window)
@@ -166,21 +310,6 @@ void Simulation::OnKeyPressHold(GLFWwindow* window)
 		Simulation::GetInstance().camera.Translate(Camera::UP);
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 		Simulation::GetInstance().camera.Translate(Camera::DOWN);
-
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		Body* b = Physics::GetInstance().bodies[0];
-		glm::vec3 v = b->GetVelocity();
-		v += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
-		b->SetVelocity(v);
-	}
-	if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
-	{
-		Body* b = Physics::GetInstance().bodies[1];
-		glm::vec3 w = b->GetAngularVelocity();
-		w += 0.2f * glm::vec3(1.0f, 0.0f, 0.0f);
-		b->SetAngularVelocity(w);
-	}
 }
 
 void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)

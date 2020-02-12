@@ -6,9 +6,9 @@
 struct MassData
 {
 	MassData()
-		: inertia(0.0f), com(0.0f), mass(0.0f){}
+		: inertia(0.0f), density(1.0f), mass(0.0f){}
 	glm::mat3 inertia;
-	glm::vec3 com;	// body space
+	float density;
 	float mass;
 };
 
@@ -40,7 +40,7 @@ public:
 	const Body* GetBody() const;
 
 	MassData* massData;
-	float density;
+	glm::vec3 com;	// body space
 	float restitution;
 	float friction;
 	Body* body;

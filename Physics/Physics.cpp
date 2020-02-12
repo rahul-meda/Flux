@@ -4,7 +4,7 @@
 #include "NarrowPhase.h"
 #include "ContactSolver.h"
 
-#define GRAVITY 3.0f
+#define GRAVITY 9.8f
 
 Physics::Physics()
 	: singleStep(false), pause(true), debugDraw(false)
@@ -65,8 +65,8 @@ void Physics::Step(float dt)
 		
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
-		v *= 0.99f;
-		w *= 0.99f;
+		//v *= 0.99f;
+		//w *= 0.99f;
 
 		positions[i].c = b->GetCentroid();
 		positions[i].q = b->GetOrientation();
@@ -83,11 +83,15 @@ void Physics::Step(float dt)
 	ContactSolver contactSolver(&contactSolverDef);
 	contactSolver.InitializeVelocityConstraints();
 
+	contactSolver.WarmStart();
+
 	int velocityIters = 8;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		contactSolver.SolveVelocityConstraints();
 	}
+
+	contactSolver.StoreImpulses();
 
 	// post stabilization error correction
 
@@ -101,6 +105,19 @@ void Physics::Step(float dt)
 		glm::vec3 w = velocities[i].w;
 
 		// check for large velocities and adjust
+		glm::vec3 translation = v * dt;
+		if (glm::dot(translation, translation) > maxTranslation2)
+		{
+			float ratio = maxTranslation / glm::length(translation);
+			v *= ratio;
+		}
+
+		glm::vec3 rotation = w * dt;
+		if (glm::dot(rotation, rotation) > maxRotation2)
+		{
+			float ratio = maxRotation / glm::length(rotation);
+			w *= ratio;
+		}
 
 		c += dt * v;
 		q += dt * 0.5f * glm::quat(0.0f, w) * q;

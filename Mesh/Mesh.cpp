@@ -95,6 +95,7 @@ void HMesh::GetColliderData(HullCollider* c) const
 		if (e->tail->edge == nullptr) 
 			e->tail->edge = e;
 		e->face = c->faces[edges[i]->face->id - 1];
+		e->id = i;
 		c->edges[edges[i]->id - 1] = e;
 	}
 

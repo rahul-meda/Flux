@@ -1,7 +1,7 @@
 
 #include "Camera.h"
 
-#define CAM_SPEED 7.0f
+#define CAM_SPEED 10.0f
 
 Camera::Camera()
 {}

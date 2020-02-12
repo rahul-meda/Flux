@@ -20,6 +20,8 @@ struct Edge
 	Edge* next;			
 	Edge* twin;			
 
+	int id;	// temp - TODO: make Edge, Face and Vertex more compact
+
 	glm::vec3 GetDirection() const;
 
 	Edge* Prev();

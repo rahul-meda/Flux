@@ -5,7 +5,7 @@ SphereCollider::SphereCollider()
 {
 	type = Sphere;
 	massData = new MassData();
-	density = 1.0f;
+	com = glm::vec3(0.0f);
 	restitution = 0.3f;
 	friction = 0.4f;
 	position = glm::vec3(0.0f);
@@ -23,10 +23,10 @@ void SphereCollider::ComputeAABB(AABB* aabb) const
 
 void SphereCollider::ComputeMass()
 {
-	massData->com = position;
+	com = position;
 
 	float volume = (4.0f / 3.0f) * PI * radius * radius * radius;
-	massData->mass = density * volume;
+	massData->mass = massData->density * volume;
 	float I = (2.0f / 5.0f) * massData->mass * radius * radius;
 
 	massData->inertia[0] = glm::vec3(I, 0.0f, 0.0f);

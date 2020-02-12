@@ -52,6 +52,7 @@ void WorldManifold::Initialize(const Manifold* manifold, const Transform & txA, 
 				points[i] = (cA + cB) * 0.5f;
 				separations[i] = glm::dot(cB - cA, normal);
 			}
+
 			ComputeBasis(normal, &tangent[0], &tangent[1]);
 		}
 		break;
@@ -70,6 +71,21 @@ void WorldManifold::Initialize(const Manifold* manifold, const Transform & txA, 
 				separations[i] = glm::dot(cA - cB, normal);
 			}
 			normal = -normal;
+
+			ComputeBasis(normal, &tangent[0], &tangent[1]);
+		}
+		break;
+
+	case Manifold::edges:
+		{
+			glm::vec3 PA = txA.R * manifold->localPoint + txA.position;
+			glm::vec3 PB = txB.R * manifold->points[0].localPoint + txB.position;
+			normal = txB.R * manifold->localNormal;
+			glm::vec3 CA = PA - radiusA * normal; // TODO: check sign
+			glm::vec3 CB = PB + radiusB * normal;
+			points[0] = (CA + CB) * 0.5f;
+			separations[0] = glm::dot(CB - CA, normal);
+			
 			ComputeBasis(normal, &tangent[0], &tangent[1]);
 		}
 		break;
