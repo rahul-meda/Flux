@@ -54,7 +54,7 @@ struct Manifold
 {
 	enum Type
 	{
-		spheres,
+		sphere,
 		faceA,
 		faceB,
 		edges

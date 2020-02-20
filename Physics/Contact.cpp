@@ -25,7 +25,14 @@ Contact* Contact::Create(Collider* colliderA, Collider* colliderB)
 
 	ContactCreateFn* createFn = NarrowPhase::contactTable[typeA][typeB].createFn;
 
-	return createFn(colliderA, colliderB);
+	if (NarrowPhase::contactTable[typeA][typeB].flip == false)
+	{
+		return createFn(colliderA, colliderB);
+	}
+	else
+	{
+		return createFn(colliderB, colliderA);
+	}
 }
 
 void Contact::Destroy(Contact* contact)

@@ -9,8 +9,7 @@ struct Face;
 
 struct Vertex
 {
-	glm::vec3 position;		
-	Edge* edge;							
+	glm::vec3 position;								
 };
 
 struct Edge

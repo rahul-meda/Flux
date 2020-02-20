@@ -16,11 +16,12 @@ uniform vec3 eyePos;
 
 void main()
 {
-	float ambientStr = 0.4f;
+	float ambientStr = 0.2f;
 	vec3 ambient = ambientStr * lightColor;
 
+	float diffuseStr = 0.9f;
 	vec3 lightDir = normalize(vPosW - lightPos);
-	vec3 diffuse = max(dot(-lightDir, vNormal), 0.0f) * lightColor;
+	vec3 diffuse = diffuseStr * max(dot(-lightDir, vNormal), 0.0f) * lightColor;
 
 	float specularStr = 0.5f;
 	int shininess = 32;

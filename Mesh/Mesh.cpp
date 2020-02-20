@@ -76,7 +76,6 @@ void HMesh::GetColliderData(HullCollider* c) const
 	{
 		Vertex *v = new Vertex();
 		v->position = vertices[i]->position;
-		v->edge = nullptr;
 		c->vertices[vertices[i]->id - 1] = v;
 	}
 
@@ -92,8 +91,6 @@ void HMesh::GetColliderData(HullCollider* c) const
 	{
 		Edge *e = new Edge();
 		e->tail = c->vertices[edges[i]->tail->id - 1];
-		if (e->tail->edge == nullptr) 
-			e->tail->edge = e;
 		e->face = c->faces[edges[i]->face->id - 1];
 		e->id = i;
 		c->edges[edges[i]->id - 1] = e;

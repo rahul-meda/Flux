@@ -55,7 +55,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	ParseObj("Resources/Models/Box.obj", mesh);
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
-	glm::vec3 sandy = glm::vec3(1.0f, 0.7f, 0.4f);
+	glm::vec3 latte(1.0f, 0.97f, 0.9f);
 
 	Transform tx;
 	BodyDef bd;
@@ -68,17 +68,17 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(25.0f, 0.5f, 25.0f));
+	boxCollider->Scale(glm::vec3(50.0f, 0.5f, 50.0f));
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(25.0f, 0.5f, 25.0f));
-	gameObjects.push_back(GameObject(boxModel, bID, sandy));
+	Graphics::GetInstance().scales.push_back(glm::vec3(50.0f, 0.5f, 50.0f));
+	gameObjects.push_back(GameObject(boxModel, bID, latte));
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
 
-	for (int i = 0; i < 1; ++i)
+	/*for (int i = 0; i < 1; ++i)
 	{
-		tx = Transform(glm::vec3(50.0f, 11.0f + (float)i*3.0f, 0.0f));
+		tx = Transform(glm::vec3(100.0f, 11.0f + (float)i*3.0f, 0.0f));
 		bd.tx = tx;
 		bd.isStatic = false;
 		bID = Physics::GetInstance().AddBody(bd);
@@ -89,7 +89,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 		gameObjects.push_back(GameObject(sphereModel, bID));
 	}
 
-	tx = Transform(glm::vec3(50.0f, 0.0f, 0.0f));
+	tx = Transform(glm::vec3(100.0f, 0.0f, 0.0f));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
@@ -97,15 +97,14 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	sphereCollider->Scale(5.0f);
 	Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(5.0f));
-	gameObjects.push_back(GameObject(sphereModel, bID, sandy));
+	gameObjects.push_back(GameObject(sphereModel, bID, latte));*/
 
 	CreateLine(line);
 	unsigned int lineModel = Graphics::GetInstance().CreateModel(line);
 	Graphics::GetInstance().lineModelID = lineModel;
 
-	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",
-															   "Resources/PointLight.frag");
-	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 20.0f, 20.0f));
+	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",																 "Resources/PointLight.frag");
+	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 20.0f));
 	Graphics::GetInstance().cubeModelID = boxModel;
 
 	Graphics::GetInstance().Initialize();

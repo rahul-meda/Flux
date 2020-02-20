@@ -1,8 +1,10 @@
 
 #include "Physics.h"
+#include "../Graphics/Graphics.h"
 #include "../Components/Body.h"
 #include "NarrowPhase.h"
 #include "ContactSolver.h"
+#include <ctime>
 
 #define GRAVITY 9.8f
 
@@ -43,12 +45,24 @@ void Physics::Initialize()
 
 void Physics::Step(float dt)
 {
+	DistanceOutput output;
+	DistanceInput input;
+	input.proxyA = DistanceProxy(bodies[0]->colliders[0]);
+	input.proxyB = DistanceProxy(bodies[1]->colliders[0]);
+	input.txA = bodies[0]->tx;
+	input.txB = bodies[1]->tx;
+
+	GJK_Distance(&input, &output);
+
 	// detect collisions
 	contactManager.bp.Update();
 
 	contactManager.FindNewContacts();
 
+	std::clock_t t0 = std::clock();
 	contactManager.Collide();
+	std::clock_t t1 = std::clock();
+	double elapsed = (t1 - t0) / (double)CLOCKS_PER_SEC;
 
 	int nBodies = bodies.size();
 
@@ -65,8 +79,8 @@ void Physics::Step(float dt)
 		
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
-		//v *= 0.99f;
-		//w *= 0.99f;
+		v *= 0.995f;
+		w *= 0.995f;
 
 		positions[i].c = b->GetCentroid();
 		positions[i].q = b->GetOrientation();
@@ -85,7 +99,7 @@ void Physics::Step(float dt)
 
 	contactSolver.WarmStart();
 
-	int velocityIters = 16;
+	int velocityIters = 25;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		contactSolver.SolveVelocityConstraints();
@@ -140,10 +154,15 @@ void Physics::Step(float dt)
 		bodies[i]->SynchronizeTransform();
 	}
 
+	Graphics::GetInstance().points.clear();
+	Graphics::GetInstance().lines.clear();
 	if (debugDraw)
 	{
 		contactManager.DebugDraw();
 	}
+
+	Graphics::GetInstance().points.push_back(R_Point(output.CA));
+	Graphics::GetInstance().points.push_back(R_Point(output.CB));
 }
 
 void Physics::Update(float dt)

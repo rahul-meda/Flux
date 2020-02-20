@@ -201,18 +201,18 @@ void ContactManager::DebugDraw()
 			angle = acosf(glm::dot(wm.tangent[0], glm::vec3(1.0f, 0.0f, 0.0f)));
 			axis = wm.normal;
 			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.0f, 1.0f, 0.0f)));
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.5f, 0.9f, 0.9f)));
 			angle = acosf(glm::dot(wm.tangent[1], glm::vec3(1.0f, 0.0f, 0.0f)));
 			axis = wm.normal;
 			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.0f, 1.0f, 0.0f)));
+			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.5f, 0.9f, 0.9f)));
 		}
 	}
 
-	N = bp.aabbs.size();
+	/*N = bp.aabbs.size();
 	for (int i = 0; i < N; ++i)
 	{
 		AABB* aabb = bp.aabbs[i];
 		Graphics::GetInstance().aabbs.push_back(R_aabb(aabb->min, aabb->max));
-	}
+	}*/
 }

@@ -34,7 +34,7 @@ void QueryFaceAxes(FaceQuery* query, const HullCollider* hullA, const HullCollid
 		glm::vec3 support = hullB->GetSupport(-n);
 		float separation = glm::dot((support - p), n);
 
-		// TODO: possible early out? Box2D and Rubicon dont check this
+		// TODO: possible early out?
 
 		if (separation > maxSep)
 		{
@@ -439,7 +439,6 @@ void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 
 	EdgeQuery edgeQuery;
 	QueryEdgeAxes(&edgeQuery, hullA, hullB, bLocal);
-
 	if (edgeQuery.separation > hullRadiusSum)
 		return;
 

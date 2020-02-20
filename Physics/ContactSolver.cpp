@@ -183,7 +183,7 @@ void ContactSolver::InitializeVelocityConstraints()
 			{
 				vcp->velocityBias = -vc->restitution * vRel;
 			}
-			vcp->velocityBias += baumgarte * 60.0f * glm::max(-worldManifold.separations[0] - linearSlop, 0.0f);
+			//vcp->velocityBias += baumgarte * 60.0f * glm::max(-worldManifold.separations[0] - linearSlop, 0.0f);
 		}
 	}
 }

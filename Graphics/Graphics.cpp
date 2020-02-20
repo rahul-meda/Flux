@@ -144,7 +144,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	{
 		R_Point p = points[i];
 		T = glm::translate(glm::mat4(1.0f), p.pos);
-		S = glm::scale(glm::vec3(0.1f));
+		S = glm::scale(glm::vec3(0.05f));
 		M = T * S;
 		MVP = VP * M;
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
@@ -161,7 +161,8 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		R_Line l = lines[i];
 		T = glm::translate(glm::mat4(1.0f), l.pos);
 		R = glm::toMat4(l.rot);
-		M = T * R;
+		S = glm::scale(glm::vec3(l.scale, 1.0f, 1.0f));
+		M = T * R * S;
 		MVP = VP * M;
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
@@ -201,9 +202,9 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUseProgram(0);
 
-		glm::vec3 lightPos = eye + glm::vec3(10.0f);
+		glm::vec3 lightP = eye;
 		glUseProgram(worldShader);
-		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightPos));
+		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightP));
 		glUseProgram(0);
 
 		glUseProgram(lightShader);

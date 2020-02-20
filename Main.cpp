@@ -14,7 +14,7 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	BoxStack::GetInstance().Init(Simulation::GetInstance().gameObjects);
+	GJK_Test::GetInstance().Init(Simulation::GetInstance().gameObjects);
 
 	Simulation::GetInstance().Init(window, width, height);
 

@@ -27,13 +27,13 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 
-	glm::vec3 s(1.0f, 0.5f, 0.2f);
+	glm::vec3 s(1.0f, 0.5f, 0.1f);
 
 	int H = 5;
 
 	for (int k = 0; k < 5; ++k)
 	{
-		for (int j = 0; j < 20; ++j)
+		for (int j = 0; j < 10; ++j)
 		{
 			for (int i = 0; i < H; ++i)
 			{

@@ -19,7 +19,7 @@ void WorldManifold::Initialize(const Manifold* manifold, const Transform & txA, 
 {
 	switch (manifold->type)
 	{
-	case Manifold::spheres:
+	case Manifold::sphere:
 		{
 			normal = glm::vec3(1.0f, 0.0f, 0.0f);
 			glm::vec3 pointA = txA.position + (txA.R * manifold->localPoint);

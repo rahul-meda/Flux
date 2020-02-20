@@ -15,12 +15,14 @@ struct R_Point
 
 struct R_Line
 {
-	R_Line(glm::vec3 pos, glm::quat rot, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f))
-		: pos(pos), rot(rot), color(color) {}
+	R_Line(glm::vec3 pos, glm::quat rot, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), 
+		   float scale = 1.0f)
+		: pos(pos), rot(rot), color(color), scale(scale) {}
 
 	glm::vec3 pos;
 	glm::quat rot;
 	glm::vec3 color;
+	float scale;
 };
 
 struct R_aabb

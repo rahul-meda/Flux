@@ -5,7 +5,7 @@
 class GameObject
 {
 public:
-	GameObject(unsigned int modelID, unsigned int bodyID, glm::vec3 color = glm::vec3(0.0f, 0.67f, 1.0f))
+	GameObject(unsigned int modelID, unsigned int bodyID, glm::vec3 color=glm::vec3(1.0f, 0.7f, 0.4f))
 		: modelID(modelID), bodyID(bodyID), color(color)
 	{}
 

@@ -27,19 +27,42 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 
-	for (int i = 0; i < 25; ++i)
+	glm::vec3 s(1.2f, 0.56f, 0.35f);
+
+	for (int k = 0; k < 1; ++k)
 	{
-		glm::vec3 p = glm::vec3(0.0f, 1.5f + 2.0f*(float)i, -1.5f);
-		glm::quat q = glm::angleAxis(0.75f * (float)i, glm::vec3(0.0f, 1.0f, 0.0f));
-		tx = Transform(p, q);
-		bd.tx = tx;
-		bd.isStatic = false;
-		bID = Physics::GetInstance().AddBody(bd);
-		boxCollider = new HullCollider();
-		mesh.GetColliderData(boxCollider);
-		boxCollider->Scale(glm::vec3(1.0f));
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-		gameObjects.push_back(GameObject(boxModel, bID));
+		for (int j = 0; j < 5; ++j)
+		{
+			for (int i = 0; i < 5; ++i)
+			{
+				float x = 2.0f * s.x * (float)i;
+				float y = 0.5f + s.y + 2.0f * s.y * (float)j;
+				float z = -2.0f * s.z * (float)k;
+				glm::vec3 p(x, y, z);
+				tx = Transform(p);
+				bd.tx = tx;
+				bd.isStatic = false;
+				bID = Physics::GetInstance().AddBody(bd);
+				boxCollider = new HullCollider();
+				mesh.GetColliderData(boxCollider);
+				boxCollider->Scale(glm::vec3(s));
+				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Graphics::GetInstance().scales.push_back(glm::vec3(s));
+				gameObjects.push_back(GameObject(boxModel, bID));
+			}
+		}
 	}
+
+	/*tx = Transform(glm::vec3(16.8f, 10.0f, 50.0f));
+	bd.tx = tx;
+	bd.isStatic = false;
+	bd.velocity = glm::vec3(0.0f, 0.0f, -50.0f);
+	bID = Physics::GetInstance().AddBody(bd);
+	boxCollider = new HullCollider();
+	boxCollider->massData->density = 1.0f;
+	mesh.GetColliderData(boxCollider);
+	boxCollider->Scale(glm::vec3(2.0f, 1.0f, 1.0f));
+	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Graphics::GetInstance().scales.push_back(glm::vec3(2.0f, 1.0f, 1.0f));
+	gameObjects.push_back(GameObject(boxModel, bID));*/
 }
