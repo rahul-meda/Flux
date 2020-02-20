@@ -138,6 +138,12 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		//glDrawElements(GL_TRIANGLES, m.nIndices, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
+	glUseProgram(0);
+
+	glUseProgram(lightShader);
+	mvpLoc = glGetUniformLocation(lightShader, "MVP");
+	mLoc = glGetUniformLocation(lightShader, "M");
+	colorLoc = glGetUniformLocation(lightShader, "objColor");
 
 	N = points.size();
 	for (int i = 0; i < N; ++i)
@@ -155,23 +161,17 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
 
-	N = lines.size();
-	for (int i = 0; i < N; ++i)
-	{
-		R_Line l = lines[i];
-		T = glm::translate(glm::mat4(1.0f), l.pos);
-		R = glm::toMat4(l.rot);
-		S = glm::scale(glm::vec3(l.scale, 1.0f, 1.0f));
-		M = T * R * S;
-		MVP = VP * M;
-		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
-		glUniform3fv(colorLoc, 1, glm::value_ptr(l.color));
-		Model m = models[lineModelID];
-		glBindVertexArray(m.VAO);
-		glLineWidth(5.0f);
-		glDrawArrays(GL_LINES, 0, m.nIndices);
-	}
+	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
+	glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
+	Model m = models[normalsModelID];
+	glBindVertexArray(m.VAO);
+	glDrawArrays(GL_LINES, 0, m.nIndices);
+
+	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
+	glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(0.2f, 0.5f, 1.0f)));
+	m = models[tangentsModelID];
+	glBindVertexArray(m.VAO);
+	glDrawArrays(GL_LINES, 0, m.nIndices);
 
 	N = aabbs.size();
 	for (int i = 0; i < N; ++i)
@@ -189,10 +189,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glLineWidth(2.5f);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
-	glUseProgram(0);
-
-	glUseProgram(lightShader);
-	mvpLoc = glGetUniformLocation(lightShader, "MVP");
+	
 	for (int i = 0; i < lightPos.size(); i++)
 	{
 		T = glm::translate(glm::mat4(1.0f), lightPos[i]);
@@ -200,6 +197,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		MVP = VP * T * S;
 
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f)));
 		glUseProgram(0);
 
 		glm::vec3 lightP = eye;
@@ -212,6 +210,6 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glBindVertexArray(m.VAO);
 		//glDrawElements(GL_TRIANGLES, m.nIndices, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
-		glUseProgram(lightShader);
+		glUseProgram(0);
 	}
 }

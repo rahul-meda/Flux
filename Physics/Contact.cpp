@@ -75,7 +75,5 @@ void Contact::Update()
 		}
 	}
 
-	// match old and new contacts
-
 	// begin, end, pre-solve
 }

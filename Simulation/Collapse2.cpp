@@ -3,6 +3,7 @@
 #include "../Components/Body.h"
 #include "../Physics/Physics.h"
 #include "../Physics/HullCollider.h"
+#include "../Physics/SphereCollider.h"
 #include "../Mesh/ObjParser.h"
 #include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
@@ -114,16 +115,20 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 		}
 	}
 
-	tx = Transform(glm::vec3(-30.0f, 1.0f, 0.0f));
+	CreateSphere(sphere);
+	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
+	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
+	glm::vec3 disco(0.2f, 0.7f, 1.0f);
+
+	tx = Transform(glm::vec3(-30.0f, 1.5f, 0.0f));
 	bd.tx = tx;
 	bd.isStatic = false;
 	bd.velocity = glm::vec3(10.0f, 0.0f, 0.0f);
 	bID = Physics::GetInstance().AddBody(bd);
-	boxCollider = new HullCollider();
-	boxCollider->massData->density = 10.0f;
-	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(1.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	SphereCollider* sphereCollider = new SphereCollider();
+	sphereCollider->Scale(1.0f);
+	sphereCollider->massData->density = 10.0f;
+	Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID));
+	gameObjects.push_back(GameObject(sphereModel, bID, disco));
 }

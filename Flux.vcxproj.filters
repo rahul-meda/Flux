@@ -95,6 +95,9 @@
     <ClCompile Include="Physics\SphereHullContact.cpp">
       <Filter>Physics\Collision\Contact</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\BallStack.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -194,6 +197,9 @@
     <ClInclude Include="Physics\SphereHullContact.h">
       <Filter>Physics\Collision\Contact</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\Ballstack.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -228,17 +234,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\VertexShader.vert">
+    <None Include="Components\Transform.inl">
+      <Filter>Components</Filter>
+    </None>
+    <None Include="Resources\WorldFragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\WorldVertexShader.vert">
       <Filter>Resources</Filter>
     </None>
     <None Include="Resources\FragmentShader.frag">
       <Filter>Resources</Filter>
-    </None>
-    <None Include="Resources\PointLight.frag">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include="Components\Transform.inl">
-      <Filter>Components</Filter>
     </None>
   </ItemGroup>
 </Project>

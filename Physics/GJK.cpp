@@ -20,6 +20,7 @@ DistanceProxy::DistanceProxy(Collider* collider)
 			vertices.reserve(nVerts);
 			for (int i = 0; i < nVerts; ++i)
 				vertices.push_back(hc->vertices[i]->position);
+			break;
 		}
 	}
 }

@@ -45,15 +45,6 @@ void Physics::Initialize()
 
 void Physics::Step(float dt)
 {
-	DistanceOutput output;
-	DistanceInput input;
-	input.proxyA = DistanceProxy(bodies[0]->colliders[0]);
-	input.proxyB = DistanceProxy(bodies[1]->colliders[0]);
-	input.txA = bodies[0]->tx;
-	input.txB = bodies[1]->tx;
-
-	GJK_Distance(&input, &output);
-
 	// detect collisions
 	contactManager.bp.Update();
 
@@ -154,15 +145,10 @@ void Physics::Step(float dt)
 		bodies[i]->SynchronizeTransform();
 	}
 
-	Graphics::GetInstance().points.clear();
-	Graphics::GetInstance().lines.clear();
 	if (debugDraw)
 	{
 		contactManager.DebugDraw();
 	}
-
-	Graphics::GetInstance().points.push_back(R_Point(output.CA));
-	Graphics::GetInstance().points.push_back(R_Point(output.CB));
 }
 
 void Physics::Update(float dt)

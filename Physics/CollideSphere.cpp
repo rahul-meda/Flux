@@ -4,38 +4,34 @@
 #include "SphereCollider.h"
 #include "HullCollider.h"
 
-void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB)
+void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB,
+										const Transform& txA, const Transform& txB)
 {
 	manifold->nPoints = 0;
 
-	Body* bodyA = sphereA->GetBody();
-	Body* bodyB = sphereB->GetBody();
-	Transform txA = bodyA->GetTransform();
-	Transform txB = bodyB->GetTransform();
-
-	glm::vec3 cA = txA.position + txA.R * sphereA->position;
-	glm::vec3 cB = txB.position + txB.R * sphereB->position;
+	glm::vec3 cA = txA.position + txA.R * sphereA->com;
+	glm::vec3 cB = txB.position + txB.R * sphereB->com;
 
 	glm::vec3 d = cB - cA;
 	float dist2 = glm::dot(d, d);
-	float rA = sphereA->radius;
-	float rB = sphereB->radius;
-	float r = rA + rB;
+	float r = sphereA->radius + sphereB->radius;
 	if (dist2 > r * r)
 		return;
 
 	manifold->type = Manifold::sphere;
-	manifold->localPoint = sphereA->position;
+	manifold->localPoint = sphereA->com;
 	manifold->localNormal = glm::vec3(0.0f);
 	manifold->nPoints = 1;
 
-	manifold->points[0].localPoint = sphereB->position;
+	manifold->points[0].localPoint = sphereB->com;
 	manifold->points[0].id.key = 0;
 }
 
 void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider* hullB,
-	const Transform& txA, const Transform& txB)
+										   const Transform& txA, const Transform& txB)
 {
+	manifold->nPoints = 0;
+
 	DistanceOutput output;
 	DistanceInput input;
 	input.proxyA = DistanceProxy(sphereA);
@@ -45,7 +41,9 @@ void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider
 
 	GJK_Distance(&input, &output);
 
-	if (output.distance > sphereA->radius + hullB->radius)
+	float r = sphereA->radius;
+
+	if (output.distance > r + hullB->radius)
 		return;
 
 	if (output.distance <= 0.0f)	// deep contact
@@ -83,8 +81,12 @@ void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider
 	}
 	else
 	{
+		float d2 = glm::length2(output.CB - output.CA);
+		if (d2 > r * r)
+			return;
+
 		manifold->type = Manifold::sphere;
-		manifold->localPoint = glm::transpose(txA.R) * (output.CA - txA.position);
+		manifold->localPoint = sphereA->com;// glm::transpose(txA.R) * (output.CA - txA.position);
 		manifold->localNormal = glm::vec3(0.0f);
 		manifold->nPoints = 1;
 		manifold->points[0].localPoint = glm::transpose(txB.R) * (output.CB - txB.position);

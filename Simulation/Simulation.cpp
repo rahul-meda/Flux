@@ -42,7 +42,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
 	camera = Camera(glm::vec3(0.0f, 3.0f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/VertexShader.vert",                                                                             "Resources/FragmentShader.frag");
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert",                                                                       "Resources/WorldFragmentShader.frag");
 
 	Texture::CreateTexture(Texture::TextureType::WOOD, "resources/textures/container.jpg", false, textureData);
 	Texture::CreateTexture(Texture::TextureType::SMILEY, "resources/textures/awesomeface.png", true, textureData);
@@ -73,37 +73,11 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().scales.push_back(glm::vec3(50.0f, 0.5f, 50.0f));
 	gameObjects.push_back(GameObject(boxModel, bID, latte));
 
-	CreateSphere(sphere);
-	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
-
-	/*for (int i = 0; i < 1; ++i)
-	{
-		tx = Transform(glm::vec3(100.0f, 11.0f + (float)i*3.0f, 0.0f));
-		bd.tx = tx;
-		bd.isStatic = false;
-		bID = Physics::GetInstance().AddBody(bd);
-		SphereCollider* sphereCollider = new SphereCollider();
-		sphereCollider->Scale(1.0f);
-		Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
-		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-		gameObjects.push_back(GameObject(sphereModel, bID));
-	}
-
-	tx = Transform(glm::vec3(100.0f, 0.0f, 0.0f));
-	bd.tx = tx;
-	bd.isStatic = true;
-	bID = Physics::GetInstance().AddBody(bd);
-	SphereCollider* sphereCollider = new SphereCollider();
-	sphereCollider->Scale(5.0f);
-	Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(5.0f));
-	gameObjects.push_back(GameObject(sphereModel, bID, latte));*/
-
 	CreateLine(line);
 	unsigned int lineModel = Graphics::GetInstance().CreateModel(line);
 	Graphics::GetInstance().lineModelID = lineModel;
 
-	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/VertexShader.vert",																 "Resources/PointLight.frag");
+	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																 "Resources/FragmentShader.frag");
 	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 20.0f));
 	Graphics::GetInstance().cubeModelID = boxModel;
 

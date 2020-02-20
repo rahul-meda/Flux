@@ -95,7 +95,8 @@ void GJK_Distance(const DistanceInput* input, DistanceOutput* output);
 ////////////  GJK  ////////////    
 //////////////////////////////
 
-void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB);
+void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB,
+										const Transform& txA, const Transform& txB);
 
 void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 								      const Transform& txA, const Transform& txB);

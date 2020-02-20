@@ -164,9 +164,6 @@ void ContactSolver::InitializeVelocityConstraints()
 
 			vcp->normalMass = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
 
-			//glm::vec3 tangent[2];
-			//ComputeBasis(vc->normal, &tangent[0], &tangent[1]);
-
 			for (int i = 0; i < 2; ++i)
 			{
 				glm::vec3 rtA = glm::cross(vcp->rA, vc->tangent[i]);
@@ -209,15 +206,12 @@ void ContactSolver::WarmStart()
 		glm::vec3 wB = (*velocities)[indexB].w;
 
 		glm::vec3 normal = vc->normal;
-		//glm::vec3 tangent[2];
-		//ComputeBasis(vc->normal, &tangent[0], &tangent[1]);
 
 		for (int j = 0; j < pointCount; ++j)
 		{
 			VelocityConstraintPoint* vcp = vc->points + j;
 			glm::vec3 P = vcp->normalImpulse * normal + vcp->tangentImpulse[0] * vc->tangent[0];
 			P += vcp->tangentImpulse[1] * vc->tangent[1];
-			//P *= 0.3f;
 			wA -= iA * glm::cross(vcp->rA, P);
 			vA -= mA * P;
 			wB += iB * glm::cross(vcp->rB, P);
@@ -301,7 +295,7 @@ void ContactSolver::SolveVelocityConstraints()
 			float lambda = -vcp->normalMass * (vn - vcp->velocityBias);
 
 			// b2Clamp the accumulated impulse
-			float newImpulse = glm::max(vcp->normalImpulse + lambda, 0.0f);
+			float newImpulse = glm::max(vcp->normalImpulse + lambda, -0.2f);	// magnetic force
 			lambda = newImpulse - vcp->normalImpulse;
 			vcp->normalImpulse = newImpulse;
 

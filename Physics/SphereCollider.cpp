@@ -8,7 +8,6 @@ SphereCollider::SphereCollider()
 	com = glm::vec3(0.0f);
 	restitution = 0.3f;
 	friction = 0.4f;
-	position = glm::vec3(0.0f);
 	radius = 1.0f;
 	aabbIndex = 0;
 }
@@ -16,15 +15,13 @@ SphereCollider::SphereCollider()
 void SphereCollider::ComputeAABB(AABB* aabb) const
 {
 	Transform tx = body->GetTransform();
-	glm::vec3 center = tx.R * position + tx.position;
+	glm::vec3 center = tx.R * com + tx.position;
 	aabb->min = center - glm::vec3(radius);
 	aabb->max = center + glm::vec3(radius);
 }
 
 void SphereCollider::ComputeMass()
 {
-	com = position;
-
 	float volume = (4.0f / 3.0f) * PI * radius * radius * radius;
 	massData->mass = massData->density * volume;
 	float I = (2.0f / 5.0f) * massData->mass * radius * radius;

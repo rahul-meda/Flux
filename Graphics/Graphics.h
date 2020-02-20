@@ -71,4 +71,6 @@ public:
 
 	unsigned int cubeModelID;
 	unsigned int lineModelID;
+	unsigned int normalsModelID;
+	unsigned int tangentsModelID;
 };

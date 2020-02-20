@@ -46,6 +46,7 @@
     <ClCompile Include="Physics\Physics.cpp" />
     <ClCompile Include="Physics\SphereCollider.cpp" />
     <ClCompile Include="Physics\SphereContact.cpp" />
+    <ClCompile Include="Simulation\BallStack.cpp" />
     <ClCompile Include="Simulation\BoxStack.cpp" />
     <ClCompile Include="Simulation\Collapse2.cpp" />
     <ClCompile Include="Simulation\Collapse1.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Physics\Settings.h" />
     <ClInclude Include="Physics\SphereCollider.h" />
     <ClInclude Include="Physics\SphereContact.h" />
+    <ClInclude Include="Simulation\Ballstack.h" />
     <ClInclude Include="Simulation\BoxStack.h" />
     <ClInclude Include="Simulation\Collapse1.h" />
     <ClInclude Include="Simulation\Collapse2.h" />
@@ -93,9 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Components\Transform.inl" />
+    <None Include="Resources\WorldFragmentShader.frag" />
     <None Include="Resources\FragmentShader.frag" />
-    <None Include="Resources\PointLight.frag" />
-    <None Include="Resources\VertexShader.vert" />
+    <None Include="Resources\WorldVertexShader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

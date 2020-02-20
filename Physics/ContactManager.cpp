@@ -3,6 +3,7 @@
 #include "ContactManager.h"
 #include "Contact.h"
 #include "../Graphics/Graphics.h"
+#include "../Components/Model.h"
 #include <iostream>
 
 ContactManager::ContactManager()
@@ -97,10 +98,6 @@ void ContactManager::Collide()
 	int N = contacts.size();
 	for (int i = 0; i < N;)
 	{
-		if (i < 0)
-		{
-			int x = 1;
-		}
 		Contact* c = contacts[i];
 		Collider* cA = c->colliderA;
 		Collider* cB = c->colliderB;
@@ -176,6 +173,8 @@ void ContactManager::DebugDraw()
 	Graphics::GetInstance().lines.clear();
 	Graphics::GetInstance().aabbs.clear();
 
+	ModelDef mdn, mdt;
+
 	int N = contacts.size();
 	for (int i = 0; i < N; ++i)
 	{
@@ -192,20 +191,25 @@ void ContactManager::DebugDraw()
 
 		for (int j = 0; j < m.nPoints; ++j)
 		{
-			Graphics::GetInstance().points.push_back(R_Point(wm.points[j]));
+			glm::vec3 p = wm.points[j];
 
-			float angle = acosf(glm::dot(wm.normal, glm::vec3(1.0f, 0.0f, 0.0f)));
-			glm::vec3 axis = wm.tangent[0];
-			glm::quat q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q));
-			angle = acosf(glm::dot(wm.tangent[0], glm::vec3(1.0f, 0.0f, 0.0f)));
-			axis = wm.normal;
-			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.5f, 0.9f, 0.9f)));
-			angle = acosf(glm::dot(wm.tangent[1], glm::vec3(1.0f, 0.0f, 0.0f)));
-			axis = wm.normal;
-			q = glm::angleAxis(angle, axis);
-			Graphics::GetInstance().lines.push_back(R_Line(wm.points[j], q, glm::vec3(0.5f, 0.9f, 0.9f)));
+			Graphics::GetInstance().points.push_back(R_Point(p));
+
+			mdn.vertices.push_back(p);
+			mdn.normals.push_back(glm::vec3(0.0f));
+			mdn.vertices.push_back(p + 0.5f * wm.normal);
+			mdn.normals.push_back(glm::vec3(0.0f));
+			Graphics::GetInstance().normalsModelID = Graphics::GetInstance().CreateModel(mdn);
+
+			mdt.vertices.push_back(p);
+			mdt.normals.push_back(glm::vec3(0.0f));
+			mdt.vertices.push_back(p + 0.5f * wm.tangent[0]);
+			mdt.normals.push_back(glm::vec3(0.0f));
+			mdt.vertices.push_back(p);
+			mdt.normals.push_back(glm::vec3(0.0f));
+			mdt.vertices.push_back(p + 0.5f * wm.tangent[1]);
+			mdt.normals.push_back(glm::vec3(0.0f));
+			Graphics::GetInstance().tangentsModelID = Graphics::GetInstance().CreateModel(mdt);
 		}
 	}
 

@@ -18,5 +18,5 @@ void SphereContact::Destroy(Contact* contact)
 
 void SphereContact::Evaluate(Manifold* manifold, const Transform& txA, const Transform& txB)
 {
-	CollideSpheres(manifold, (SphereCollider*)colliderA, (SphereCollider*)colliderB);
+	CollideSpheres(manifold, (SphereCollider*)colliderA, (SphereCollider*)colliderB, txA, txB);
 }

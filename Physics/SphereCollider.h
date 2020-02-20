@@ -14,6 +14,4 @@ public:
 	void ComputeMass() override;
 
 	void Scale(const float r);
-
-	glm::vec3 position;	// relative to owning body
 };
