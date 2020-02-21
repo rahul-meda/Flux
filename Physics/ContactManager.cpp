@@ -199,7 +199,6 @@ void ContactManager::DebugDraw()
 			mdn.normals.push_back(glm::vec3(0.0f));
 			mdn.vertices.push_back(p + 0.5f * wm.normal);
 			mdn.normals.push_back(glm::vec3(0.0f));
-			Graphics::GetInstance().normalsModelID = Graphics::GetInstance().CreateModel(mdn);
 
 			mdt.vertices.push_back(p);
 			mdt.normals.push_back(glm::vec3(0.0f));
@@ -209,9 +208,11 @@ void ContactManager::DebugDraw()
 			mdt.normals.push_back(glm::vec3(0.0f));
 			mdt.vertices.push_back(p + 0.5f * wm.tangent[1]);
 			mdt.normals.push_back(glm::vec3(0.0f));
-			Graphics::GetInstance().tangentsModelID = Graphics::GetInstance().CreateModel(mdt);
 		}
 	}
+
+	Graphics::GetInstance().normalsModelID = Graphics::GetInstance().CreateModel(mdn);
+	Graphics::GetInstance().tangentsModelID = Graphics::GetInstance().CreateModel(mdt);
 
 	/*N = bp.aabbs.size();
 	for (int i = 0; i < N; ++i)

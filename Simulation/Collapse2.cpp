@@ -32,7 +32,7 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 	glm::vec3 cv(-20.f, 0.5f + sv.y, 0.0f);
 	glm::vec3 ch(cv.x - sv.x + sh.x, cv.y + sv.y + sh.y, cv.z);
 	int NX = 25;
-	int NY = 10;
+	int NY = 8;
 	int NZ = 1;
 
 	for (int k = 0; k < NZ; ++k)
@@ -123,7 +123,7 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 	tx = Transform(glm::vec3(-30.0f, 1.5f, 0.0f));
 	bd.tx = tx;
 	bd.isStatic = false;
-	bd.velocity = glm::vec3(10.0f, 0.0f, 0.0f);
+	//bd.velocity = glm::vec3(10.0f, 0.0f, 0.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	SphereCollider* sphereCollider = new SphereCollider();
 	sphereCollider->Scale(1.0f);

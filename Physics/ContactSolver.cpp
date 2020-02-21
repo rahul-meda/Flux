@@ -180,7 +180,6 @@ void ContactSolver::InitializeVelocityConstraints()
 			{
 				vcp->velocityBias = -vc->restitution * vRel;
 			}
-			//vcp->velocityBias += baumgarte * 60.0f * glm::max(-worldManifold.separations[0] - linearSlop, 0.0f);
 		}
 	}
 }
@@ -245,8 +244,6 @@ void ContactSolver::SolveVelocityConstraints()
 		glm::vec3 wB = (*velocities)[indexB].w;
 
 		glm::vec3 normal = vc->normal;
-		//glm::vec3 tangent[2];
-		//ComputeBasis(normal, &tangent[0], &tangent[1]);
 		float friction = vc->friction;
 
 		// Solve tangent constraints first because non-penetration is more important
@@ -329,4 +326,162 @@ void ContactSolver::StoreImpulses()
 			manifold->points[j].tangentImpulse[1] = vc->points[j].tangentImpulse[1];
 		}
 	}
+}
+
+struct b2PositionSolverManifold
+{
+	void Initialize(ContactPositionConstraint* pc, const Transform& txA, const Transform& txB, int index)
+	{
+		assert(pc->pointCount > 0);
+
+		switch (pc->type)
+		{
+		case Manifold::sphere:
+		{
+			normal = glm::vec3(1.0f, 0.0f, 0.0f);
+			glm::vec3 pointA = txA.R * pc->localPoint + txA.position;
+			glm::vec3 pointB = txB.R * pc->localPoints[0] + txB.position;
+			if (glm::distance2(pointA, pointB) > fxEpsilon * fxEpsilon)
+			{
+				normal = pointB - pointA;
+				normal = glm::normalize(normal);
+			}
+			glm::vec3 cA = pointA + pc->radiusA * normal;
+			glm::vec3 cB = pointB - pc->radiusB * normal;
+			point = 0.5f * (cA + cB);
+			//point = 0.5f * (pointA + pointB);
+			separation = glm::dot(pointB - pointA, normal);// -pc->radiusA - pc->radiusB;
+		}
+		break;
+
+		case Manifold::faceA:
+		{
+			normal = txA.R * pc->localNormal;
+			glm::vec3 planePoint = txA.R * pc->localPoint + txA.position;
+
+			glm::vec3 clipPoint = txB.R * pc->localPoints[index] + txB.position;
+			/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
+			point = clipPoint;*/
+			glm::vec3 cA = clipPoint + normal * (pc->radiusA - glm::dot(clipPoint - planePoint, normal));
+			glm::vec3 cB = clipPoint - normal * pc->radiusB;
+			point = (cA + cB) * 0.5f;
+			separation = glm::dot(cB - cA, normal);
+		}
+		break;
+
+		case Manifold::faceB:
+		{
+			normal = txB.R * pc->localNormal;
+			glm::vec3 planePoint = txB.R * pc->localPoint + txB.position;
+
+			glm::vec3 clipPoint = txA.R * pc->localPoints[index] + txA.position;
+			/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
+			point = clipPoint;*/
+
+			glm::vec3 cB = clipPoint + normal * (pc->radiusB - glm::dot(clipPoint - planePoint, normal));
+			glm::vec3 cA = clipPoint - normal * pc->radiusA;
+			point = (cA + cB) * 0.5f;
+			separation = glm::dot(cA - cB, normal);
+
+			// Ensure normal points from A to B
+			normal = -normal;
+		}
+		break;
+
+		case Manifold::edges:
+		{
+			glm::vec3 PA = txA.R * pc->localPoint + txA.position;
+			glm::vec3 PB = txB.R * pc->localPoints[index] + txB.position;
+			normal = txB.R * pc->localNormal;
+			glm::vec3 CA = PA - pc->radiusA * normal; // TODO: check sign
+			glm::vec3 CB = PB + pc->radiusB * normal;
+			point = (CA + CB) * 0.5f;
+			separation = glm::dot(CB - CA, normal);
+		}
+		break;
+		}
+	}
+
+	glm::vec3 normal;
+	glm::vec3 point;
+	float separation;
+};
+
+bool ContactSolver::SolvePositionConstraints()
+{
+	float minSeparation = 0.0f;
+
+	for (int i = 0; i < positionConstraints.size(); ++i)
+	{
+		ContactPositionConstraint* pc = &positionConstraints[i];
+
+		int indexA = pc->indexA;
+		int indexB = pc->indexB;
+		glm::vec3 localCenterA = pc->localCenterA;
+		float mA = pc->invMassA;
+		glm::mat3 iA = pc->invIA;
+		glm::vec3 localCenterB = pc->localCenterB;
+		float mB = pc->invMassB;
+		glm::mat3 iB = pc->invIB;
+		int pointCount = pc->pointCount;
+
+		glm::vec3 cA = (*positions)[indexA].c;
+		glm::quat qA = (*positions)[indexA].q;
+
+		glm::vec3 cB = (*positions)[indexB].c;
+		glm::quat qB = (*positions)[indexB].q;
+
+		// Solve normal constraints
+		for (int j = 0; j < pointCount; ++j)
+		{
+			Transform txA, txB;
+			txA.R = glm::toMat3(qA);
+			txB.R = glm::toMat3(qB);
+			txA.position = cA - (txA.R * localCenterA);
+			txB.position = cB - (txB.R * localCenterB);
+
+			b2PositionSolverManifold psm;
+			psm.Initialize(pc, txA, txB, j);
+			glm::vec3 normal = psm.normal;
+
+			glm::vec3 point = psm.point;
+			float separation = psm.separation;
+
+			glm::vec3 rA = point - cA;
+			glm::vec3 rB = point - cB;
+
+			// Track max constraint error.
+			minSeparation = glm::min(minSeparation, separation);
+
+			// Prevent large corrections and allow slop.
+			float C = glm::clamp(baumgarte * (separation + linearSlop), -maxLinearCorrection, 0.0f);
+
+			// Compute the effective mass.
+			glm::vec3 rnA = glm::cross(rA, normal);
+			glm::vec3 rnB = glm::cross(rB, normal);
+			float K = mA + mB + glm::dot(iA * rnA, rnA) + glm::dot(iB * rnB, rnB);
+
+			// Compute normal impulse
+			float impulse = K > 0.0f ? -C / K : 0.0f;
+
+			glm::vec3 P = impulse * normal;
+
+			cA -= mA * P;
+			glm::vec3 w = iA * glm::cross(rA, P);
+			qA -= 0.5f * glm::quat(0.0f, w) * qA;
+
+			cB += mB * P;
+			w = iB * glm::cross(rB, P);
+			qB += 0.5f * glm::quat(0.0f, w) * qB;
+		}
+
+		(*positions)[indexA].c = cA;
+		(*positions)[indexA].q = qA;
+		(*positions)[indexB].c = cB;
+		(*positions)[indexB].q = qB;
+	}
+
+	// We can't expect minSpeparation >= -b2_linearSlop because we don't
+	// push the separation above -b2_linearSlop.
+	return minSeparation >= -3.0f * linearSlop;
 }

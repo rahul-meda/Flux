@@ -31,9 +31,9 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 
 	for (int k = 0; k < 1; ++k)
 	{
-		for (int j = 0; j < 5; ++j)
+		for (int j = 0; j < 10; ++j)
 		{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 1; ++i)
 			{
 				float x = 2.0f * s.x * (float)i;
 				float y = 0.5f + s.y + 2.0f * s.y * (float)j;
@@ -53,10 +53,10 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 		}
 	}
 
-	/*tx = Transform(glm::vec3(16.8f, 10.0f, 50.0f));
+	tx = Transform(glm::vec3(10.0f, 10.0f, 50.0f));
 	bd.tx = tx;
 	bd.isStatic = false;
-	bd.velocity = glm::vec3(0.0f, 0.0f, -50.0f);
+	//bd.velocity = glm::vec3(0.0f, 0.0f, -50.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	boxCollider->massData->density = 1.0f;
@@ -64,5 +64,5 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 	boxCollider->Scale(glm::vec3(2.0f, 1.0f, 1.0f));
 	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(2.0f, 1.0f, 1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID));*/
+	gameObjects.push_back(GameObject(boxModel, bID));
 }

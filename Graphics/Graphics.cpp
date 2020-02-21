@@ -161,17 +161,20 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
 
-	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
-	glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
-	Model m = models[normalsModelID];
-	glBindVertexArray(m.VAO);
-	glDrawArrays(GL_LINES, 0, m.nIndices);
+	if (Physics::GetInstance().debugDraw)
+	{
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
+		Model m = models[normalsModelID];
+		glBindVertexArray(m.VAO);
+		glDrawArrays(GL_LINES, 0, m.nIndices);
 
-	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
-	glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(0.2f, 0.5f, 1.0f)));
-	m = models[tangentsModelID];
-	glBindVertexArray(m.VAO);
-	glDrawArrays(GL_LINES, 0, m.nIndices);
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(0.2f, 0.5f, 1.0f)));
+		m = models[tangentsModelID];
+		glBindVertexArray(m.VAO);
+		glDrawArrays(GL_LINES, 0, m.nIndices);
+	}
 
 	N = aabbs.size();
 	for (int i = 0; i < N; ++i)

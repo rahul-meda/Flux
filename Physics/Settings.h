@@ -22,6 +22,10 @@
 // velocity slop allowance for elastic collisions
 #define velocityThreshold 1.0f
 
+// The maximum linear position correction used when solving constraints.
+// This helps to prevent overshoot.
+#define maxLinearCorrection 0.2f
+
 #define maxTranslation 1.2f
 #define maxTranslation2 (maxTranslation * maxTranslation)
 

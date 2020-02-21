@@ -5,6 +5,7 @@
 #include "NarrowPhase.h"
 #include "ContactSolver.h"
 #include <ctime>
+#include <iostream>
 
 #define GRAVITY 9.8f
 
@@ -129,6 +130,17 @@ void Physics::Step(float dt)
 
 		positions[i].c = c;
 		positions[i].q = q;
+	}
+
+	int positionIters = 3;
+	for (int i = 0; i < positionIters; ++i)
+	{
+		bool contactsOkay = contactSolver.SolvePositionConstraints();
+
+		if (contactsOkay)
+		{
+			break;
+		}
 	}
 
 	for (int i = 0; i < nBodies; ++i)
