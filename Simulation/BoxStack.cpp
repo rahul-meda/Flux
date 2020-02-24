@@ -46,7 +46,7 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 				boxCollider = new HullCollider();
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(glm::vec3(s));
-				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(glm::vec3(s));
 				gameObjects.push_back(GameObject(boxModel, bID));
 			}
@@ -62,7 +62,7 @@ void BoxStack::Init(std::vector<GameObject>& gameObjects)
 	boxCollider->massData->density = 1.0f;
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(2.0f, 1.0f, 1.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(2.0f, 1.0f, 1.0f));
 	gameObjects.push_back(GameObject(boxModel, bID));
 }

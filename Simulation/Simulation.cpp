@@ -69,7 +69,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(50.0f, 0.5f, 50.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(50.0f, 0.5f, 50.0f));
 	gameObjects.push_back(GameObject(boxModel, bID, latte));
 
@@ -100,12 +100,29 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		Graphics::GetInstance().lines.clear();
 		Graphics::GetInstance().aabbs.clear();
 	}
-	if (key == GLFW_KEY_SPACE)
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		Transform tx = Transform(camera.position + 3.0f*camera.fwd);
+		ModelDef sphere;
+		BodyDef bd;
+		bd.tx = tx;
+		bd.isStatic = false;
+		bd.velocity = 20.f * camera.fwd;
+		unsigned int bID = Physics::GetInstance().AddBody(bd);
+		SphereCollider* sphereCollider = new SphereCollider();
+		sphereCollider->Scale(0.5f);
+		Physics::GetInstance().AddCollider(bID, sphereCollider);
+		Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
+		CreateSphere(sphere);
+		unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
+		gameObjects.push_back(GameObject(sphereModel, bID, glm::vec3(0.5f, 1.0f, 0.3f)));
+	}
+	if (key == GLFW_KEY_T)
 	{
 		Body* b = Physics::GetInstance().bodies[0];
 		glm::vec3 v = b->GetVelocity();
 		v = 25.0f * glm::vec3(1.0f, 0.0f, 0.0f);
-		b->SetVelocity(v);
+		b->ApplyForce(glm::vec3(0.0f, 0.0f, -250.0f), glm::vec3(0.0f, 14.5f, 0.0f));
 	}
 }
 

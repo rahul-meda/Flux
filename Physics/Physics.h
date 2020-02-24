@@ -5,6 +5,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include "../Components/Body.h"
 #include "ContactManager.h"
+#include "../Physics/PositionJoint.h"
 
 class Physics
 {
@@ -17,6 +18,8 @@ public:
 	static Physics& GetInstance();
 
 	unsigned int AddBody(const BodyDef& bd);
+
+	void AddCollider(unsigned int bID, Collider* collider);
 
 	void Initialize();
 
@@ -32,6 +35,7 @@ public:
 	std::vector<Position> positions;
 	std::vector<Velocity> velocities;
 	std::vector<Collider*> colliders;
+	std::vector<PositionJoint> posJoints;
 
 	ContactManager contactManager;
 };

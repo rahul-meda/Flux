@@ -53,7 +53,7 @@ void BallStack::Init(std::vector<GameObject>& gameObjects)
 					boxCollider = new HullCollider();
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(s));
-					Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+					Physics::GetInstance().AddCollider(bID, boxCollider);
 					Graphics::GetInstance().scales.push_back(glm::vec3(s));
 					gameObjects.push_back(GameObject(boxModel, bID));
 				}
@@ -61,7 +61,7 @@ void BallStack::Init(std::vector<GameObject>& gameObjects)
 				{
 					SphereCollider* sphereCollider = new SphereCollider();
 					sphereCollider->Scale(1.0f);
-					Physics::GetInstance().bodies.back()->AddCollider(sphereCollider);
+					Physics::GetInstance().AddCollider(bID, sphereCollider);
 					Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
 					gameObjects.push_back(GameObject(sphereModel, bID, disco));
 				}

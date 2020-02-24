@@ -2,6 +2,7 @@
 #include "Physics.h"
 #include "../Graphics/Graphics.h"
 #include "../Components/Body.h"
+#include "../Components/Model.h"
 #include "NarrowPhase.h"
 #include "ContactSolver.h"
 #include <ctime>
@@ -30,17 +31,17 @@ unsigned int Physics::AddBody(const BodyDef& bd)
 	return b->index;
 }
 
+void Physics::AddCollider(unsigned int bID, Collider* collider)
+{
+	bodies[bID]->AddCollider(collider);
+
+	colliders.push_back(collider);
+
+	contactManager.bp.Add(collider);
+}
+
 void Physics::Initialize()
 {
-	for (Body* b : bodies)
-	{
-		for (Collider* c : b->colliders)
-			colliders.push_back(c);
-	}
-
-	for (Collider* c : colliders)
-		contactManager.bp.Add(c);
-
 	NarrowPhase::InitializeTable();
 }
 
@@ -67,12 +68,13 @@ void Physics::Step(float dt)
 		glm::vec3 v = b->velocity;
 		glm::vec3 w = b->angularVelocity;
 
-		b->iitW = b->tx.R * b->iitL * glm::transpose(b->tx.R);
+		glm::mat3 R = b->tx.R;
+		b->iitW = (R) * b->iitL * glm::transpose(R);
 		
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
-		v *= 0.995f;
-		w *= 0.995f;
+		v *= 0.9995f;
+		w *= 0.975f;
 
 		positions[i].c = b->GetCentroid();
 		positions[i].q = b->GetOrientation();
@@ -81,6 +83,10 @@ void Physics::Step(float dt)
 	}
 
 	// solve constraints
+	SolverDef solverData;
+	solverData.positions = &positions;
+	solverData.velocities = &velocities;
+
 	ContactSolverDef contactSolverDef;
 	contactSolverDef.contacts = &(contactManager.contacts);
 	contactSolverDef.positions = &positions;
@@ -91,9 +97,20 @@ void Physics::Step(float dt)
 
 	contactSolver.WarmStart();
 
-	int velocityIters = 25;
+	int N = posJoints.size();
+	for (int i = 0; i < N; ++i)
+	{
+		posJoints[i].InitVelocityConstraints(solverData);
+	}
+
+	int velocityIters = 8;
 	for (int i = 0; i < velocityIters; ++i)
 	{
+		for (int j = 0; j < N; ++j)
+		{
+			posJoints[j].SolveVelocityConstraints(solverData);
+		}
+
 		contactSolver.SolveVelocityConstraints();
 	}
 
@@ -137,6 +154,11 @@ void Physics::Step(float dt)
 	{
 		bool contactsOkay = contactSolver.SolvePositionConstraints();
 
+		for (int j = 0; j < N; ++j)
+		{
+			posJoints[j].SolvePositionConstraints(solverData);
+		}
+
 		if (contactsOkay)
 		{
 			break;
@@ -156,11 +178,6 @@ void Physics::Step(float dt)
 
 		bodies[i]->SynchronizeTransform();
 	}
-
-	if (debugDraw)
-	{
-		contactManager.DebugDraw();
-	}
 }
 
 void Physics::Update(float dt)
@@ -174,11 +191,19 @@ void Physics::Update(float dt)
 		Step(dt);
 		singleStep = false;
 	}
+
+	if (debugDraw)
+		contactManager.DebugDraw();
+
+	int N = posJoints.size();
+	for (int i = 0; i < N; ++i)
+	{
+		posJoints[i].Render();
+	}
 }
 
 Physics::~Physics()
 {
-
 	for (Body* b : bodies)
 	{
 		for (Collider* c : b->colliders)

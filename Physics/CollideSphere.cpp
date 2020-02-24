@@ -59,11 +59,7 @@ void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider
 		{
 			Face* face = hullB->faces[i];
 			float sep = glm::dot(CL - face->edge->tail->position, face->normal);
-			if (sep > 0.0f)
-			{
-				assert(false);
-				return;
-			}
+
 			if (sep > maxSep)
 			{
 				maxSep = sep;

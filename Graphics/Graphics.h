@@ -73,4 +73,5 @@ public:
 	unsigned int lineModelID;
 	unsigned int normalsModelID;
 	unsigned int tangentsModelID;
+	unsigned int jointsModelID;
 };

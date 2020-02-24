@@ -7,14 +7,14 @@
 int main()
 {
 	int width, height;
-	GLFWwindow* window =  Window::CreateWindow(width, height);
+	GLFWwindow* window = Window::CreateWindow(width, height);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "Failed to initialize GLAD" << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
 
-	BoxStack::GetInstance().Init(Simulation::GetInstance().gameObjects);
+	Chain1::GetInstance().Init(Simulation::GetInstance().gameObjects);
 
 	Simulation::GetInstance().Init(window, width, height);
 

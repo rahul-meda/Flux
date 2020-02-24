@@ -93,6 +93,8 @@ public:
 	friend class HullCollider;
 	friend class ContactSolver;
 	friend class ContactManager;
+
+	friend class PositionJoint;
 };
 
 inline const glm::vec3& Body::GetPosition() const

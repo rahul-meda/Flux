@@ -29,12 +29,13 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 
 	glm::vec3 sv(0.1f, 1.0f, 0.1f);
 	glm::vec3 sh(1.0f, 0.1f, 1.0f);
+	sv *= 2.0f;
+	sh *= 2.0f;
 	glm::vec3 C(-20.0f, 0.5f + sv.y, 20.0f);
-
 	for (int k = 0; k < 1; ++k)
 	{
 		float dz = 2.0f * sh.z * (float)k;
-		for (int j = 0; j < 10; ++j)
+		for (int j = 0; j < 8; ++j)
 		{
 			float dy = 2.0f * (sv.y + sh.y) * float(j);
 			for (int i = 0; i < 9; ++i)
@@ -54,7 +55,7 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 					boxCollider = new HullCollider();
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(sv));
-					Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+					Physics::GetInstance().AddCollider(bID, boxCollider);
 					Graphics::GetInstance().scales.push_back(glm::vec3(sv));
 					gameObjects.push_back(GameObject(boxModel, bID));
 				}
@@ -69,23 +70,23 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 				boxCollider = new HullCollider();
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(glm::vec3(sh));
-				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(glm::vec3(sh));
 				gameObjects.push_back(GameObject(boxModel, bID));
 			}
 		}
 	}
 
-	/*tx = Transform(glm::vec3(-30.0f, 3.0f, 20.0f));
+	tx = Transform(glm::vec3(-30.0f, 3.0f, 20.0f));
 	bd.tx = tx;
 	bd.isStatic = false;
-	bd.velocity = glm::vec3(10.0f, 0.0f, 1.0f);
+	bd.velocity = glm::vec3(0.0f, 0.0f, 1.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
 	boxCollider->massData->density = 10.0f;
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(0.5f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
-	gameObjects.push_back(GameObject(boxModel, bID));*/
+	boxCollider->Scale(glm::vec3(1.0f));
+	Physics::GetInstance().AddCollider(bID, boxCollider);
+	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
+	gameObjects.push_back(GameObject(boxModel, bID));
 }

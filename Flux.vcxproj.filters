@@ -98,6 +98,18 @@
     <ClCompile Include="Simulation\BallStack.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\Collapse3.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\PositionJoint.cpp">
+      <Filter>Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\PositionJointTest.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\Chain1.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -200,6 +212,21 @@
     <ClInclude Include="Simulation\Ballstack.h">
       <Filter>Simulation</Filter>
     </ClInclude>
+    <ClInclude Include="Physics\PositionJoint.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Collapse3.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\JointCommon.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\PositionJointTest.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Chain1.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -231,6 +258,9 @@
     </Filter>
     <Filter Include="Physics\Collision\NarrowPhase">
       <UniqueIdentifier>{f7f0b5d9-cfe6-4c7e-895b-726ef96da6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Joints">
+      <UniqueIdentifier>{b92ca019-0cae-441e-92ef-38731d3d9348}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

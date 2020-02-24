@@ -169,12 +169,6 @@ void ContactManager::Destroy(Contact* nuke, int i)
 
 void ContactManager::DebugDraw()
 {
-	Graphics::GetInstance().points.clear();
-	Graphics::GetInstance().lines.clear();
-	Graphics::GetInstance().aabbs.clear();
-
-	ModelDef mdn, mdt;
-
 	int N = contacts.size();
 	for (int i = 0; i < N; ++i)
 	{
@@ -195,24 +189,56 @@ void ContactManager::DebugDraw()
 
 			Graphics::GetInstance().points.push_back(R_Point(p));
 
-			mdn.vertices.push_back(p);
-			mdn.normals.push_back(glm::vec3(0.0f));
-			mdn.vertices.push_back(p + 0.5f * wm.normal);
-			mdn.normals.push_back(glm::vec3(0.0f));
+			glm::vec3 X(1.0f, 0.0f, 0.0f);
+			glm::vec3 h = wm.normal + X;
+			glm::quat q = glm::identity<glm::quat>();
+			float angle = 0.0f;
+			float lA = 0.0f, lB = 0.0f;
+			if (glm::length2(h) == 0.0f)
+			{
+				q = glm::angleAxis(PI, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+			else
+			{
+				h = glm::normalize(h);
+				glm::vec3 axis(0.0f, -h.z, h.y);
+				if (glm::length2(axis) == 0.0f)
+					axis = glm::vec3(0.0f, 1.0f, 0.0f);
+				else
+				{
+					lA = glm::length(wm.normal);
+					angle = acosf(wm.normal.x / lA);
+					axis = glm::normalize(axis);
+				}
+				q = glm::angleAxis(angle, axis);
+			}
+			Graphics::GetInstance().lines.push_back(R_Line(p, q));
 
-			mdt.vertices.push_back(p);
-			mdt.normals.push_back(glm::vec3(0.0f));
-			mdt.vertices.push_back(p + 0.5f * wm.tangent[0]);
-			mdt.normals.push_back(glm::vec3(0.0f));
-			mdt.vertices.push_back(p);
-			mdt.normals.push_back(glm::vec3(0.0f));
-			mdt.vertices.push_back(p + 0.5f * wm.tangent[1]);
-			mdt.normals.push_back(glm::vec3(0.0f));
+			for (int k = 0; k < 2; ++k)
+			{
+				h = wm.tangent[k] + X;
+				if (glm::length2(h) == 0.0f)
+				{
+					q = glm::angleAxis(PI, glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				else
+				{
+					h = glm::normalize(h);
+					glm::vec3 axis(0.0f, -h.z, h.y);
+					if (glm::length2(axis) == 0.0f)
+						axis = glm::vec3(0.0f, 1.0f, 0.0f);
+					else
+					{
+						lB = glm::length(wm.tangent[k]);
+						angle = acosf(wm.tangent[k].x / lB);
+						axis = glm::normalize(axis);
+					}
+					q = glm::angleAxis(angle, axis);
+				}
+				Graphics::GetInstance().lines.push_back(R_Line(p, q, glm::vec3(0.3f, 0.5f, 0.9f)));
+			}
 		}
 	}
-
-	Graphics::GetInstance().normalsModelID = Graphics::GetInstance().CreateModel(mdn);
-	Graphics::GetInstance().tangentsModelID = Graphics::GetInstance().CreateModel(mdt);
 
 	/*N = bp.aabbs.size();
 	for (int i = 0; i < N; ++i)

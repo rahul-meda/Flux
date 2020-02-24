@@ -46,7 +46,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 				boxCollider = new HullCollider();
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
-				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
 				gameObjects.push_back(GameObject(boxModel, bID));
 			}
@@ -63,7 +63,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 				boxCollider = new HullCollider();
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
-				Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
 				gameObjects.push_back(GameObject(boxModel, bID));
 			}
@@ -81,7 +81,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -97,7 +97,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -113,7 +113,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -129,7 +129,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -145,7 +145,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -161,7 +161,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider = new HullCollider();
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
-		Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
 		gameObjects.push_back(GameObject(boxModel, bID));
 	}
@@ -173,7 +173,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(0.5f, 12.5f, 2.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f, 12.5f, 2.0f));
 	gameObjects.push_back(GameObject(boxModel, bID, sandy));
 
@@ -184,7 +184,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(0.5f, 12.5f, 2.0f));
-	Physics::GetInstance().bodies.back()->AddCollider(boxCollider);
+	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f, 12.5f, 2.0f));
 	gameObjects.push_back(GameObject(boxModel, bID, sandy));*/
 }

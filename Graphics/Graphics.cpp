@@ -122,6 +122,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	{
 		GameObject obj = objects[i];
 
+		// todo: optimize
 		T = glm::translate(glm::mat4(1.0f), Physics::GetInstance().bodies[i]->GetPosition());
 		R = glm::toMat4(Physics::GetInstance().positions[i].q);
 		S = glm::scale(scales[i]);
@@ -161,7 +162,24 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
 
-	if (Physics::GetInstance().debugDraw)
+	N = lines.size();
+	for (int i = 0; i < N; ++i)
+	{
+		R_Line l = lines[i];
+		T = glm::translate(glm::mat4(1.0f), l.pos);
+		R = glm::toMat4(l.rot);
+		S = glm::scale(glm::vec3(l.scale, 1.0f, 1.0f));
+		M = T * R * S;
+		MVP = VP * M;
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(l.color));
+		Model m = models[lineModelID];
+		glBindVertexArray(m.VAO);
+		glDrawArrays(GL_LINES, 0, m.nIndices);
+	}
+
+	/*if (Physics::GetInstance().debugDraw)
 	{
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -175,6 +193,12 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glBindVertexArray(m.VAO);
 		glDrawArrays(GL_LINES, 0, m.nIndices);
 	}
+
+	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(VP));
+	glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(1.0f)));
+	Model m = models[jointsModelID];
+	glBindVertexArray(m.VAO);
+	glDrawArrays(GL_LINES, 0, m.nIndices);*/
 
 	N = aabbs.size();
 	for (int i = 0; i < N; ++i)
@@ -205,7 +229,7 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 
 		glm::vec3 lightP = eye;
 		glUseProgram(worldShader);
-		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightP));
+		glUniform3fv(glGetUniformLocation(worldShader, "lightPos"), 1, glm::value_ptr(lightPos[i]));
 		glUseProgram(0);
 
 		glUseProgram(lightShader);
@@ -215,4 +239,8 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 		glUseProgram(0);
 	}
+
+	Graphics::GetInstance().points.clear();
+	Graphics::GetInstance().lines.clear();
+	Graphics::GetInstance().aabbs.clear();
 }
