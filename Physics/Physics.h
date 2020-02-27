@@ -5,7 +5,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include "../Components/Body.h"
 #include "ContactManager.h"
-#include "../Physics/PositionJoint.h"
+#include "PositionJoint.h"
+#include "HingeJoint.h"
 
 class Physics
 {
@@ -36,6 +37,7 @@ public:
 	std::vector<Velocity> velocities;
 	std::vector<Collider*> colliders;
 	std::vector<PositionJoint> posJoints;
+	std::vector<HingeJoint> hingeJoints;
 
 	ContactManager contactManager;
 };

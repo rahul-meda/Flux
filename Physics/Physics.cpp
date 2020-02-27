@@ -74,7 +74,7 @@ void Physics::Step(float dt)
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
 		v *= 0.9995f;
-		w *= 0.975f;
+		w *= 0.995f;
 
 		positions[i].c = b->GetCentroid();
 		positions[i].q = b->GetOrientation();
@@ -97,18 +97,29 @@ void Physics::Step(float dt)
 
 	contactSolver.WarmStart();
 
-	int N = posJoints.size();
-	for (int i = 0; i < N; ++i)
+	int NP = posJoints.size();
+	for (int i = 0; i < NP; ++i)
 	{
 		posJoints[i].InitVelocityConstraints(solverData);
 	}
 
-	int velocityIters = 8;
+	int NH = hingeJoints.size();
+	for (int i = 0; i < NH; ++i)
+	{
+		hingeJoints[i].InitVelocityConstraints(solverData);
+	}
+
+	int velocityIters = 500;
 	for (int i = 0; i < velocityIters; ++i)
 	{
-		for (int j = 0; j < N; ++j)
+		for (int j = 0; j < NP; ++j)
 		{
 			posJoints[j].SolveVelocityConstraints(solverData);
+		}
+
+		for (int ih = 0; ih < NH; ++ih)
+		{
+			hingeJoints[ih].SolveVelocityConstraints(solverData);
 		}
 
 		contactSolver.SolveVelocityConstraints();
@@ -154,9 +165,14 @@ void Physics::Step(float dt)
 	{
 		bool contactsOkay = contactSolver.SolvePositionConstraints();
 
-		for (int j = 0; j < N; ++j)
+		for (int j = 0; j < NP; ++j)
 		{
 			posJoints[j].SolvePositionConstraints(solverData);
+		}
+
+		for (int ih = 0; ih < NH; ++ih)
+		{
+			hingeJoints[ih].SolvePositionConstraints(solverData);
 		}
 
 		if (contactsOkay)
@@ -195,10 +211,16 @@ void Physics::Update(float dt)
 	if (debugDraw)
 		contactManager.DebugDraw();
 
-	int N = posJoints.size();
-	for (int i = 0; i < N; ++i)
+	int NP = posJoints.size();
+	for (int i = 0; i < NP; ++i)
 	{
 		posJoints[i].Render();
+	}
+
+	int NH = hingeJoints.size();
+	for (int i = 0; i < NH; ++i)
+	{
+		hingeJoints[i].Render();
 	}
 }
 

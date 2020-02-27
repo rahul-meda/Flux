@@ -110,6 +110,21 @@
     <ClCompile Include="Simulation\Chain1.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\HingeJoint.cpp">
+      <Filter>Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\HingeJointTest.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\Ragdoll1.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\DoorHinge.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\BridgeHinge.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -225,6 +240,21 @@
       <Filter>Simulation</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\Chain1.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\HingeJoint.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\HingeJointTest.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Ragdoll1.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\DoorHinge.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\BridgeHinge.h">
       <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>

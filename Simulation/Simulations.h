@@ -10,3 +10,7 @@
 #include "Collapse3.h"
 #include "PositionJointTest.h"
 #include "Chain1.h"
+#include "HingeJointTest.h"
+#include "Ragdoll1.h"
+#include "DoorHinge.h"
+#include "BridgeHinge.h"

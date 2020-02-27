@@ -1,10 +1,11 @@
 
 #include <glm/gtx/matrix_cross_product.hpp>
-#include "PositionJoint.h"
+#include "HingeJoint.h"
 #include "../Components/Body.h"
 #include "../Graphics/Graphics.h"
+#include "../Utils.h"
 
-void PositionJointDef::Initialize(Body* bA, Body* bB, const glm::vec3& anchor)
+void HingeJointDef::Initialize(Body* bA, Body* bB, const glm::vec3& anchor, const glm::vec3& axis)
 {
 	bodyA = bA;
 	bodyB = bB;
@@ -13,18 +14,24 @@ void PositionJointDef::Initialize(Body* bA, Body* bB, const glm::vec3& anchor)
 
 	localAnchorA = glm::transpose(txA.R) * (anchor - txA.position);
 	localAnchorB = glm::transpose(txB.R) * (anchor - txB.position);
+	localAxisA = glm::transpose(txA.R) * axis;
+	localAxisB = glm::transpose(txB.R) * axis;
 }
 
-PositionJoint::PositionJoint(const PositionJointDef* def)
+HingeJoint::HingeJoint(const HingeJointDef* def)
 {
 	bodyA = def->bodyA;
 	bodyB = def->bodyB;
 	localAnchorA = def->localAnchorA;
 	localAnchorB = def->localAnchorB;
-	impulseSum = glm::vec3(0.0f);
+	localAxisA = def->localAxisA;
+	localAxisB = def->localAxisB;
+	impulseSumT = glm::vec3(0.0f);
+	impulseSumR1 = 0.0f;
+	impulseSumR2 = 0.0f;
 }
 
-void PositionJoint::InitVelocityConstraints(const SolverDef& def)
+void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 {
 	indexA = bodyA->index;
 	indexB = bodyB->index;
@@ -44,20 +51,43 @@ void PositionJoint::InitVelocityConstraints(const SolverDef& def)
 	glm::vec3 vB = (*velocities)[indexB].v;
 	glm::vec3 wB = (*velocities)[indexB].w;
 
-	rA = glm::toMat3(qA) * (localAnchorA - localCenterA);
-	rB = glm::toMat3(qB) * (localAnchorB - localCenterB);
+	glm::mat3 RA = glm::toMat3(qA);
+	glm::mat3 RB = glm::toMat3(qB);
+
+	// linear
+	rA = RA * (localAnchorA - localCenterA);
+	rB = RB * (localAnchorB - localCenterB);
 
 	glm::mat3 rAx = glm::matrixCross3(rA);	// todo: check order - row vs column major
 	glm::mat3 rBx = glm::matrixCross3(rB);
 	glm::mat3 I = glm::identity<glm::mat3>();
+	
+	kT = mA * I - rAx * iA * rAx + mB * I - rBx * iB * rBx;	// todo: optimize
 
-	effMass = mA * I - rAx * iA * rAx + mB * I - rBx * iB * rBx;	// todo: optimize
+	// angular
+	glm::vec3 aA = RA * localAxisA;	// world axis
+	glm::vec3 aB = RB * localAxisB;
+	ComputeBasis(aB, &t1, &t2);
 
-	vA -= mA * impulseSum;
-	wA -= iA * glm::cross(rA, impulseSum);
+	glm::vec3 correction = glm::cross(aA, aB);
+	float erp = 0.7f * 60.0f;
+	bias1 = erp * glm::dot(correction, t1);
+	bias2 = erp * glm::dot(correction, t2);
 
-	vB += mB * impulseSum;
-	wB += iB * glm::cross(rB, impulseSum);
+	kr1 = glm::dot(iA * t1, t1) + glm::dot(iB * t1, t1);
+	kr2 = glm::dot(iA * t2, t2) + glm::dot(iB * t2, t2);
+
+	vA -= mA * impulseSumT;
+	wA -= iA * glm::cross(rA, impulseSumT);
+
+	vB += mB * impulseSumT;
+	wB += iB * glm::cross(rB, impulseSumT);
+
+	wA -= iA * t1 * impulseSumR1;
+	wB += iB * t1 * impulseSumR1;
+
+	wA -= iA * t2 * impulseSumR2;
+	wB += iB * t2 * impulseSumR2;
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
@@ -65,7 +95,7 @@ void PositionJoint::InitVelocityConstraints(const SolverDef& def)
 	(*velocities)[indexB].w = wB;
 }
 
-void PositionJoint::SolveVelocityConstraints(const SolverDef& def)
+void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 {
 	std::vector<Velocity>* velocities = def.velocities;
 	glm::vec3 vA = (*velocities)[indexA].v;
@@ -74,17 +104,29 @@ void PositionJoint::SolveVelocityConstraints(const SolverDef& def)
 	glm::vec3 wB = (*velocities)[indexB].w;
 
 	glm::vec3 Cdot = vB + glm::cross(wB, rB) - vA - glm::cross(wA, rA);
-	glm::vec3 impulse(0.0f);
-	if(glm::determinant(effMass) != 0.0f)
-		impulse = glm::inverse(effMass) * (-Cdot);	// todo: optimize
+	glm::vec3 impulseL(0.0f);
+	if(glm::determinant(kT) != 0.0f)
+		impulseL = glm::inverse(kT) * (-Cdot);	// todo: optimize
 
-	impulseSum += impulse;
+	impulseSumT += impulseL;
 
-	vA -= mA * impulse;
-	wA -= iA * glm::cross(rA, impulse);
+	vA -= mA * impulseL;
+	wA -= iA * glm::cross(rA, impulseL);
 
-	vB += mB * impulse;
-	wB += iB * glm::cross(rB, impulse);
+	vB += mB * impulseL;
+	wB += iB * glm::cross(rB, impulseL);
+
+	float lambda1 = -(glm::dot(t1, wB - wA) + bias1) / kr1;
+	impulseSumR1 += lambda1;
+
+	wA -= iA * t1 * lambda1;
+	wB += iB * t1 * lambda1;
+
+	float lambda2 = -(glm::dot(t2, wB - wA) + bias2) / kr2;
+	impulseSumR2 += lambda2;
+
+	wA -= iA * t2 * lambda2;
+	wB += iB * t2 * lambda2;
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
@@ -92,7 +134,7 @@ void PositionJoint::SolveVelocityConstraints(const SolverDef& def)
 	(*velocities)[indexB].w = wB;
 }
 
-void  PositionJoint::SolvePositionConstraints(const SolverDef& def)
+void HingeJoint::SolvePositionConstraints(const SolverDef& def)
 {
 	std::vector<Position>* positions = def.positions;
 
@@ -104,7 +146,7 @@ void  PositionJoint::SolvePositionConstraints(const SolverDef& def)
 	rA = glm::toMat3(qA) * (localAnchorA - localCenterA);
 	rB = glm::toMat3(qB) * (localAnchorB - localCenterB);
 
-	glm::mat3 rAx = glm::matrixCross3(rA);	
+	glm::mat3 rAx = glm::matrixCross3(rA);
 	glm::mat3 rBx = glm::matrixCross3(rB);
 	glm::mat3 I = glm::identity<glm::mat3>();
 
@@ -129,7 +171,7 @@ void  PositionJoint::SolvePositionConstraints(const SolverDef& def)
 	(*positions)[indexB].q = qB;
 }
 
-void PositionJoint::Render()
+void HingeJoint::Render()
 {
 	Transform txA = bodyA->tx;
 	Transform txB = bodyB->tx;

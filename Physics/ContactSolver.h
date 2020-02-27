@@ -6,8 +6,8 @@
 
 class Contact;
 class Body;
-class Position;
-class Velocity;
+struct Position;
+struct Velocity;
 struct ContactPositionConstraint;
 
 struct VelocityConstraintPoint

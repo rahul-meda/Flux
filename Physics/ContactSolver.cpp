@@ -292,7 +292,7 @@ void ContactSolver::SolveVelocityConstraints()
 			float lambda = -vcp->normalMass * (vn - vcp->velocityBias);
 
 			// b2Clamp the accumulated impulse
-			float newImpulse = glm::max(vcp->normalImpulse + lambda, -0.0f);	// magnetic force
+			float newImpulse = glm::max(vcp->normalImpulse + lambda, 0.0f);	// magnetic force
 			lambda = newImpulse - vcp->normalImpulse;
 			vcp->normalImpulse = newImpulse;
 

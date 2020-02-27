@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include "Settings.h"
 
 struct Position;
 struct Velocity;

@@ -95,6 +95,7 @@ public:
 	friend class ContactManager;
 
 	friend class PositionJoint;
+	friend class HingeJoint;
 };
 
 inline const glm::vec3& Body::GetPosition() const

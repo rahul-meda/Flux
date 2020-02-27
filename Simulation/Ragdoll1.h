@@ -1,0 +1,14 @@
+#pragma once
+
+#include "Simulation.h"
+
+class Ragdoll1
+{
+public:
+	static Ragdoll1& GetInstance();
+	void Init(std::vector<GameObject>& gameObjects);
+
+private:
+	Ragdoll1() {};
+	~Ragdoll1() {};
+};

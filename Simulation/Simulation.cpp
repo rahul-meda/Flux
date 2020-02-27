@@ -78,7 +78,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().lineModelID = lineModel;
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																 "Resources/FragmentShader.frag");
-	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 10.0f, 20.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 50.0f, 25.0f));
 	Graphics::GetInstance().cubeModelID = boxModel;
 
 	Graphics::GetInstance().Initialize();
@@ -111,6 +111,7 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		unsigned int bID = Physics::GetInstance().AddBody(bd);
 		SphereCollider* sphereCollider = new SphereCollider();
 		sphereCollider->Scale(0.5f);
+		sphereCollider->massData->density = 10.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
 		Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
 		CreateSphere(sphere);

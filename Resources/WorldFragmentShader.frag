@@ -16,10 +16,10 @@ uniform vec3 eyePos;
 
 void main()
 {
-	float ambientStr = 0.2f;
+	float ambientStr = 0.4f;
 	vec3 ambient = ambientStr * lightColor;
 
-	float diffuseStr = 0.9f;
+	float diffuseStr = 0.5f;
 	vec3 lightDir = normalize(vPosW - lightPos);
 	vec3 diffuse = diffuseStr * max(dot(-lightDir, vNormal), 0.0f) * lightColor;
 

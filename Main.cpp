@@ -14,7 +14,7 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	Chain1::GetInstance().Init(Simulation::GetInstance().gameObjects);
+	BridgeHinge::GetInstance().Init(Simulation::GetInstance().gameObjects);
 
 	Simulation::GetInstance().Init(window, width, height);
 
