@@ -28,7 +28,7 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 
-	glm::vec3 s(1.5f, 5.0f, 0.5f);
+	glm::vec3 s(0.5f, 1.5f, 0.5f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;

@@ -33,3 +33,6 @@
 #define maxRotation2 (maxRotation * maxRotation)
 
 #define baumgarte 0.2f
+
+// inv_dt (fps)
+#define hertz 60.0f

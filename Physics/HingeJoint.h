@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "JointCommon.h"
 
 // no relative translation b/w bodies wrt anchor point
@@ -15,6 +16,9 @@ struct HingeJointDef
 	{
 		localAnchorA = glm::vec3(0.0f);
 		localAnchorB = glm::vec3(0.0f);
+		enableLimit = false;
+		lowerLimit = 0.0f;
+		upperLimit = 0.0f;
 	}
 
 	void Initialize(Body* bodyA, Body* bodyB, const glm::vec3& anchor, const glm::vec3& axis);
@@ -25,6 +29,10 @@ struct HingeJointDef
 	glm::vec3 localAnchorB;
 	glm::vec3 localAxisA;
 	glm::vec3 localAxisB;
+	glm::quat q0;
+	bool enableLimit;
+	float lowerLimit;	// [0 2*PI] todo: verify
+	float upperLimit;	// [0 2*PI]
 };
 
 class HingeJoint
@@ -49,9 +57,10 @@ private:
 	glm::vec3 localAnchorB;
 	glm::vec3 localAxisA;
 	glm::vec3 localAxisB;
+	glm::vec3 f;	// world hinge axis
+	glm::quat q0;	// initial relative orientation
 	glm::vec3 impulseSumT;
-	float impulseSumR1;
-	float impulseSumR2;
+	float impulseSumR;
 
 	int indexA;
 	int indexB;
@@ -69,6 +78,14 @@ private:
 	float kr1;
 	float kr2;
 	float bias1, bias2;
+
+	//angular limit
+	bool enableLimit;
+	float lowerLimit, upperLimit;
+	float kMin, kMax;
+	float bMin, bMax;		// limits correction bias
+	bool flipJ;				// flip tje jacobian sigh based on relative quaternion axis
+	LimitState limitState;
 
 	friend class Physics;
 };

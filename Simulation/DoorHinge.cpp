@@ -31,8 +31,8 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 	unsigned int bid1, bid2;
 
-	float gap = 0.1f;
-	glm::vec3 s1(2.5f, 0.05f, 0.05f);
+	float gap = 1.25f;
+	glm::vec3 s1(0.25f, 0.05f, 0.05f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;
@@ -54,8 +54,8 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	glm::vec3 s2(2.5f, 1.5f, 0.1f);
 
 	glm::vec3 p2 = p1;
-	p2.y -= s1.y + s2.y + gap;
-	tx = Transform(p2);
+	p2.z += s1.z + gap + s2.y;
+	tx = Transform(p2, glm::angleAxis(0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = false;
 	bID = Physics::GetInstance().AddBody(bd);
@@ -70,8 +70,11 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	Body* b1 = (*bodies)[bid1];
 	Body* b2 = (*bodies)[bid2];
 	glm::vec3 anchor(p1);
-	anchor.y -= s1.y + gap * 0.5f;
+	anchor.z += s1.z + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(1.0f, 0.0f, 0.0f));
+	hjd.enableLimit = true;
+	hjd.lowerLimit = -PI * 0.25f;
+	hjd.upperLimit = PI * 0.25f;
 
 	HingeJoint hj(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);
@@ -107,7 +110,7 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	b2 = (*bodies)[bid2];
 	anchor = p1;
 	anchor.x += s1.y + gap * 0.5f;
-	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
+	//hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	hj = HingeJoint(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);
@@ -144,7 +147,7 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	b2 = (*bodies)[bid2];
 	anchor = p1;
 	anchor.x -= s1.y + gap * 0.5f;
-	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
+	//hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	hj = HingeJoint(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);

@@ -31,7 +31,7 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 	unsigned int bid1, bid2;
 
-	glm::vec3 p1 = glm::vec3(0.0f, 20.1f, 0.0f);
+	glm::vec3 p1 = glm::vec3(0.0f, 30.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;
 	bd.isStatic = true;
@@ -67,14 +67,17 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	Body* b1 = (*bodies)[bid1];
 	Body* b2 = (*bodies)[bid2];
 	glm::vec3 anchor(p2);
-	anchor.y += s.y + 0.05f;
+	anchor.y += s.y + 1.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(1.0f, 0.0f, 0.0f));
+	hjd.enableLimit = true;
+	hjd.lowerLimit = 0.0f;
+	hjd.upperLimit = PI;
 
 	HingeJoint hj(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);
 
 	p1 = p2;
-	p2.y -= s.y + s.x + 0.05f;
+	p2.y -= s.y + s.x + 0.5f;
 	p2.x += s.y - s.x;
 	tx = Transform(p2, glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 0.0f, 1.0f)));
 	bd.tx = tx;
@@ -94,6 +97,9 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	anchor.x = p1.x;
 	anchor.y = (p1.y + p2.y) * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
+	hjd.enableLimit = true;
+	hjd.lowerLimit = 0.0f;
+	hjd.upperLimit = PI * 0.5f;
 
 	hj = HingeJoint(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);

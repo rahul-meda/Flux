@@ -197,7 +197,7 @@ void Simulation::Update(GLFWwindow* window)
 	double delta = currFrame - prevFrame;
 	prevFrame = currFrame;
 
-	static const float dt = 1.0f / 60.0f;
+	static const float dt = 1.0f / hertz;
 
 	OnKeyPressHold(window);
 

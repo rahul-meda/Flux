@@ -12,3 +12,10 @@ struct SolverDef
 	std::vector<Position>* positions;
 	std::vector<Velocity>* velocities;
 };
+
+enum LimitState
+{
+	inactiveLimit,
+	atLowerLimit,
+	atUpperLimit
+};
