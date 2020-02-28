@@ -109,7 +109,7 @@ void Physics::Step(float dt)
 		hingeJoints[i].InitVelocityConstraints(solverData);
 	}
 
-	int velocityIters = 500;
+	int velocityIters = 25;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		for (int j = 0; j < NP; ++j)

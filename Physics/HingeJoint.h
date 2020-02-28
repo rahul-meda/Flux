@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "JointCommon.h"
 
 // no relative translation b/w bodies wrt anchor point
@@ -56,7 +57,6 @@ private:
 	int indexB;
 	glm::vec3 rA;	// world space anchor
 	glm::vec3 rB;
-	glm::vec3 t1, t2;	// orthogonal to world axis
 	glm::vec3 localCenterA;
 	glm::vec3 localCenterB;
 	float mA;
@@ -64,6 +64,8 @@ private:
 	glm::mat3 iA;
 	glm::mat3 iB;
 	glm::mat3 kT;
+	glm::vec3 cr1;
+	glm::vec3 cr2;
 	float kr1;
 	float kr2;
 	float bias1, bias2;

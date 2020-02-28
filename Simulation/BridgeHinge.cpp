@@ -28,7 +28,7 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 
-	glm::vec3 s(0.1f, 1.5f, 0.1f);
+	glm::vec3 s(1.5f, 5.0f, 0.5f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;
@@ -47,9 +47,9 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
 
-	float gap = 0.1f;
+	float gap = 0.25f;
 
-	int NL = 10;
+	int NL = 20;
 	for (int i = 0; i < NL; ++i)
 	{
 		glm::vec3 p2(-(2.0f * s.x + gap) * (i + 1.0f), 10.0f, 0.0f);

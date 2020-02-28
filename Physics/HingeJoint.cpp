@@ -61,33 +61,30 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	glm::mat3 rAx = glm::matrixCross3(rA);	// todo: check order - row vs column major
 	glm::mat3 rBx = glm::matrixCross3(rB);
 	glm::mat3 I = glm::identity<glm::mat3>();
-	
+
 	kT = mA * I - rAx * iA * rAx + mB * I - rBx * iB * rBx;	// todo: optimize
 
 	// angular
-	glm::vec3 aA = RA * localAxisA;	// world axis
-	glm::vec3 aB = RB * localAxisB;
-	ComputeBasis(aB, &t1, &t2);
+	glm::vec3 f = RA * localAxisA;	// world axis
+	glm::vec3 t1, t2;
+	ComputeBasis(localAxisB, &t1, &t2);
+	glm::vec3 d = RB * t1;
+	glm::vec3 e = RB * t2;
 
-	glm::vec3 correction = glm::cross(aA, aB);
-	float erp = 0.7f * 60.0f;
-	bias1 = erp * glm::dot(correction, t1);
-	bias2 = erp * glm::dot(correction, t2);
+	cr1 = glm::cross(d, f);
+	kr1 = glm::dot((iA * cr1), cr1) + glm::dot((iB * cr1), cr1);
 
-	kr1 = glm::dot(iA * t1, t1) + glm::dot(iB * t1, t1);
-	kr2 = glm::dot(iA * t2, t2) + glm::dot(iB * t2, t2);
+	cr2 = glm::cross(e, f);
+	kr2 = glm::dot((iA * cr2), cr2) + glm::dot((iB * cr2), cr2);
+
+	bias1 = 0.4f * 60.0f * glm::dot(f, d);
+	bias2 = 0.4f * 60.0f * glm::dot(f, e);
 
 	vA -= mA * impulseSumT;
 	wA -= iA * glm::cross(rA, impulseSumT);
 
 	vB += mB * impulseSumT;
 	wB += iB * glm::cross(rB, impulseSumT);
-
-	wA -= iA * t1 * impulseSumR1;
-	wB += iB * t1 * impulseSumR1;
-
-	wA -= iA * t2 * impulseSumR2;
-	wB += iB * t2 * impulseSumR2;
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
@@ -116,17 +113,16 @@ void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 	vB += mB * impulseL;
 	wB += iB * glm::cross(rB, impulseL);
 
-	float lambda1 = -(glm::dot(t1, wB - wA) + bias1) / kr1;
-	impulseSumR1 += lambda1;
+	// angular
+	float CdotR1 = glm::dot(cr1, wB - wA);
+	float l1 = -(CdotR1 + bias1)/ kr1;
+	wA -= iA * cr1 * l1;
+	wB += iB * cr1 * l1;
 
-	wA -= iA * t1 * lambda1;
-	wB += iB * t1 * lambda1;
-
-	float lambda2 = -(glm::dot(t2, wB - wA) + bias2) / kr2;
-	impulseSumR2 += lambda2;
-
-	wA -= iA * t2 * lambda2;
-	wB += iB * t2 * lambda2;
+	float CdotR2 = glm::dot(cr2, wB - wA);
+	float l2 = -(CdotR2 + bias2) / kr2;
+	wA -= iA * cr2 * l2;
+	wB += iB * cr2 * l2;
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
