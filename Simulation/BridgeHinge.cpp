@@ -23,6 +23,14 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
+	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
+	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
+	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
+	Material material;
+	material.diffuseMap = boxDfTxt;
+	material.specularMap = boxSpTxt;
+	material.count = 2;
+
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
@@ -40,7 +48,7 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	boxCollider->Scale(s);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(s);
-	gameObjects.push_back(GameObject(boxModel, bID));
+	gameObjects.push_back(GameObject(boxModel, bID, material));
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -62,7 +70,7 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID, disco));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 
 		HingeJointDef hjd;
 		std::vector<Body*>* bodies = &Physics::GetInstance().bodies;

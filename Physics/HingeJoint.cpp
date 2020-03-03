@@ -37,6 +37,7 @@ HingeJoint::HingeJoint(const HingeJointDef* def)
 	enableLimit = true;
 	flipJ = false;
 	limitState = inactiveLimit;
+	scale = def->scale;
 }
 
 void HingeJoint::InitVelocityConstraints(const SolverDef& def)
@@ -85,8 +86,8 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	cr2 = glm::cross(e, f);
 	kr2 = glm::dot((iA * cr2), cr2) + glm::dot((iB * cr2), cr2);
 
-	bias1 = 0.4f * 60.0f * glm::dot(f, d);
-	bias2 = 0.4f * 60.0f * glm::dot(f, e);
+	bias1 = 2.0f * baumgarte * hertz * glm::dot(f, d);
+	bias2 = 2.0f * baumgarte * hertz * glm::dot(f, e);
 
 	// check limits
 	if (enableLimit)
@@ -114,7 +115,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 			limitState = atLowerLimit;
 			kMin = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
-			bMin = baumgarte * 60.0f * (jointAngle - lowerLimit);
+			bMin = 0.0f; //baumgarte * hertz * (jointAngle - lowerLimit);
 		}
 		else if (jointAngle > upperLimit)
 		{
@@ -125,7 +126,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 			limitState = atUpperLimit;
 			kMax = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
-			bMax = baumgarte * 60.0f * (upperLimit - jointAngle);
+			bMax = 0.0f; //baumgarte * hertz * (upperLimit - jointAngle);
 		}
 		else
 		{
@@ -345,4 +346,10 @@ void HingeJoint::Render()
 		q = glm::angleAxis(angle, axis);
 	}
 	Graphics::GetInstance().lines.push_back(R_Line(cB, q, glm::vec3(1.0f), 2.0f*lB));
+
+	R_Hinge hinge;
+	hinge.pos = anchor;
+	hinge.rot = txB.R * glm::toMat3(glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 0.0f, 1.0f)));
+	hinge.scale = scale * 0.25f;
+	Graphics::GetInstance().hinges.push_back(hinge);
 }

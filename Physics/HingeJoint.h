@@ -33,6 +33,8 @@ struct HingeJointDef
 	bool enableLimit;
 	float lowerLimit;	// [0 2*PI] todo: verify
 	float upperLimit;	// [0 2*PI]
+
+	float scale;	// render
 };
 
 class HingeJoint
@@ -86,6 +88,8 @@ private:
 	float bMin, bMax;		// limits correction bias
 	bool flipJ;				// flip tje jacobian sigh based on relative quaternion axis
 	LimitState limitState;
+
+	float scale;	// render
 
 	friend class Physics;
 };

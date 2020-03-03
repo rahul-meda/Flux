@@ -23,6 +23,14 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
+	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
+	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
+	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
+	Material material;
+	material.diffuseMap = boxDfTxt;
+	material.specularMap = boxSpTxt;
+	material.count = 2;
+
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
@@ -58,7 +66,7 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 
 				p.x += s.x-dy;
 				q = glm::angleAxis(-angle, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -72,7 +80,7 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 			}
 			for (int l = 0; l < NX - j; ++l)
 			{
@@ -91,7 +99,7 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(sh);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(sh);
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 			}
 		}
 	}
@@ -111,5 +119,5 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 	sphereCollider->massData->density = 20.0f;
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
-	gameObjects.push_back(GameObject(sphereModel, bID, disco));
+	gameObjects.push_back(GameObject(sphereModel, bID, material));
 }

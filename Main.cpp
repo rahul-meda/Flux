@@ -14,7 +14,7 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	Ragdoll1::GetInstance().Init(Simulation::GetInstance().gameObjects);
+	BoxStack::GetInstance().Init(Simulation::GetInstance().gameObjects);
 
 	Simulation::GetInstance().Init(window, width, height);
 

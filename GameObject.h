@@ -2,14 +2,22 @@
 
 #include <glm/glm.hpp>
 
+struct Material
+{
+	unsigned int diffuseMap;
+	unsigned int specularMap;
+	unsigned int emissionMap;
+
+	unsigned int count;	// 1, 2 or 3
+};
+
 class GameObject
 {
 public:
-	GameObject(unsigned int modelID, unsigned int bodyID, glm::vec3 color=glm::vec3(1.0f, 0.7f, 0.4f))
-		: modelID(modelID), bodyID(bodyID), color(color)
-	{}
+	GameObject(unsigned int modelID, unsigned int bodyID, const Material& material)
+		: modelID(modelID), bodyID(bodyID), material(material) {}
 
-	glm::vec3 color;
 	unsigned int modelID;
 	unsigned int bodyID;	// is it better to store pointers?
+	Material material;
 };

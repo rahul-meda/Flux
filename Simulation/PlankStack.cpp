@@ -22,6 +22,14 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
+	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
+	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
+	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
+	Material material;
+	material.diffuseMap = boxDfTxt;
+	material.specularMap = boxSpTxt;
+	material.count = 2;
+
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
@@ -48,7 +56,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 			}
 			for (int i = 0; i < H; ++i)
 			{
@@ -65,7 +73,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 			}
 		}
 	}
@@ -83,7 +91,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	for (int i = 0; i < H; ++i)
@@ -99,7 +107,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	for (int i = 0; i < H; ++i)
@@ -115,7 +123,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	for (int i = 0; i < H; ++i)
@@ -131,7 +139,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	for (int i = 0; i < H; ++i)
@@ -147,7 +155,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	for (int i = 0; i < H; ++i)
@@ -163,7 +171,7 @@ void PlankStack::Init(std::vector<GameObject>& gameObjects)
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
 		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID));
+		gameObjects.push_back(GameObject(boxModel, bID, material));
 	}
 
 	/*tx = Transform(glm::vec3(-20.75, 12.5f, -2.0f), glm::identity<glm::quat>());

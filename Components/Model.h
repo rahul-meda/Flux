@@ -8,7 +8,7 @@ struct ModelDef
 	std::vector<glm::vec3> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<glm::vec3> normals;	// vertex normals
-	std::vector<glm::vec2> textureCoords;
+	std::vector<glm::vec3> textureCoords;
 };
 
 class Model

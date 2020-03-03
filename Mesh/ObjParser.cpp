@@ -75,6 +75,12 @@ void ParseLine(std::vector<ObjFace>& objFaces, HMesh& mesh, const std::string& l
 		}
 		objFaces.push_back(f);
 	}
+	else if (line[0] == 'v' && line[1] == 't' && line[2] == ' ')
+	{
+		glm::vec3 v(0.0f);
+		sscanf(line.c_str(), "vt %f %f", &v.x, &v.y);
+		mesh.vt.push_back(v);
+	}
 }
 
 void AddFace(HMesh& mesh, const std::vector<int>& vids)

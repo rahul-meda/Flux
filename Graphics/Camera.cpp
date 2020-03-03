@@ -1,13 +1,13 @@
 
 #include "Camera.h"
 
-#define CAM_SPEED 20.0f
+#define CAM_SPEED 100.0f
 
 Camera::Camera()
 {}
 
 Camera::Camera(glm::vec3 pos, glm::vec3 fwd, glm::vec3 up)
-	: position(pos), fwd(fwd), up(up)
+	: position(pos), velocity(0.0f), fwd(fwd), up(up)
 {}
 
 void Camera::Translate(DIR mode)
@@ -39,7 +39,10 @@ void Camera::Translate(DIR mode)
 	}
 
 	const static float dt = 1.0f / 60.0f;
-	position += CAM_SPEED * dir * dt;
+
+	velocity += 10.0f * dt * dir;
+
+	position += velocity * dt;
 }
 
 void Camera::Rotate(float yaw, float pitch)

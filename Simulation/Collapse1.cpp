@@ -22,6 +22,14 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetModelData(box);
 	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
 
+	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
+	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
+	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
+	Material material;
+	material.diffuseMap = boxDfTxt;
+	material.specularMap = boxSpTxt;
+	material.count = 2;
+
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
@@ -57,7 +65,7 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 					boxCollider->Scale(glm::vec3(sv));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
 					Graphics::GetInstance().scales.push_back(glm::vec3(sv));
-					gameObjects.push_back(GameObject(boxModel, bID));
+					gameObjects.push_back(GameObject(boxModel, bID, material));
 				}
 				float x = C.x + dx;
 				float y = C.y + sv.y + sh.y + dy;
@@ -72,7 +80,7 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 				boxCollider->Scale(glm::vec3(sh));
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				Graphics::GetInstance().scales.push_back(glm::vec3(sh));
-				gameObjects.push_back(GameObject(boxModel, bID));
+				gameObjects.push_back(GameObject(boxModel, bID, material));
 			}
 		}
 	}
@@ -88,5 +96,5 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID));
+	gameObjects.push_back(GameObject(boxModel, bID, material));
 }

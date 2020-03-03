@@ -23,6 +23,10 @@ struct HalfSpace
 	bool On(const glm::vec3& point) const;
 };
 
+void CreateLine(ModelDef& md);
+
 void CreateSphere(ModelDef& md);
 
-void CreateLine(ModelDef& md);
+void CreateCircle(std::vector<glm::vec3>& verts);
+
+void CreateCylinder(ModelDef& md);

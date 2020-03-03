@@ -14,9 +14,6 @@
     <ClCompile Include="Graphics\Shader.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Texture.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\Camera.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -136,9 +133,6 @@
     </ClInclude>
     <ClInclude Include="Input.h" />
     <ClInclude Include="Graphics\Graphics.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\Texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Camera.h">

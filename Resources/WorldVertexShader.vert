@@ -2,10 +2,10 @@
 
 layout (location = 0) in vec3 vertPos;
 layout (location = 1) in vec3 vertNormal;
-layout (location = 2) in vec2 texCoord;
+layout (location = 2) in vec3 texCoord;
 
 out vec3 vNormal;
-out vec3 vPosW;
+out vec3 fragPos;
 out vec2 fragTexCoord;
 
 uniform mat4 MVP;
@@ -15,6 +15,6 @@ void main()
 {
     gl_Position = MVP * vec4(vertPos, 1.0f);
 	vNormal = normalize(vec3(M * vec4(vertNormal, 0.0f)));
-	vPosW = vec3(M * vec4(vertPos, 1.0f));
+	fragPos = vec3(M * vec4(vertPos, 1.0f));
 	fragTexCoord = vec2(texCoord.x, texCoord.y);
 }

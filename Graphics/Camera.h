@@ -14,6 +14,7 @@ public:
 	Camera(glm::vec3 pos, glm::vec3 fwd, glm::vec3 up);
 
 	glm::vec3 position;
+	glm::vec3 velocity;
 
 	glm::vec3 fwd;
 

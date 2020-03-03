@@ -1,10 +1,10 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <vector>
 #include <map>
 #include <utility>
 #include "../Graphics/Camera.h"
-#include "../Graphics/Texture.h"
 #include "../Components/Transform.h"
 #include "../GameObject.h"
 
@@ -44,9 +44,9 @@ public:
 	double prevFrame;
 
 	std::map<int, std::pair<int, int>> bufferIDmap;
-	TextureInfo textureData;
 	Camera camera;
 	MouseInfo mouseData;
+	Material material;
 
 	std::vector<GameObject> gameObjects;
 };

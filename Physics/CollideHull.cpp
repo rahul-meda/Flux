@@ -403,6 +403,9 @@ void IntersectEdges(glm::vec3* CA, glm::vec3* CB, const glm::vec3& PA, const glm
 	float b = glm::dot(DA, DB);
 	float d = a * e - b * b;
 
+	if (d <= 0.0f)
+		return;
+
 	assert(d > 0.0f, "ERROR::Invalid edge intersection");
 
 	const static float eTol = 0.02;

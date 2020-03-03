@@ -3,6 +3,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "../GameObject.h"
 
 struct R_Point
 {
@@ -34,6 +35,13 @@ struct R_aabb
 	glm::vec3 color;
 };
 
+struct R_Hinge
+{
+	glm::vec3 pos;
+	glm::mat3 rot;
+	float scale;
+};
+
 class Model;
 struct TextureInfo;
 struct ModelDef;
@@ -50,6 +58,8 @@ public:
 	void Initialize();
 
 	unsigned int CreateModel(const ModelDef& modelDef);
+
+	unsigned int CreateTexture(const char* filePath);
 
 	void AddPointLight(glm::vec3 pos);
 
@@ -74,4 +84,11 @@ public:
 	unsigned int normalsModelID;
 	unsigned int tangentsModelID;
 	unsigned int jointsModelID;
+	unsigned int cylinderModelID;
+
+	Material hingeMaterial;
+	std::vector<R_Hinge> hinges;
+
+	char* textureLocs[3];
+	glm::vec3 lightColors[4];
 };
