@@ -6,7 +6,7 @@ class Ragdoll1
 {
 public:
 	static Ragdoll1& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	Ragdoll1() {};

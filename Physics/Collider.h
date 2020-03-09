@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "../Components/Body.h"
+#include "../Mesh/Geometry.h"
 
 struct MassData
 {
@@ -12,7 +13,6 @@ struct MassData
 	float mass;
 };
 
-struct AABB;
 // ToDo: Collider has a lot of 'cold' data which is never accessed
 // after initilization. Separate the 'hot' and 'cold' parts to optimize cache
 class Collider
@@ -21,9 +21,7 @@ public:
 	enum Type
 	{
 		Sphere = 0,
-		Cylinder,
 		Capsule,
-		Cone,
 		ConvexHull,
 		nShapes
 	};

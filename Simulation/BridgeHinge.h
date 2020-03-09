@@ -7,7 +7,7 @@ class BridgeHinge
 {
 public:
 	static BridgeHinge& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	BridgeHinge() {};

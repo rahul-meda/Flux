@@ -96,13 +96,14 @@ void ContactManager::FindNewContacts()
 void ContactManager::Collide()
 {
 	int N = contacts.size();
-	for (int i = 0; i < N;)
+	int i = 0;
+	while(i < N)
 	{
 		Contact* c = contacts[i];
 		Collider* cA = c->colliderA;
 		Collider* cB = c->colliderB;
 
-		// destroy contacts that cease to overlap in braod-phase
+		// destroy contacts that cease to overlap in broad-phase
 		AABB* aabbA = bp.aabbs[cA->aabbIndex];
 		AABB* aabbB = bp.aabbs[cB->aabbIndex];
 		bool overlap = Overlap(aabbA, aabbB);

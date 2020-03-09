@@ -5,8 +5,8 @@
 #include <map>
 #include <utility>
 #include "../Graphics/Camera.h"
+#include "../Graphics/Graphics.h"
 #include "../Components/Transform.h"
-#include "../GameObject.h"
 
 struct MouseInfo
 {
@@ -47,6 +47,4 @@ public:
 	Camera camera;
 	MouseInfo mouseData;
 	Material material;
-
-	std::vector<GameObject> gameObjects;
 };

@@ -4,6 +4,7 @@
 
 class SphereCollider;
 class HullCollider;
+class CapsuleCollider;
 class Manifold;
 
 typedef Contact* ContactCreateFn(Collider* colliderA, Collider* colliderB);
@@ -101,5 +102,11 @@ void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider*
 void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 								      const Transform& txA, const Transform& txB);
 
+void CollideCapsules(Manifold* m, CapsuleCollider* A, CapsuleCollider* B, const Transform& txA, const Transform& txB);
+
 void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider* hullB,
 										   const Transform& txA, const Transform& txB);
+
+void CollideSphereCapsule(Manifold* m, SphereCollider* A, CapsuleCollider* B, const Transform& txA, const Transform& txB);
+
+void CollideCapsuleHull(Manifold* m, CapsuleCollider* A, HullCollider* B, const Transform& txA, const Transform& txB);

@@ -15,7 +15,7 @@ BridgeHinge& BridgeHinge::GetInstance()
 	return instance;
 }
 
-void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
+void BridgeHinge::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -35,6 +35,7 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 
 	glm::vec3 s(0.5f, 1.5f, 0.5f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
@@ -47,8 +48,11 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s);
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = s;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -69,14 +73,18 @@ void BridgeHinge::Init(std::vector<GameObject>& gameObjects)
 		mesh.GetColliderData(boxCollider);
 		boxCollider->Scale(s);
 		Physics::GetInstance().AddCollider(bID, boxCollider);
-		Graphics::GetInstance().scales.push_back(s);
-		gameObjects.push_back(GameObject(boxModel, bID, material));
+		obj.modelIDs.push_back(boxModel);
+		obj.materials.push_back(material);
+		obj.scale = s;
+		Graphics::GetInstance().objects.push_back(obj);
+		obj.Clear();
 
 		HingeJointDef hjd;
 		std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 		glm::vec3 anchor = (p1 + p2) * 0.5f;
 		p1 = p2;
 		hjd.Initialize((*bodies)[i], (*bodies)[i + 1], anchor, glm::vec3(0.0f, 1.0f, 0.0f));
+		hjd.scale = 0.25f;
 
 		HingeJoint hj(&hjd);
 		Physics::GetInstance().hingeJoints.push_back(hj);

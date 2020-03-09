@@ -1,5 +1,4 @@
 
-
 inline const Transform FxMul(const Transform& txA, const Transform& txB)
 {
 	Transform tx;

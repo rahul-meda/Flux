@@ -3,7 +3,7 @@
 #include "HingeJoint.h"
 #include "../Components/Body.h"
 #include "../Graphics/Graphics.h"
-#include "../Utils.h"
+#include "../Mesh/Geometry.h"
 
 void HingeJointDef::Initialize(Body* bA, Body* bB, const glm::vec3& anchor, const glm::vec3& axis)
 {
@@ -33,10 +33,15 @@ HingeJoint::HingeJoint(const HingeJointDef* def)
 	upperLimit = def->upperLimit;
 	impulseSumT = glm::vec3(0.0f);
 	impulseSumR = 0.0f;
+	impulseSumR1 = impulseSumR2 = 0.0f;
 	kMin = kMax = 0.0f;
-	enableLimit = true;
-	flipJ = false;
+	enableLimit = def->enableLimit;
+	jSign = 1.0f;
 	limitState = inactiveLimit;
+	enableMotor = def->enableMotor;
+	motorSpeed = def->motorSpeed;
+	maxMotorTorque = def->maxMotorTorque;
+	impulseMotor = 0.0f;
 	scale = def->scale;
 }
 
@@ -75,6 +80,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 
 	// angular
 	f = RA * localAxisA;	// world axis
+	glm::vec3 a2 = RB * localAxisB;
 	glm::vec3 t1, t2;
 	ComputeBasis(localAxisB, &t1, &t2);
 	glm::vec3 d = RB * t1;
@@ -86,8 +92,10 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	cr2 = glm::cross(e, f);
 	kr2 = glm::dot((iA * cr2), cr2) + glm::dot((iB * cr2), cr2);
 
-	bias1 = 2.0f * baumgarte * hertz * glm::dot(f, d);
-	bias2 = 2.0f * baumgarte * hertz * glm::dot(f, e);
+	bias1 = 0.0f; //2.0f * baumgarte * hertz * glm::dot(f, d);
+	bias2 = 0.0f; //2.0f * baumgarte * hertz * glm::dot(f, e);
+
+	kMotor = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
 	// check limits
 	if (enableLimit)
@@ -99,11 +107,11 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 
 		if (glm::dot(localAxisA, u) < 0.0f)
 		{
-			flipJ = true;
+			jSign = -1.0f;
 		}
 		else
 		{
-			flipJ = false;
+			jSign = 1.0f;
 		}
 
 		if (jointAngle < lowerLimit)
@@ -115,7 +123,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 			limitState = atLowerLimit;
 			kMin = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
-			bMin = 0.0f; //baumgarte * hertz * (jointAngle - lowerLimit);
+			bMin = baumgarte * hertz * (jointAngle - lowerLimit);
 		}
 		else if (jointAngle > upperLimit)
 		{
@@ -126,7 +134,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 			limitState = atUpperLimit;
 			kMax = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
-			bMax = 0.0f; //baumgarte * hertz * (upperLimit - jointAngle);
+			bMax = baumgarte * hertz * (upperLimit - jointAngle);
 		}
 		else
 		{
@@ -146,11 +154,16 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	vB += mB * impulseSumT;
 	wB += iB * glm::cross(rB, impulseSumT);
 
-	// too violent!!
-	/*wA -= iA * cr1 * impulseSumR1;
+	wA -= iA * cr1 * impulseSumR1;
 	wB += iB * cr1 * impulseSumR1;
 	wA -= iA * cr2 * impulseSumR2;
-	wB += iB * cr2 * impulseSumR2;*/
+	wB += iB * cr2 * impulseSumR2;
+
+	if (enableMotor)
+	{
+		wA -= iA * f * impulseMotor;
+		wB += iB * f * impulseMotor;
+	}
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
@@ -166,16 +179,24 @@ void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 	glm::vec3 vB = (*velocities)[indexB].v;
 	glm::vec3 wB = (*velocities)[indexB].w;
 
+	if (enableMotor)
+	{
+		float cDot = glm::dot(wB - wA, f) + motorSpeed;
+		float impulse = -cDot / kMotor;
+		float oldImpulse = impulseMotor;
+		impulseMotor = glm::clamp(impulseMotor + impulse, -maxMotorTorque, maxMotorTorque);
+		impulse = impulseMotor - oldImpulse;
+
+		wA -= iA * f * impulse;
+		wB += iB * f * impulse;
+	}
+
 	if (enableLimit && limitState != inactiveLimit)
 	{
 		if (limitState == atLowerLimit)
 		{
-			glm::vec3 J = f;
+			glm::vec3 J = jSign * f;
 
-			if (flipJ)
-			{
-				J = -f;
-			}
 			
 			float cDot = glm::dot((wB - wA), J);
 			float P = -(cDot + bMin) / kMin;
@@ -195,12 +216,7 @@ void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 		}
 		else if (limitState == atUpperLimit)
 		{
-			glm::vec3 J = f;
-
-			if (flipJ)
-			{
-				J = -f;
-			}
+			glm::vec3 J = jSign * f;
 
 			float cDot = glm::dot((wA - wB), J);
 			float P = -(cDot + bMax) / kMax;
@@ -236,14 +252,14 @@ void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 	// angular
 	float CdotR1 = glm::dot(cr1, wB - wA);
 	float l1 = -(CdotR1 + bias1)/ kr1;
-	impulseSumR += l1;
+	impulseSumR1 += l1;
 
 	wA -= iA * cr1 * l1;
 	wB += iB * cr1 * l1;
 
 	float CdotR2 = glm::dot(cr2, wB - wA);
 	float l2 = -(CdotR2 + bias2) / kr2;
-	impulseSumR += l2;
+	impulseSumR2 += l2;
 
 	wA -= iA * cr2 * l2;
 	wB += iB * cr2 * l2;
@@ -350,6 +366,6 @@ void HingeJoint::Render()
 	R_Hinge hinge;
 	hinge.pos = anchor;
 	hinge.rot = txB.R * glm::toMat3(glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 0.0f, 1.0f)));
-	hinge.scale = scale * 0.25f;
+	hinge.scale = scale;
 	Graphics::GetInstance().hinges.push_back(hinge);
 }

@@ -15,7 +15,7 @@ PositionJointTest& PositionJointTest::GetInstance()
 	return instance;
 }
 
-void PositionJointTest::Init(std::vector<GameObject>& gameObjects)
+void PositionJointTest::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -35,6 +35,7 @@ void PositionJointTest::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 
 	glm::vec3 p1 = glm::vec3(25.0f, 20.0f, 0.0f);
 	tx = Transform(p1);
@@ -46,8 +47,11 @@ void PositionJointTest::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(25.0f, 0.05f, 0.05f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(25.0f, 0.05f, 0.05f));
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(25.0f, 0.05f, 0.05f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -66,8 +70,11 @@ void PositionJointTest::Init(std::vector<GameObject>& gameObjects)
 		SphereCollider* sphereCollider = new SphereCollider();
 		sphereCollider->Scale(1.0f);
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
-		Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-		gameObjects.push_back(GameObject(sphereModel, bID, material));
+		obj.modelIDs.push_back(sphereModel);
+		obj.materials.push_back(material);
+		obj.scale = glm::vec3(1.0f);
+		Graphics::GetInstance().objects.push_back(obj);
+		obj.Clear();
 
 		PositionJointDef pjd;
 		std::vector<Body*>* bodies = &Physics::GetInstance().bodies;

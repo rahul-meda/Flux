@@ -52,10 +52,7 @@ void Physics::Step(float dt)
 
 	contactManager.FindNewContacts();
 
-	std::clock_t t0 = std::clock();
 	contactManager.Collide();
-	std::clock_t t1 = std::clock();
-	double elapsed = (t1 - t0) / (double)CLOCKS_PER_SEC;
 
 	int nBodies = bodies.size();
 
@@ -174,11 +171,6 @@ void Physics::Step(float dt)
 		{
 			hingeJoints[ih].SolvePositionConstraints(solverData);
 		}
-
-		if (contactsOkay)
-		{
-			break;
-		}
 	}
 
 	for (int i = 0; i < nBodies; ++i)
@@ -192,7 +184,7 @@ void Physics::Step(float dt)
 		bodies[i]->force = glm::vec3(0.0f);
 		bodies[i]->torque = glm::vec3(0.0f);
 
-		bodies[i]->SynchronizeTransform();
+		bodies[i]->SynchronizeTransform(i);
 	}
 }
 

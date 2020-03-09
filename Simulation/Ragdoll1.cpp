@@ -15,7 +15,7 @@ Ragdoll1& Ragdoll1::GetInstance()
 	return instance;
 }
 
-void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
+void Ragdoll1::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -38,6 +38,7 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	HingeJointDef hjd;
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 	unsigned int bid1, bid2;
+	R_Object obj;
 
 	glm::vec3 p1 = glm::vec3(0.0f, 30.0f, 0.0f);
 	tx = Transform(p1);
@@ -50,8 +51,11 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(2.0f, 0.05f, 0.05f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(2.0f, 0.05f, 0.05f));
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(2.0f, 0.05f, 0.05f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -69,17 +73,21 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s);
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = s;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	Body* b1 = (*bodies)[bid1];
 	Body* b2 = (*bodies)[bid2];
 	glm::vec3 anchor(p2);
 	anchor.y += s.y + 1.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(1.0f, 0.0f, 0.0f));
-	hjd.enableLimit = true;
+	hjd.enableLimit = false;
 	hjd.lowerLimit = 0.0f;
 	hjd.upperLimit = PI;
+	hjd.scale = 0.25f;
 
 	HingeJoint hj(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);
@@ -97,17 +105,23 @@ void Ragdoll1::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s);
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = s;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	b1 = (*bodies)[bid1];
 	b2 = (*bodies)[bid2];
 	anchor.x = p1.x;
 	anchor.y = (p1.y + p2.y) * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
-	hjd.enableLimit = true;
+	hjd.enableLimit = false;
 	hjd.lowerLimit = 0.0f;
 	hjd.upperLimit = PI * 0.5f;
+	hjd.scale = 0.25f;
+	hjd.enableMotor = true;
+	hjd.maxMotorTorque = 0.3f;
 
 	hj = HingeJoint(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);

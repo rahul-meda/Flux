@@ -3,7 +3,6 @@
 #include "../Components/Body.h"
 #include "Contact.h"
 #include "Collider.h"
-#include "../Utils.h"
 #include <iostream>
 
 struct ContactPositionConstraint
@@ -336,68 +335,68 @@ struct b2PositionSolverManifold
 
 		switch (pc->type)
 		{
-		case Manifold::sphere:
-		{
-			normal = glm::vec3(1.0f, 0.0f, 0.0f);
-			glm::vec3 pointA = txA.R * pc->localPoint + txA.position;
-			glm::vec3 pointB = txB.R * pc->localPoints[0] + txB.position;
-			if (glm::distance2(pointA, pointB) > fxEpsilon * fxEpsilon)
+			case Manifold::sphere:
 			{
-				normal = pointB - pointA;
-				normal = glm::normalize(normal);
+				normal = glm::vec3(1.0f, 0.0f, 0.0f);
+				glm::vec3 pointA = txA.R * pc->localPoint + txA.position;
+				glm::vec3 pointB = txB.R * pc->localPoints[0] + txB.position;
+				if (glm::distance2(pointA, pointB) > fxEpsilon * fxEpsilon)
+				{
+					normal = pointB - pointA;
+					normal = glm::normalize(normal);
+				}
+				glm::vec3 cA = pointA + pc->radiusA * normal;
+				glm::vec3 cB = pointB - pc->radiusB * normal;
+				point = 0.5f * (cA + cB);
+				//point = 0.5f * (pointA + pointB);
+				separation = glm::dot(pointB - pointA, normal);// -pc->radiusA - pc->radiusB;
 			}
-			glm::vec3 cA = pointA + pc->radiusA * normal;
-			glm::vec3 cB = pointB - pc->radiusB * normal;
-			point = 0.5f * (cA + cB);
-			//point = 0.5f * (pointA + pointB);
-			separation = glm::dot(pointB - pointA, normal);// -pc->radiusA - pc->radiusB;
-		}
-		break;
+			break;
 
-		case Manifold::faceA:
-		{
-			normal = txA.R * pc->localNormal;
-			glm::vec3 planePoint = txA.R * pc->localPoint + txA.position;
+			case Manifold::faceA:
+			{
+				normal = txA.R * pc->localNormal;
+				glm::vec3 planePoint = txA.R * pc->localPoint + txA.position;
 
-			glm::vec3 clipPoint = txB.R * pc->localPoints[index] + txB.position;
-			/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
-			point = clipPoint;*/
-			glm::vec3 cA = clipPoint + normal * (pc->radiusA - glm::dot(clipPoint - planePoint, normal));
-			glm::vec3 cB = clipPoint - normal * pc->radiusB;
-			point = (cA + cB) * 0.5f;
-			separation = glm::dot(cB - cA, normal);
-		}
-		break;
+				glm::vec3 clipPoint = txB.R * pc->localPoints[index] + txB.position;
+				/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
+				point = clipPoint;*/
+				glm::vec3 cA = clipPoint + normal * (pc->radiusA - glm::dot(clipPoint - planePoint, normal));
+				glm::vec3 cB = clipPoint - normal * pc->radiusB;
+				point = (cA + cB) * 0.5f;
+				separation = glm::dot(cB - cA, normal);
+			}
+			break;
 
-		case Manifold::faceB:
-		{
-			normal = txB.R * pc->localNormal;
-			glm::vec3 planePoint = txB.R * pc->localPoint + txB.position;
+			case Manifold::faceB:
+			{
+				normal = txB.R * pc->localNormal;
+				glm::vec3 planePoint = txB.R * pc->localPoint + txB.position;
 
-			glm::vec3 clipPoint = txA.R * pc->localPoints[index] + txA.position;
-			/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
-			point = clipPoint;*/
-			glm::vec3 cB = clipPoint + normal * (pc->radiusB - glm::dot(clipPoint - planePoint, normal));
-			glm::vec3 cA = clipPoint - normal * pc->radiusA;
-			point = (cA + cB) * 0.5f;
-			separation = glm::dot(cA - cB, normal);
+				glm::vec3 clipPoint = txA.R * pc->localPoints[index] + txA.position;
+				/*separation = glm::dot(clipPoint - planePoint, normal) - pc->radiusA - pc->radiusB;
+				point = clipPoint;*/
+				glm::vec3 cB = clipPoint + normal * (pc->radiusB - glm::dot(clipPoint - planePoint, normal));
+				glm::vec3 cA = clipPoint - normal * pc->radiusA;
+				point = (cA + cB) * 0.5f;
+				separation = glm::dot(cA - cB, normal);
 
-			// Ensure normal points from A to B
-			normal = -normal;
-		}
-		break;
+				// Ensure normal points from A to B
+				normal = -normal;
+			}
+			break;
 
-		case Manifold::edges:
-		{
-			glm::vec3 PA = txA.R * pc->localPoint + txA.position;
-			glm::vec3 PB = txB.R * pc->localPoints[index] + txB.position;
-			normal = txB.R * pc->localNormal;
-			glm::vec3 CA = PA - pc->radiusA * normal; // TODO: check sign
-			glm::vec3 CB = PB + pc->radiusB * normal;
-			point = (CA + CB) * 0.5f;
-			separation = glm::dot(CB - CA, normal);
-		}
-		break;
+			case Manifold::edges:
+			{
+				glm::vec3 PA = txA.R * pc->localPoint + txA.position;
+				glm::vec3 PB = txB.R * pc->localPoints[index] + txB.position;
+				normal = txB.R * pc->localNormal;
+				glm::vec3 CA = PA - pc->radiusA * normal; // TODO: check sign
+				glm::vec3 CB = PB + pc->radiusB * normal;
+				point = (CA + CB) * 0.5f;
+				separation = glm::dot(CB - CA, normal);
+			}
+			break;
 		}
 	}
 

@@ -14,7 +14,7 @@ Collapse1& Collapse1::GetInstance()
 	return instance;
 }
 
-void Collapse1::Init(std::vector<GameObject>& gameObjects)
+void Collapse1::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -34,6 +34,7 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 
 	glm::vec3 sv(0.1f, 1.0f, 0.1f);
 	glm::vec3 sh(1.0f, 0.1f, 1.0f);
@@ -64,8 +65,11 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(sv));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
-					Graphics::GetInstance().scales.push_back(glm::vec3(sv));
-					gameObjects.push_back(GameObject(boxModel, bID, material));
+					obj.modelIDs.push_back(boxModel);
+					obj.materials.push_back(material);
+					obj.scale = sv;
+					Graphics::GetInstance().objects.push_back(obj);
+					obj.Clear();
 				}
 				float x = C.x + dx;
 				float y = C.y + sv.y + sh.y + dy;
@@ -79,8 +83,11 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(glm::vec3(sh));
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(glm::vec3(sh));
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				obj.scale = sh;
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 			}
 		}
 	}
@@ -95,6 +102,9 @@ void Collapse1::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(1.0f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 }

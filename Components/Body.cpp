@@ -1,5 +1,7 @@
+
 #include "Body.h"
 #include "../Physics/Collider.h"
+#include "../Graphics/Graphics.h"
 
 Body::Body(const BodyDef& bd)
 {
@@ -19,11 +21,15 @@ Body::Body(const BodyDef& bd)
 	torque = glm::vec3(0.0f);
 }
 
-void Body::SynchronizeTransform()
+void Body::SynchronizeTransform(int i)
 {
 	orientation = glm::normalize(orientation);	// needed every frame?
 	tx.R = glm::toMat3(orientation);
 	tx.position = comW - (tx.R * comL);
+
+	R_Object* obj = &Graphics::GetInstance().objects[i];
+	obj->pos = tx.position;
+	obj->rot = tx.R;
 }
 
 void Body::AddCollider(Collider* collider)

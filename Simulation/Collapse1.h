@@ -6,7 +6,7 @@ class Collapse1
 {
 public:
 	static Collapse1& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	Collapse1() {};

@@ -2,6 +2,7 @@
 #include "NarrowPhase.h"
 #include "SphereCollider.h"
 #include "HullCollider.h"
+#include "CapsuleCollider.h"
 
 DistanceProxy::DistanceProxy(Collider* collider)
 {
@@ -21,6 +22,15 @@ DistanceProxy::DistanceProxy(Collider* collider)
 			for (int i = 0; i < nVerts; ++i)
 				vertices.push_back(hc->vertices[i]->position);
 			break;
+		}
+		case Collider::Capsule:
+		{
+			CapsuleCollider* c = (CapsuleCollider*)collider;
+			glm::vec3 C = c->com;
+			float h = c->H;
+			glm::vec3 d = h * c->upB;
+			vertices.push_back(C - d);
+			vertices.push_back(C + d);
 		}
 	}
 }
@@ -71,29 +81,6 @@ void Simplex::CalculateClosestPoints(glm::vec3* a, glm::vec3* b)
 	default:
 		assert(false);
 		break;
-	}
-
-	float w = 0.51f;
-	if (nVerts == 2)
-	{
-		if (A.weight > w || B.weight > w)
-		{
-			int x = 1;
-		}
-	}
-	else if (nVerts == 3)
-	{
-		if (A.weight > w || B.weight > w || C.weight > w)
-		{
-			int x = 1;
-		}
-	}
-	else if (nVerts == 4)
-	{
-		if (A.weight > w || B.weight > w || C.weight > w || D.weight > w)
-		{
-			int x = 1;
-		}
 	}
 }
 

@@ -63,29 +63,32 @@ void HMesh::GetModelData(ModelDef& md) const
 	}
 
 	int N = md.vertices.size();
-	for (int i = 0; i < N; ++i)
+	if (N == 36)
 	{
-		md.textureCoords.push_back(glm::vec3(0.0f));
-		if (abs(md.normals[i].x) > 0.5f)
+		for (int i = 0; i < N; ++i)
 		{
-			if (md.vertices[i].y > 0.0f)
-				md.textureCoords[i].x = 1.0f;
-			if (md.vertices[i].z > 0.0f)
-				md.textureCoords[i].y = 1.0f;
-		}
-		else if (abs(md.normals[i].y) > 0.5f)
-		{
-			if (md.vertices[i].x > 0.0f)
-				md.textureCoords[i].x = 1.0f;
-			if (md.vertices[i].z > 0.0f)
-				md.textureCoords[i].y = 1.0f;
-		}
-		else if (abs(md.normals[i].z) > 0.5f)
-		{
-			if (md.vertices[i].x > 0.0f)
-				md.textureCoords[i].x = 1.0f;
-			if (md.vertices[i].y > 0.0f)
-				md.textureCoords[i].y = 1.0f;
+			md.textureCoords.push_back(glm::vec3(0.0f));
+			if (abs(md.normals[i].x) > 0.5f)
+			{
+				if (md.vertices[i].y > 0.0f)
+					md.textureCoords[i].x = 1.0f;
+				if (md.vertices[i].z > 0.0f)
+					md.textureCoords[i].y = 1.0f;
+			}
+			else if (abs(md.normals[i].y) > 0.5f)
+			{
+				if (md.vertices[i].x > 0.0f)
+					md.textureCoords[i].x = 1.0f;
+				if (md.vertices[i].z > 0.0f)
+					md.textureCoords[i].y = 1.0f;
+			}
+			else if (abs(md.normals[i].z) > 0.5f)
+			{
+				if (md.vertices[i].x > 0.0f)
+					md.textureCoords[i].x = 1.0f;
+				if (md.vertices[i].y > 0.0f)
+					md.textureCoords[i].y = 1.0f;
+			}
 		}
 	}
 }

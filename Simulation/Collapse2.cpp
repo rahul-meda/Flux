@@ -15,7 +15,7 @@ Collapse2& Collapse2::GetInstance()
 	return instance;
 }
 
-void Collapse2::Init(std::vector<GameObject>& gameObjects)
+void Collapse2::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -35,6 +35,7 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 	glm::vec3 sv(0.1f, 1.0f, 1.5f);
 	glm::vec3 sh(1.5f, 1.0, 0.1f);
 	glm::vec3 cv(-20.f, 0.5f + sv.y, 0.0f);
@@ -61,8 +62,11 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(sv);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(sv);
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				obj.scale = sv;
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 			}
 			for (int i = 0; i < NX-1; ++i)
 			{
@@ -80,8 +84,11 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(sh);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(sh);
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				obj.scale = sh;
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 			}
 		}
 	}
@@ -101,8 +108,11 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 			mesh.GetColliderData(boxCollider);
 			boxCollider->Scale(sh);
 			Physics::GetInstance().AddCollider(bID, boxCollider);
-			Graphics::GetInstance().scales.push_back(sh);
-			gameObjects.push_back(GameObject(boxModel, bID, material));
+			obj.modelIDs.push_back(boxModel);
+			obj.materials.push_back(material);
+			obj.scale = sh;
+			Graphics::GetInstance().objects.push_back(obj);
+			obj.Clear();
 		}
 		for (int j = 0; j < NY / 2; ++j)
 		{
@@ -118,8 +128,11 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 			mesh.GetColliderData(boxCollider);
 			boxCollider->Scale(sh);
 			Physics::GetInstance().AddCollider(bID, boxCollider);
-			Graphics::GetInstance().scales.push_back(sh);
-			gameObjects.push_back(GameObject(boxModel, bID, material));
+			obj.modelIDs.push_back(boxModel);
+			obj.materials.push_back(material);
+			obj.scale = sh;
+			Graphics::GetInstance().objects.push_back(obj);
+			obj.Clear();
 		}
 	}
 
@@ -137,6 +150,9 @@ void Collapse2::Init(std::vector<GameObject>& gameObjects)
 	sphereCollider->Scale(1.0f);
 	sphereCollider->massData->density = 10.0f;
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(sphereModel, bID, material));
+	obj.modelIDs.push_back(sphereModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(1.0f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 }

@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Simulation.h"
 #include "../input.h"
-#include "../Graphics/Graphics.h"
 #include "../Graphics/Shader.h"
 #include "../Components/Model.h"
 #include "../Mesh/Geometry.h"
@@ -36,27 +35,30 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	glfwSetKeyCallback(window, InputEvent::KeyboardCallback);
 	glfwSetCursorPosCallback(window, InputEvent::MouseMoveCallback);
 
+	Graphics::GetInstance().Initialize();
+	Physics::GetInstance().Initialize();
+
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
 	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
-	camera = Camera(glm::vec3(90.0f, 50.0f, 90.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert",                                                             "Resources/WorldFragmentShader.frag");
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									"Resources/WorldFragmentShader.frag");
 
 	ModelDef box, sphere, cylinder;
 	HMesh mesh;
 
 	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
+	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
 
 	unsigned int floorTexture = Graphics::GetInstance().CreateTexture("resources/textures/wood1.jpg");
 	Material floorMaterial;
 	floorMaterial.diffuseMap = floorTexture;
-	floorMaterial.count = 1;
+	floorMaterial.specularMap = floorTexture;
+	floorMaterial.count = 2;
 
-	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
+	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/earth_10k.jpg");
 	unsigned int ballEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
 	material.diffuseMap = ballDfTxt;
 	material.specularMap = ballDfTxt;
@@ -67,6 +69,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 	glm::vec3 s1(100.0f, 0.5f, 100.0f);
 
 	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>());
@@ -77,8 +80,16 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s1);
-	gameObjects.push_back(GameObject(boxModel, bID, floorMaterial));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s1);
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(floorMaterial);
+	obj.scale = s1;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	unsigned int wallTexture = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
 	Material wallMaterial;
@@ -96,8 +107,16 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
-	gameObjects.push_back(GameObject(boxModel, bID, wallMaterial));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(wallMaterial);
+	obj.scale = s2;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	tx = Transform(glm::vec3(s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
@@ -107,8 +126,16 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
-	gameObjects.push_back(GameObject(boxModel, bID, wallMaterial));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(wallMaterial);
+	obj.scale = s2;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	glm::quat q = glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
 	tx = Transform(glm::vec3(0.0f, s2.z, s1.z), q * glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -119,8 +146,16 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
-	gameObjects.push_back(GameObject(boxModel, bID, wallMaterial));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(wallMaterial);
+	obj.scale = s2;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	tx = Transform(glm::vec3(0.0f, s2.z, -s1.z), q * glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
@@ -130,21 +165,24 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
-	gameObjects.push_back(GameObject(boxModel, bID, wallMaterial));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(wallMaterial);
+	obj.scale = s2;
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
-	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																 "Resources/FragmentShader.frag");
-	
-	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 5.0f, 50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 5.0f, 50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 5.0f, -50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 5.0f, -50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 5.0f, 0.0f));
+	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									 "Resources/FragmentShader.frag");
 
-	Graphics::GetInstance().cubeModelID = boxModel;
-
-	Graphics::GetInstance().Initialize();
-	Physics::GetInstance().Initialize();
+	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 20.0f, 50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 20.0f, 50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 20.0f, -50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 20.0f, -50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 20.0f, 0.0f));
 }
 
 void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -169,16 +207,23 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		BodyDef bd;
 		bd.tx = tx;
 		bd.isStatic = false;
-		bd.velocity = 25.f * camera.fwd;
+		bd.velocity = 20.0f * camera.fwd;
 		unsigned int bID = Physics::GetInstance().AddBody(bd);
 		SphereCollider* sphereCollider = new SphereCollider();
-		sphereCollider->Scale(0.5f);
+		sphereCollider->Scale(1.0f);
 		sphereCollider->massData->density = 2.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
-		Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
-		CreateSphere(sphere);
-		unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
-		gameObjects.push_back(GameObject(sphereModel, bID, material));
+		unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
+		R_Object obj;
+		obj.pos = tx.position;
+		obj.rot = tx.R;
+		obj.scales.push_back(glm::vec3(1.0f));
+		obj.posOffsets.push_back(glm::vec3(0.0f));
+		obj.rotOffsets.push_back(glm::mat3(1.0f));
+		obj.modelIDs.push_back(sphereModel);
+		obj.materials.push_back(material);
+		obj.scale = glm::vec3(1.0f);
+		Graphics::GetInstance().objects.push_back(obj);
 	}
 	if (key == GLFW_KEY_T)
 	{
@@ -287,7 +332,7 @@ void Simulation::Update(GLFWwindow* window)
 		break;
 	}
 
-	Graphics::GetInstance().Update(gameObjects);
+	Graphics::GetInstance().Update();
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

@@ -15,8 +15,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "../Components/Transform.h"
-#include "../Components/Model.h"
 #include "../Mesh/Geometry.h"
+#include "../Mesh/ObjParser.h"
 
 Graphics::Graphics()
 {}
@@ -33,19 +33,30 @@ void Graphics::Initialize()
 	glEnable(GL_DEPTH_TEST); // enables depth-testing
 	glDepthFunc(GL_LESS);    // interpret smaller values as closer
 
-	ModelDef line, cylinder;
+	ModelDef box, line, sphere, cylinder, capsule;
+	HMesh mesh;
+
+	ParseObj("Resources/Models/Box.obj", mesh);
+	mesh.GetModelData(box);
+	cubeModelID = CreateModel(box);
 
 	CreateLine(line);
 	lineModelID = CreateModel(line);
 
+	CreateSphere(sphere);
+	sphereModelID = CreateModel(sphere);
+
 	CreateCylinder(cylinder);
 	cylinderModelID = CreateModel(cylinder);
+
+	CreateCapsule(capsule);
+	capsuleModelID = CreateModel(capsule);
 
 	textureLocs[0] = "diffuseTexture";
 	textureLocs[1] = "specularTexture";
 	textureLocs[2] = "emissionTexture";
 
-	unsigned int hingeTexture = CreateTexture("resources/textures/metal1.jpeg");
+	unsigned int hingeTexture = CreateTexture("resources/textures/metal2.jpg");
 
 	hingeMaterial.diffuseMap = hingeTexture;
 	hingeMaterial.specularMap = hingeTexture;
@@ -115,7 +126,10 @@ unsigned int Graphics::CreateModel(const ModelDef& modelDef)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	models.push_back(Model(VAO, modelDef.vertices.size()));
+	Model m;
+	m.VAO = VAO;
+	m.nIndices = n;
+	models.push_back(m);
 
 	return models.size() - 1;
 }
@@ -167,7 +181,7 @@ void Graphics::AddPointLight(glm::vec3 pos)
 	glUseProgram(0);
 }
 
-void Graphics::Update(const std::vector<GameObject>& objects)
+void Graphics::Update()
 {
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -194,46 +208,51 @@ void Graphics::Update(const std::vector<GameObject>& objects)
 	glUniform3fv(glGetUniformLocation(worldShader, "lightPos[4]"), 1, glm::value_ptr(eye));
 	glUniform1f(glGetUniformLocation(worldShader, "time"), glfwGetTime());
 
-	float time = glfwGetTime();
-
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
-		GameObject obj = objects[i];
+		R_Object obj = objects[i];
 
-		// todo: optimize
-		T = glm::translate(glm::mat4(1.0f), Physics::GetInstance().bodies[i]->GetPosition());
-		R = glm::toMat4(Physics::GetInstance().positions[i].q);
-		S = glm::scale(scales[i]);
-		M = T * R * S;
-		MVP = VP * M;
-
-		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
-
-		Model m = models[obj.modelID];	//cache friendly? ToDo: try storing pointers to model in GO
-		Material material = obj.material;
-		unsigned int* mapID = &material.diffuseMap;
-		int C = material.count;
-		for (unsigned int c = 0; c < C; ++c)
+		int nM = obj.modelIDs.size();
+		if (nM == 3)
 		{
-			unsigned int tID = *(mapID + c);
-			glActiveTexture(GL_TEXTURE0 + tID - 1);
-			glBindTexture(GL_TEXTURE_2D, tID);
-
-			glUniform1i(glGetUniformLocation(worldShader, textureLocs[c]), tID - 1);
+			int x = 1;
 		}
+		for (int j = 0; j < nM; ++j)
+		{
+			T = glm::translate(glm::mat4(1.0f), obj.pos + obj.rot * obj.posOffsets[j]);
+			R = glm::mat4(obj.rot * obj.rotOffsets[j]);
+			S = glm::scale(obj.scales[j]);
+			M = T * R * S;
+			MVP = VP * M;
 
-		glm::vec3 lightMap(1.0f);
-		if (C == 1)
-			lightMap.y = lightMap.z = 0.0f;
-		else if (C == 2)
-			lightMap.z = 0.0f;
+			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 
-		glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
-		glBindVertexArray(m.VAO);
-		glLineWidth(2.0f);
-		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
+			Model m = models[obj.modelIDs[j]];	
+			Material material = obj.materials[j];
+			unsigned int* mapID = &material.diffuseMap;
+			int C = material.count;
+			for (unsigned int c = 0; c < C; ++c)
+			{
+				unsigned int tID = *(mapID + c);
+				glActiveTexture(GL_TEXTURE0 + tID - 1);
+				glBindTexture(GL_TEXTURE_2D, tID);
+
+				glUniform1i(glGetUniformLocation(worldShader, textureLocs[c]), tID - 1);
+			}
+
+			glm::vec3 lightMap(1.0f);
+			if (C == 1)
+				lightMap.y = lightMap.z = 0.0f;
+			else if (C == 2)
+				lightMap.z = 0.0f;
+
+			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
+			glBindVertexArray(m.VAO);
+			glLineWidth(2.0f);
+			glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
+		}
 	}
 
 	N = hinges.size();

@@ -6,7 +6,7 @@ class GJK_Test
 {
 public:
 	static GJK_Test& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	GJK_Test() {};

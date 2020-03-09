@@ -15,7 +15,7 @@ BallStack& BallStack::GetInstance()
 	return instance;
 }
 
-void BallStack::Init(std::vector<GameObject>& gameObjects)
+void BallStack::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -35,6 +35,7 @@ void BallStack::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -62,16 +63,22 @@ void BallStack::Init(std::vector<GameObject>& gameObjects)
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(s));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
-					Graphics::GetInstance().scales.push_back(glm::vec3(s));
-					gameObjects.push_back(GameObject(boxModel, bID, material));
+					obj.modelIDs.push_back(boxModel);
+					obj.materials.push_back(material);
+					obj.scale = s;
+					Graphics::GetInstance().objects.push_back(obj);
+					obj.Clear();
 				}
 				else
 				{
 					SphereCollider* sphereCollider = new SphereCollider();
 					sphereCollider->Scale(1.0f);
 					Physics::GetInstance().AddCollider(bID, sphereCollider);
-					Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-					gameObjects.push_back(GameObject(sphereModel, bID, material));
+					obj.modelIDs.push_back(sphereModel);
+					obj.materials.push_back(material);
+					obj.scale = glm::vec3(1.0f);
+					Graphics::GetInstance().objects.push_back(obj);
+					obj.Clear();
 				}
 			}
 		}

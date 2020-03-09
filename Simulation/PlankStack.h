@@ -6,7 +6,7 @@ class PlankStack
 {
 public:
 	static PlankStack& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	PlankStack() {};

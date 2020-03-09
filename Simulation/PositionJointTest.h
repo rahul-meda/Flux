@@ -6,7 +6,7 @@ class PositionJointTest
 {
 public:
 	static PositionJointTest& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	PositionJointTest() {};

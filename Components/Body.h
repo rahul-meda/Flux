@@ -85,7 +85,7 @@ public:
 
 	void AddCollider(Collider* collider);
 
-	void SynchronizeTransform();
+	void SynchronizeTransform(int i);
 
 	bool ShouldCollide(Body* other) const;
 

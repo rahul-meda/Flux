@@ -17,9 +17,6 @@
     <ClCompile Include="Graphics\Camera.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Components\Model.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="Physics\Physics.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
@@ -122,6 +119,24 @@
     <ClCompile Include="Simulation\BridgeHinge.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\CRB_Test.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CapsuleCollider.cpp">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\SphereCapsuleContact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CapsuleHullContact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CollideCapsule.cpp">
+      <Filter>Physics\Collision\NarrowPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CapsuleContact.cpp">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -138,11 +153,9 @@
     <ClInclude Include="Graphics\Camera.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="Components\Transform.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Components\Model.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -251,6 +264,21 @@
     <ClInclude Include="Simulation\BridgeHinge.h">
       <Filter>Simulation</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\CRB_Test.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\CapsuleCollider.h">
+      <Filter>Physics\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\SphereCapsuleContact.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\CapsuleHullContact.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\CapsuleContact.h">
+      <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -299,6 +327,9 @@
     </None>
     <None Include="Resources\FragmentShader.frag">
       <Filter>Resources</Filter>
+    </None>
+    <None Include="Mesh\Geometry.inl">
+      <Filter>Mesh</Filter>
     </None>
   </ItemGroup>
 </Project>

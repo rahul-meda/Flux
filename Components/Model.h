@@ -11,14 +11,8 @@ struct ModelDef
 	std::vector<glm::vec3> textureCoords;
 };
 
-class Model
+struct Model
 {
-public:
-	Model(unsigned int vaoID, unsigned int nIndices);
-
-	~Model();
-
 	unsigned int VAO;
-
 	unsigned int nIndices;
 };

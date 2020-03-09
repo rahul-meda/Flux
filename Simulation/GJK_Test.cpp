@@ -15,7 +15,7 @@ GJK_Test& GJK_Test::GetInstance()
 	return instance;
 }
 
-void GJK_Test::Init(std::vector<GameObject>& gameObjects)
+void GJK_Test::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -35,6 +35,7 @@ void GJK_Test::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	glm::quat q = glm::angleAxis(0.75f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -48,8 +49,11 @@ void GJK_Test::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(1.0f, 3.0f, 1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f, 3.0f, 1.0f));
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(1.0f, 3.0f, 1.0f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -60,12 +64,16 @@ void GJK_Test::Init(std::vector<GameObject>& gameObjects)
 	tx = Transform(p2);
 	bd.tx = tx;
 	bd.isStatic = false;
+	bd.angularVelocity = glm::vec3(0.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	SphereCollider* sphereCollider = new SphereCollider();
 	sphereCollider->Scale(1.0f);
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(1.0f));
-	gameObjects.push_back(GameObject(sphereModel, bID, material));
+	obj.modelIDs.push_back(sphereModel);
+	obj.materials.push_back(material);
+	obj.scale = glm::vec3(1.0f);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	PositionJointDef pjd;
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;

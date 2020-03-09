@@ -29,17 +29,17 @@ glm::vec3 HalfSpace::Projection(const glm::vec3& point) const
 	return point - Distance(point) * normal;
 }
 
-bool HalfSpace::Infront(const glm::vec3& point) const
+inline bool HalfSpace::Infront(const glm::vec3& point) const
 {
 	return Distance(point) > 0.0f;
 }
 
-bool HalfSpace::Behind(const glm::vec3& point) const
+inline bool HalfSpace::Behind(const glm::vec3& point) const
 {
 	return Distance(point) < 0.0f;
 }
 
-bool HalfSpace::On(const glm::vec3& point) const
+inline bool HalfSpace::On(const glm::vec3& point) const
 {
 	float dist = Distance(point);
 
@@ -52,54 +52,151 @@ void CreateLine(ModelDef& md)
 	md.vertices.push_back(glm::vec3(0.5f, 0.0f, 0.0f));
 }
 
-void CreateSphere(ModelDef& md)
+#define slices 36
+#define stacks 12
+
+void TriangulateSphere(ModelDef& to, ModelDef& from)
 {
-	const int slices = 20;
-	const int stacks = 20;
-	float R = 1.0f / (float)(slices - 1);
-	float S = 1.0f / (float)(stacks - 1);
-	std::vector<glm::vec3> vertices;
-	std::vector<int> indices;
-
-	for (int r = 0; r < slices; ++r)
+	int k1, k2;
+	for (int i = 0; i < stacks; ++i)
 	{
-		for (int s = 0; s < stacks; ++s)
+		k1 = i * (slices + 1);     // beginning of current stack
+		k2 = k1 + slices + 1;      // beginning of next stack
+
+		for (int j = 0; j < slices; ++j, ++k1, ++k2)
 		{
-			float y = (float)(sin(-PI*0.5f + PI * r * R));
-			float x = (float)(cos(2 * PI * s * S) * sin(PI * r * R));
-			float z = (float)(sin(2 * PI * s * S) * sin(PI * r * R));
+			// 2 triangles per sector excluding first and last stacks
+			// k1 => k2 => k1+1
+			if (i != 0)
+			{
+				to.vertices.push_back(from.vertices[k1]);
+				to.vertices.push_back(from.vertices[k2]);
+				to.vertices.push_back(from.vertices[k1 + 1]);
+				to.normals.push_back(from.normals[k1]);
+				to.normals.push_back(from.normals[k2]);
+				to.normals.push_back(from.normals[k1 + 1]);
+				to.textureCoords.push_back(from.textureCoords[k1]);
+				to.textureCoords.push_back(from.textureCoords[k2]);
+				to.textureCoords.push_back(from.textureCoords[k1 + 1]);
+			}
 
-			vertices.push_back(glm::vec3(x, y, z));
-
-			int curRow = r * stacks;
-			int nextRow = (r + 1) * stacks;
-
-			indices.push_back(curRow + s);
-			indices.push_back(nextRow + s);
-			indices.push_back(nextRow + (s + 1));
-
-			indices.push_back(curRow + s);
-			indices.push_back(nextRow + (s + 1));
-			indices.push_back(curRow + (s + 1));
+			// k1+1 => k2 => k2+1
+			if (i != (stacks - 1))
+			{
+				to.vertices.push_back(from.vertices[k1 + 1]);
+				to.vertices.push_back(from.vertices[k2]);
+				to.vertices.push_back(from.vertices[k2 + 1]);
+				to.normals.push_back(from.normals[k1 + 1]);
+				to.normals.push_back(from.normals[k2]);
+				to.normals.push_back(from.normals[k2 + 1]);
+				to.textureCoords.push_back(from.textureCoords[k1 + 1]);
+				to.textureCoords.push_back(from.textureCoords[k2]);
+				to.textureCoords.push_back(from.textureCoords[k2 + 1]);
+			}
 		}
-	}
-
-	int N = indices.size();
-	for (int i = 0; i < N; ++i)
-	{
-		if (indices[i] > slices * stacks - 1) continue;
-
-		glm::vec3 v = vertices[indices[i]];
-		md.vertices.push_back(v);
-		md.normals.push_back(v);
-
-		float tu = (asinf(v.x) / PI) + 0.5f;
-		float tv = (asinf(v.y) / PI) + 0.5f;
-		md.textureCoords.push_back(glm::vec3(tu, tv, 0.0f));
 	}
 }
 
-#define sectors 20
+void CreateSphere(ModelDef& md)
+{
+	float sectorStep = 2.0f * PI / slices;
+	float stackStep = PI / stacks;
+	float sectorAngle, stackAngle;
+	ModelDef tmp;
+
+	for (int i = 0; i <= stacks; ++i)
+	{
+		stackAngle = PI / 2.0f - (float)i * stackStep;      // starting from pi/2 to -pi/2
+		float xz = cosf(stackAngle);						// r * cos(u)
+		float y = sinf(stackAngle);							// r * sin(u)
+
+		// add (sectorCount+1) vertices per stack
+		// the first and last vertices have same position and normal, but different tex coords
+		for (int j = 0; j <= slices; ++j)
+		{
+			sectorAngle = (float)j * sectorStep;    // starting from 0 to 2pi
+
+			// vertex position (x, y, z)
+			float x = xz * sinf(sectorAngle);             // r * cos(u) * sin(v)
+			float z = xz * cosf(sectorAngle);             // r * cos(u) * cos(v)
+			tmp.vertices.push_back(glm::vec3(x, y, z));
+
+			// vertex normal (nx, ny, nz)
+			tmp.normals.push_back(glm::vec3(x, y, z));
+
+			// vertex tex coord (s, t) range between [0, 1]
+			float u = (float)j / slices;
+			float v = (float)i / stacks;
+			tmp.textureCoords.push_back(glm::vec3(u, v, 0.0f));
+		}
+	}
+
+	TriangulateSphere(md, tmp);
+}
+
+void CreateCapsule(ModelDef& md)
+{
+	CreateSphere(md);
+	std::vector<int> indices1;
+	std::vector<int> indices2;
+
+	int N = md.vertices.size();
+	for (int i = 0; i < N/2; ++i)
+	{
+		if ((md.vertices[i].y) == 0.0f)
+		{
+			indices1.push_back(i);
+		}
+
+		md.vertices[i].y += 1.0f;
+	}
+	
+	for (int i = N / 2; i < N; ++i)
+	{
+		if ((md.vertices[i].y) == 0.0f)
+		{
+			indices2.push_back(i);
+		}
+
+		md.vertices[i].y -= 1.0f;
+	}
+
+	for (int i = 0; i < 3 * slices - 1; ++i)
+	{
+		int i1 = indices1[i];
+		int i2 = indices1[i + 1];
+		int i3 = indices2[i];
+		int i4 = indices2[i + 1];
+
+		glm::vec3 v1 = md.vertices[i1];
+		glm::vec3 v2 = md.vertices[i2];
+		glm::vec3 v3 = md.vertices[i3];
+		glm::vec3 v4 = md.vertices[i4];
+
+		glm::vec3 n = glm::normalize(glm::cross(v1 - v2, v3 - v1));
+
+		md.vertices.push_back(v1);
+		md.vertices.push_back(v3);
+		md.vertices.push_back(v2);
+		md.vertices.push_back(v2);
+		md.vertices.push_back(v3);
+		md.vertices.push_back(v4);
+		md.normals.push_back(md.normals[i1]);
+		md.normals.push_back(md.normals[i3]);
+		md.normals.push_back(md.normals[i2]);
+		md.normals.push_back(md.normals[i2]);
+		md.normals.push_back(md.normals[i3]);
+		md.normals.push_back(md.normals[i4]);
+		md.textureCoords.push_back(v1);
+		md.textureCoords.push_back(v3);
+		md.textureCoords.push_back(v2);
+		md.textureCoords.push_back(v2);
+		md.textureCoords.push_back(v3);
+		md.textureCoords.push_back(v4);
+	}
+}
+
+#define sectors 32
 
 void CreateCircle(std::vector<glm::vec3>& vertices)
 {
@@ -110,25 +207,6 @@ void CreateCircle(std::vector<glm::vec3>& vertices)
 	{
 		sectorAngle = (float)i * sectorStep;
 		vertices.push_back(glm::vec3(cosf(sectorAngle), 0.0f, sinf(sectorAngle)));
-	}
-}
-
-void RecalculateNormals(ModelDef& md)
-{
-	md.normals.clear();
-
-	int N = md.vertices.size();
-	for (int i = 0; i <= N - 3; i += 3)
-	{
-		glm::vec3 v1 = md.vertices[i];
-		glm::vec3 v2 = md.vertices[i + 1];
-		glm::vec3 v3 = md.vertices[i + 2];
-		glm::vec3 n = glm::normalize(glm::cross(v2 - v1, v3 - v1));
-
-		for (int j = 0; j < 3; ++j)
-		{
-			md.normals.push_back(n);
-		}
 	}
 }
 
@@ -157,7 +235,7 @@ void TriangulateCylinder(ModelDef& to, ModelDef& from)
 		to.vertices.push_back(from.vertices[k2 + 1]);
 		to.textureCoords.push_back(glm::vec3((i + 1.0f) / sectors, 1.0f, 0.0f));
 
-		glm::vec3 n = glm::normalize(glm::cross(v2 - v1, v3 - v1));
+		glm::vec3 n = -glm::normalize(glm::cross(v2 - v1, v3 - v1));
 
 		for (int j = 0; j < 6; ++j)
 			to.normals.push_back(n);
@@ -181,7 +259,7 @@ void TriangulateCylinder(ModelDef& to, ModelDef& from)
 	to.vertices.push_back(from.vertices[sectors]);
 	to.textureCoords.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
 
-	glm::vec3 n = glm::normalize(glm::cross(v2 - v1, v3 - v1));
+	glm::vec3 n = -glm::normalize(glm::cross(v2 - v1, v3 - v1));
 
 	for (int j = 0; j < 6; ++j)
 		to.normals.push_back(n);

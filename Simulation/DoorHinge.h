@@ -7,7 +7,7 @@ class DoorHinge
 {
 public:
 	static DoorHinge& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	DoorHinge() {};

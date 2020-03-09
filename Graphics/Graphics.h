@@ -3,7 +3,16 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "../GameObject.h"
+#include "../Components/Model.h"
+
+struct Material
+{
+	unsigned int diffuseMap;
+	unsigned int specularMap;
+	unsigned int emissionMap;
+
+	unsigned int count;	// 1, 2 or 3
+};
 
 struct R_Point
 {
@@ -42,10 +51,26 @@ struct R_Hinge
 	float scale;
 };
 
-class Model;
-struct TextureInfo;
-struct ModelDef;
-class GameObject;
+struct R_Object
+{
+	glm::vec3 pos;
+	glm::mat3 rot;
+	std::vector<glm::vec3> posOffsets;
+	std::vector<glm::mat3> rotOffsets;
+	std::vector<glm::vec3> scales;
+	glm::vec3 scale;
+	std::vector<unsigned int> modelIDs;
+	std::vector<Material> materials;
+
+	void Clear()
+	{
+		posOffsets.clear();
+		rotOffsets.clear();
+		scales.clear();
+		modelIDs.clear();
+		materials.clear();
+	}
+};
 
 class Graphics
 {
@@ -63,12 +88,13 @@ public:
 
 	void AddPointLight(glm::vec3 pos);
 
-	void Update(const std::vector<GameObject>& objects);
+	void Update();
 
 	glm::mat4 P;
 
+	std::vector<R_Object> objects;
+
 	std::vector<Model> models;
-	std::vector<glm::vec3> scales;
 	std::vector<glm::vec3> lightPos;
 
 	// debug draw
@@ -81,10 +107,12 @@ public:
 
 	unsigned int cubeModelID;
 	unsigned int lineModelID;
-	unsigned int normalsModelID;
-	unsigned int tangentsModelID;
-	unsigned int jointsModelID;
+	unsigned int sphereModelID;
 	unsigned int cylinderModelID;
+	unsigned int capsuleModelID;
+	unsigned int soupModelID;
+	//unsigned int tangentsModelID;
+	//unsigned int jointsModelID;
 
 	Material hingeMaterial;
 	std::vector<R_Hinge> hinges;

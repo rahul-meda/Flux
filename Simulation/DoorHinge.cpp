@@ -15,7 +15,7 @@ DoorHinge& DoorHinge::GetInstance()
 	return instance;
 }
 
-void DoorHinge::Init(std::vector<GameObject>& gameObjects)
+void DoorHinge::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
@@ -27,7 +27,7 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int emissionTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
-	unsigned int metalDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/wood3.jpg");
+	unsigned int metalDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/wood2.jpg");
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
@@ -40,9 +40,10 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	HingeJointDef hjd;
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 	unsigned int bid1, bid2;
+	R_Object obj;
 
 	float gap = 0.25f;
-	glm::vec3 s1(2.5f, 0.05f, 0.05f);
+	glm::vec3 s1(1.0f, 0.05f, 0.05f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;
@@ -54,11 +55,16 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s1);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s1);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	CreateSphere(sphere);
 	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
@@ -77,17 +83,22 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s2);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	Body* b1 = (*bodies)[bid1];
 	Body* b2 = (*bodies)[bid2];
 	glm::vec3 anchor(p1);
 	//anchor.z += s1.z + gap * 0.5f;
-	anchor.y -= s1.y + gap * 0.5f;
+	//anchor.y -= s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(1.0f, 0.0f, 0.0f));
 	hjd.enableLimit = true;
 	hjd.lowerLimit = -PI * 0.5f;
@@ -107,11 +118,16 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s1);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s1);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	p2 = p1;
 	p2.x += s1.y + gap + s2.y;
@@ -124,16 +140,21 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s2);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	b1 = (*bodies)[bid1];
 	b2 = (*bodies)[bid2];
 	anchor = p1;
-	anchor.x += s1.y + gap * 0.5f;
+	//anchor.x += s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
 	hjd.scale = s1.x;
 
@@ -151,11 +172,16 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s1);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s1);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	p2 = p1;
 	p2.x -= s1.y + gap + s2.y;
@@ -168,16 +194,21 @@ void DoorHinge::Init(std::vector<GameObject>& gameObjects)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	Graphics::GetInstance().scales.push_back(s2);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
 	material.count = 2;
-	gameObjects.push_back(GameObject(boxModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.modelIDs.push_back(boxModel);
+	obj.materials.push_back(material);
+	obj.scales.push_back(s2);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 
 	b1 = (*bodies)[bid1];
 	b2 = (*bodies)[bid2];
 	anchor = p1;
-	anchor.x -= s1.y + gap * 0.5f;
+	//anchor.x -= s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
 	hjd.scale = s1.x;
 

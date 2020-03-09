@@ -15,13 +15,12 @@ Collapse3& Collapse3::GetInstance()
 	return instance;
 }
 
-void Collapse3::Init(std::vector<GameObject>& gameObjects)
+void Collapse3::Init()
 {
 	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
+	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
 
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
@@ -35,6 +34,7 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
+	R_Object obj;
 	glm::vec3 s(1.0f, 0.05f, 0.5f);
 	int NX = 9;
 	int NY = 9;
@@ -65,8 +65,15 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.pos = tx.position;
+				obj.rot = tx.R;
+				obj.posOffsets.push_back(glm::vec3(0.0f));
+				obj.rotOffsets.push_back(glm::mat3(1.0f));
+				obj.scales.push_back(s);
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 
 				p.x += s.x-dy;
 				q = glm::angleAxis(-angle, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -79,8 +86,15 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(s);
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.pos = tx.position;
+				obj.rot = tx.R;
+				obj.posOffsets.push_back(glm::vec3(0.0f));
+				obj.rotOffsets.push_back(glm::mat3(1.0f));
+				obj.scales.push_back(s);
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 			}
 			for (int l = 0; l < NX - j; ++l)
 			{
@@ -98,14 +112,21 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(sh);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				Graphics::GetInstance().scales.push_back(sh);
-				gameObjects.push_back(GameObject(boxModel, bID, material));
+				obj.pos = tx.position;
+				obj.rot = tx.R;
+				obj.posOffsets.push_back(glm::vec3(0.0f));
+				obj.rotOffsets.push_back(glm::mat3(1.0f));
+				obj.scales.push_back(sh);
+				obj.modelIDs.push_back(boxModel);
+				obj.materials.push_back(material);
+				Graphics::GetInstance().objects.push_back(obj);
+				obj.Clear();
 			}
 		}
 	}
 
 	CreateSphere(sphere);
-	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
+	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
 
@@ -115,9 +136,16 @@ void Collapse3::Init(std::vector<GameObject>& gameObjects)
 	bd.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	SphereCollider* sphereCollider = new SphereCollider();
-	sphereCollider->Scale(0.5f);
+	sphereCollider->Scale(1.0f);
 	sphereCollider->massData->density = 20.0f;
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
-	Graphics::GetInstance().scales.push_back(glm::vec3(0.5f));
-	gameObjects.push_back(GameObject(sphereModel, bID, material));
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(1.0f));
+	obj.modelIDs.push_back(sphereModel);
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
 }

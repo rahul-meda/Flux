@@ -92,10 +92,6 @@ void ReduceManifold(std::vector<ClipVertex>& inPoly, glm::vec3& n)
 			index = i;
 		}
 	}
-	if (index == -1)
-	{
-		int x = 1;
-	}
 
 	outPoly.push_back(inPoly[index]);
 	inPoly[index] = inPoly[--N];
@@ -158,21 +154,22 @@ void ReduceManifold(std::vector<ClipVertex>& inPoly, glm::vec3& n)
 	for (int j = 0; j < 3; ++j)
 	{
 		A = outPoly[j].v;
-		B = outPoly[(j + 3) % 3].v;
+		B = outPoly[(j + 4) % 3].v;
 		for (int i = 0; i < N; ++i)
 		{
 			glm::vec3 P = inPoly[i].v;
 			float area = glm::dot(glm::cross(P - A, P - B), n);
 			if (area < 0)
 			{
-				area = -area;
-				ccw = false;
+				/*area = -area;
+				ccw = false;*/
+				continue;
 			}
-			else
+			/*else
 			{
 				ccw = true;
 				continue;
-			}
+			}*/
 			if (area > madMax)
 			{
 				madMax = area;
@@ -305,7 +302,7 @@ void ClipFaces(Manifold* m, HullCollider* inc, HullCollider* ref, int incFace, i
 
 	for (int i = 0; i < m->nPoints; ++i)
 	{
-		m->points[i].localPoint = glm::transpose(txI.R) * (outPoly[i].v - txI.position);
+		m->points[i].localPoint = outPoly[i].v; 
 		m->points[i].id = outPoly[i].id;
 	}
 }
@@ -357,15 +354,14 @@ void QueryEdgeAxes(EdgeQuery* query, const HullCollider* A, const HullCollider* 
 			glm::vec3 UB = edgeB->face->normal;
 			glm::vec3 VB = twinB->face->normal;
 
-			glm::vec3 axis = glm::cross(EA, EB);
-			float l2 = glm::length2(axis);
-			if (l2 < linearSlop2)	// skip parallel edges
-				continue;
-
 			if (IsMinkowskiFace(UA, VA, -EA, -UB, -VB, -EB))
 			{
 				glm::vec3 axis = glm::cross(EA, EB);
 				
+				float l2 = glm::length2(axis);
+				if (l2 < linearSlop2)	// skip parallel edges	// todo: fails when edge lengths are huge
+					continue;
+
 				axis = glm::normalize(axis);
 
 				if (glm::dot(PA - CA, axis) < 0.0f)
@@ -476,8 +472,7 @@ void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 	{
 		HullCollider* incident;
 		HullCollider* reference;
-		Transform txL, txI, txR;
-		bool flip;
+		Transform txL, txI, txR, txBody;
 		int incidentFace, referenceFace;
 
 		if (queryA.separation > queryB.separation + linearSlop)
@@ -488,8 +483,8 @@ void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 			txL = bLocal;
 			txI = btx;
 			txR = atx;
+			txBody = txB;
 			manifold->type = Manifold::faceA;
-			flip = false;
 		}
 		else
 		{
@@ -499,12 +494,19 @@ void CollideHulls(Manifold* manifold, HullCollider* hullA, HullCollider* hullB,
 			txL = aLocal;
 			txI = atx;
 			txR = btx;
+			txBody = txA;
 			manifold->type = Manifold::faceB;
-			flip = true;
 		}
 
 		incidentFace = FindIncidentFace(incident, reference, referenceFace, txL);
 
 		ClipFaces(manifold, incident, reference, incidentFace, referenceFace, txI, txR);
+
+		for (int i = 0; i < manifold->nPoints; ++i)
+		{
+			glm::vec3 p = manifold->points[i].localPoint;
+			
+			manifold->points[i].localPoint = glm::transpose(txBody.R) * (p - txBody.position);
+		}
 	}
 }

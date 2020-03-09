@@ -6,7 +6,7 @@ class BoxStack
 {
 public:
 	static BoxStack& GetInstance();
-	void Init(std::vector<GameObject>& gameObjects);
+	void Init();
 
 private:
 	BoxStack() {};

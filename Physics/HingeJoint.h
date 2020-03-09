@@ -19,6 +19,9 @@ struct HingeJointDef
 		enableLimit = false;
 		lowerLimit = 0.0f;
 		upperLimit = 0.0f;
+		enableMotor = false;
+		motorSpeed = 0.0f;
+		maxMotorTorque = 0.2f;
 	}
 
 	void Initialize(Body* bodyA, Body* bodyB, const glm::vec3& anchor, const glm::vec3& axis);
@@ -33,7 +36,9 @@ struct HingeJointDef
 	bool enableLimit;
 	float lowerLimit;	// [0 2*PI] todo: verify
 	float upperLimit;	// [0 2*PI]
-
+	bool enableMotor;
+	float motorSpeed;
+	float maxMotorTorque;
 	float scale;	// render
 };
 
@@ -63,6 +68,7 @@ private:
 	glm::quat q0;	// initial relative orientation
 	glm::vec3 impulseSumT;
 	float impulseSumR;
+	float impulseSumR1, impulseSumR2;
 
 	int indexA;
 	int indexB;
@@ -86,8 +92,14 @@ private:
 	float lowerLimit, upperLimit;
 	float kMin, kMax;
 	float bMin, bMax;		// limits correction bias
-	bool flipJ;				// flip tje jacobian sigh based on relative quaternion axis
+	float jSign;				// to ensure correct Jacobian direction for correcting limits
 	LimitState limitState;
+
+	bool enableMotor;
+	float motorSpeed;
+	float maxMotorTorque;
+	float kMotor;
+	float impulseMotor;
 
 	float scale;	// render
 

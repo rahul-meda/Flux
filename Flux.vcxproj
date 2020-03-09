@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\Body.cpp" />
-    <ClCompile Include="Components\Model.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
@@ -31,17 +30,22 @@
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Mesh\ObjParser.cpp" />
     <ClCompile Include="Physics\BroadPhase.cpp" />
+    <ClCompile Include="Physics\CapsuleContact.cpp" />
+    <ClCompile Include="Physics\CapsuleHullContact.cpp" />
+    <ClCompile Include="Physics\CollideCapsule.cpp" />
     <ClCompile Include="Physics\CollideHull.cpp" />
     <ClCompile Include="Physics\CollideSphere.cpp" />
     <ClCompile Include="Physics\Collision.cpp" />
     <ClCompile Include="Physics\Contact.cpp" />
     <ClCompile Include="Physics\ContactManager.cpp" />
     <ClCompile Include="Physics\ContactSolver.cpp" />
+    <ClCompile Include="Physics\CapsuleCollider.cpp" />
     <ClCompile Include="Physics\GJK.cpp" />
     <ClCompile Include="Physics\HingeJoint.cpp" />
     <ClCompile Include="Physics\HullCollider.cpp" />
     <ClCompile Include="Physics\HullContact.cpp" />
     <ClCompile Include="Physics\PositionJoint.cpp" />
+    <ClCompile Include="Physics\SphereCapsuleContact.cpp" />
     <ClCompile Include="Physics\SphereHullContact.cpp" />
     <ClCompile Include="Physics\NarrowPhase.cpp" />
     <ClCompile Include="Physics\Physics.cpp" />
@@ -54,6 +58,7 @@
     <ClCompile Include="Simulation\Collapse2.cpp" />
     <ClCompile Include="Simulation\Collapse1.cpp" />
     <ClCompile Include="Simulation\Collapse3.cpp" />
+    <ClCompile Include="Simulation\CRB_Test.cpp" />
     <ClCompile Include="Simulation\DoorHinge.cpp" />
     <ClCompile Include="Simulation\GJK_Test.cpp" />
     <ClCompile Include="Simulation\HingeJointTest.cpp" />
@@ -67,7 +72,6 @@
     <ClInclude Include="Components\Body.h" />
     <ClInclude Include="Components\Model.h" />
     <ClInclude Include="Components\Transform.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Shader.h" />
@@ -76,16 +80,20 @@
     <ClInclude Include="Mesh\ObjParser.h" />
     <ClInclude Include="Mesh\Geometry.h" />
     <ClInclude Include="Physics\BroadPhase.h" />
+    <ClInclude Include="Physics\CapsuleContact.h" />
+    <ClInclude Include="Physics\CapsuleHullContact.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\Collision.h" />
     <ClInclude Include="Physics\Contact.h" />
     <ClInclude Include="Physics\ContactManager.h" />
     <ClInclude Include="Physics\ContactSolver.h" />
+    <ClInclude Include="Physics\CapsuleCollider.h" />
     <ClInclude Include="Physics\HingeJoint.h" />
     <ClInclude Include="Physics\HullCollider.h" />
     <ClInclude Include="Physics\HullContact.h" />
     <ClInclude Include="Physics\JointCommon.h" />
     <ClInclude Include="Physics\PositionJoint.h" />
+    <ClInclude Include="Physics\SphereCapsuleContact.h" />
     <ClInclude Include="Physics\SphereHullContact.h" />
     <ClInclude Include="Physics\NarrowPhase.h" />
     <ClInclude Include="Physics\Physics.h" />
@@ -99,6 +107,7 @@
     <ClInclude Include="Simulation\Collapse1.h" />
     <ClInclude Include="Simulation\Collapse2.h" />
     <ClInclude Include="Simulation\Collapse3.h" />
+    <ClInclude Include="Simulation\CRB_Test.h" />
     <ClInclude Include="Simulation\DoorHinge.h" />
     <ClInclude Include="Simulation\GJK_Test.h" />
     <ClInclude Include="Simulation\HingeJointTest.h" />
@@ -107,11 +116,11 @@
     <ClInclude Include="Simulation\Simulation.h" />
     <ClInclude Include="Simulation\PlankStack.h" />
     <ClInclude Include="Simulation\Simulations.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Components\Transform.inl" />
+    <None Include="Mesh\Geometry.inl" />
     <None Include="Resources\WorldFragmentShader.frag" />
     <None Include="Resources\FragmentShader.frag" />
     <None Include="Resources\WorldVertexShader.vert" />
