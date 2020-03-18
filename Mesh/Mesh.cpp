@@ -89,6 +89,14 @@ void HMesh::GetModelData(ModelDef& md) const
 				if (md.vertices[i].y > 0.0f)
 					md.textureCoords[i].y = 1.0f;
 			}
+			//md.textureCoords[i] *= 10.0f;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < N; ++i)
+		{
+			md.textureCoords.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
 		}
 	}
 }

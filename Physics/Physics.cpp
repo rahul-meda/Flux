@@ -106,7 +106,21 @@ void Physics::Step(float dt)
 		hingeJoints[i].InitVelocityConstraints(solverData);
 	}
 
-	int velocityIters = 25;
+	int NU = uniJoints.size();
+	for (int i = 0; i < NU; ++i)
+	{
+		uniJoints[i].InitVelocityConstraints(solverData);
+	}
+
+	int velocityIters = 8;
+	for (int i = 0; i < velocityIters; ++i)
+	{
+		contactSolver.SolveVelocityConstraints();
+	}
+
+	contactSolver.StoreImpulses();
+
+	velocityIters = 25;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		for (int j = 0; j < NP; ++j)
@@ -119,10 +133,11 @@ void Physics::Step(float dt)
 			hingeJoints[ih].SolveVelocityConstraints(solverData);
 		}
 
-		contactSolver.SolveVelocityConstraints();
+		for (int iu = 0; iu < NU; ++iu)
+		{
+			uniJoints[iu].SolveVelocityConstraints(solverData);
+		}
 	}
-
-	contactSolver.StoreImpulses();
 
 	// post stabilization error correction
 
@@ -171,6 +186,11 @@ void Physics::Step(float dt)
 		{
 			hingeJoints[ih].SolvePositionConstraints(solverData);
 		}
+
+		for (int iu = 0; iu < NU; ++iu)
+		{
+			uniJoints[iu].SolvePositionConstraints(solverData);
+		}
 	}
 
 	for (int i = 0; i < nBodies; ++i)
@@ -213,6 +233,12 @@ void Physics::Update(float dt)
 	for (int i = 0; i < NH; ++i)
 	{
 		hingeJoints[i].Render();
+	}
+
+	int NU = uniJoints.size();
+	for (int i = 0; i < NU; ++i)
+	{
+		//uniJoints[i].Render();
 	}
 }
 

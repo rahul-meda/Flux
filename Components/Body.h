@@ -29,12 +29,14 @@ struct BodyDef
 		velocity = glm::vec3(0.0f);
 		angularVelocity = glm::vec3(0.0f);
 		isStatic = false;
+		filterID = 0;
 	}
 
 	Transform tx;
 	glm::vec3 velocity;
 	glm::vec3 angularVelocity;
 	bool isStatic;
+	unsigned int filterID;
 };
 
 class Collider;
@@ -63,13 +65,18 @@ private:
 	ContactEdge* edgeList;
 
 	bool isStatic;
-	int index;	// index in world body list
+	unsigned int filterID;	// to filter collision groups	
+	int index;				// index in world body list
 
 public:
 	Body(const BodyDef& bd);
 
+	const float GetMass() const;
+	const float GetInvMass() const;
+
 	const glm::vec3& GetPosition() const;
 	const glm::quat& GetOrientation() const;
+	void SetOrientation(const glm::quat& q);
 	const glm::vec3& GetCentroid() const;
 
 	void SetVelocity(const glm::vec3& v);
@@ -89,6 +96,8 @@ public:
 
 	bool ShouldCollide(Body* other) const;
 
+	void FixRotation();
+
 	friend class Physics;
 	friend class HullCollider;
 	friend class ContactSolver;
@@ -96,7 +105,18 @@ public:
 
 	friend class PositionJoint;
 	friend class HingeJoint;
+	friend class UniversalJoint;
 };
+
+inline const float Body::GetMass() const
+{
+	return (invMass == 0.0f ? 0.0f : 1.0f / invMass);
+}
+
+inline const float Body::GetInvMass() const
+{
+	return (invMass == 0.0f ? 0.0f : invMass);
+}
 
 inline const glm::vec3& Body::GetPosition() const
 {
@@ -106,6 +126,11 @@ inline const glm::vec3& Body::GetPosition() const
 inline const glm::quat& Body::GetOrientation() const
 {
 	return orientation;
+}
+
+inline void Body::SetOrientation(const glm::quat& q)
+{
+	orientation = q;
 }
 
 inline const glm::vec3& Body::GetCentroid() const

@@ -42,6 +42,9 @@ void BroadPhase::ComputePairs()
 			Collider* cA = aabbA->collider;
 			Collider* cB = aabbB->collider;
 
+			if (cA->body->ShouldCollide(cB->body) == false)
+				continue;
+
 			if (Overlap(aabbA, aabbB))
 				pairs.push_back(ColliderPair(cA, cB));
 		}

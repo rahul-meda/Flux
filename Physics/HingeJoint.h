@@ -55,6 +55,8 @@ public:
 
 	Body* GetBodyA();
 	Body* GetBodyB();
+	void SetMotorSpeed(float speed);
+	float GetMotorSpeed();
 
 private:
 	Body* bodyA;
@@ -114,4 +116,14 @@ inline Body* HingeJoint::GetBodyA()
 inline Body* HingeJoint::GetBodyB()
 {
 	return bodyB;
+}
+
+inline void HingeJoint::SetMotorSpeed(float speed)
+{
+	motorSpeed = speed;
+}
+
+inline float HingeJoint::GetMotorSpeed()
+{
+	return motorSpeed;
 }

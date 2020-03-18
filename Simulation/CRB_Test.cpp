@@ -41,7 +41,7 @@ void CRB_Test::Init()
 	glm::quat q = glm::angleAxis(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p1, q);
 	bd.tx = tx;
-	bd.isStatic = true;
+	bd.isStatic = false;
 	bd.angularVelocity = glm::vec3(0.0f);
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();

@@ -92,8 +92,8 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	cr2 = glm::cross(e, f);
 	kr2 = glm::dot((iA * cr2), cr2) + glm::dot((iB * cr2), cr2);
 
-	bias1 = 0.0f; //2.0f * baumgarte * hertz * glm::dot(f, d);
-	bias2 = 0.0f; //2.0f * baumgarte * hertz * glm::dot(f, e);
+	bias1 = 2.0f * baumgarte * hertz * glm::dot(f, d);
+	bias2 = 2.0f * baumgarte * hertz * glm::dot(f, e);
 
 	kMotor = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 
@@ -197,7 +197,6 @@ void HingeJoint::SolveVelocityConstraints(const SolverDef& def)
 		{
 			glm::vec3 J = jSign * f;
 
-			
 			float cDot = glm::dot((wB - wA), J);
 			float P = -(cDot + bMin) / kMin;
 			float newP = impulseSumR + P;
@@ -365,7 +364,7 @@ void HingeJoint::Render()
 
 	R_Hinge hinge;
 	hinge.pos = anchor;
-	hinge.rot = txB.R * glm::toMat3(glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 0.0f, 1.0f)));
+	hinge.rot = txB.R;// *glm::toMat3(glm::angleAxis(PI * 0.5f, txB.R * localAxisB));
 	hinge.scale = scale;
 	Graphics::GetInstance().hinges.push_back(hinge);
 }

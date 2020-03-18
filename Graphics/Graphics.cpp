@@ -65,7 +65,12 @@ void Graphics::Initialize()
 	lightColors[0] = glm::vec3(1.0f, 0.0f, 0.0f);
 	lightColors[1] = glm::vec3(0.0f, 1.0f, 0.0f);
 	lightColors[2] = glm::vec3(0.0f, 0.0f, 1.0f);
-	lightColors[3] = glm::vec3(0.7f, 0.1f, 1.0f);
+	lightColors[3] = glm::vec3(1.0f, 1.0f, 0.0f);
+}
+
+void Graphics::PostInit()
+{
+	AddPointLight(glm::vec3(0.0f));
 }
 
 unsigned int Graphics::CreateModel(const ModelDef& modelDef)
@@ -134,7 +139,7 @@ unsigned int Graphics::CreateModel(const ModelDef& modelDef)
 	return models.size() - 1;
 }
 
-unsigned int Graphics::CreateTexture(const char* filePath)
+unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
 {
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -146,7 +151,7 @@ unsigned int Graphics::CreateTexture(const char* filePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(false);
+	stbi_set_flip_vertically_on_load(flip);
 
 	unsigned char *data = stbi_load(filePath, &width, &height, &nrChannels, 0);
 	if (!data)
@@ -181,13 +186,13 @@ void Graphics::AddPointLight(glm::vec3 pos)
 	glUseProgram(0);
 }
 
-void Graphics::Update()
+void Graphics::Update(Camera& camera)
 {
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glm::mat4 T, R, S, M, VP, MVP;
-	VP = P * Simulation::GetInstance().camera.ViewSpace();
+	VP = P * camera.ViewSpace();
 
 	if (Physics::GetInstance().debugDraw)
 	{
@@ -203,7 +208,7 @@ void Graphics::Update()
 	unsigned int mLoc = glGetUniformLocation(worldShader, "M");
 	unsigned int eyeLoc = glGetUniformLocation(worldShader, "eyePos");
 	unsigned int lightMapLoc = glGetUniformLocation(worldShader, "lightMap");
-	glm::vec3 eye = Simulation::GetInstance().camera.position;
+	glm::vec3 eye = camera.position;
 	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
 	glUniform3fv(glGetUniformLocation(worldShader, "lightPos[4]"), 1, glm::value_ptr(eye));
 	glUniform1f(glGetUniformLocation(worldShader, "time"), glfwGetTime());
@@ -214,10 +219,6 @@ void Graphics::Update()
 		R_Object obj = objects[i];
 
 		int nM = obj.modelIDs.size();
-		if (nM == 3)
-		{
-			int x = 1;
-		}
 		for (int j = 0; j < nM; ++j)
 		{
 			T = glm::translate(glm::mat4(1.0f), obj.pos + obj.rot * obj.posOffsets[j]);
@@ -269,7 +270,7 @@ void Graphics::Update()
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 
-		Model m = models[cylinderModelID];	//cache friendly? ToDo: try storing pointers to model in GO
+		Model m = models[cylinderModelID];	
 		unsigned int* mapID = &hingeMaterial.diffuseMap;
 		int C = hingeMaterial.count;
 		for (unsigned int c = 0; c < C; ++c)
@@ -352,7 +353,7 @@ void Graphics::Update()
 	for (int i = 0; i < lightPos.size() - 1; i++)
 	{
 		T = glm::translate(glm::mat4(1.0f), lightPos[i]);
-		S = glm::scale(glm::vec3(0.3f));
+		S = glm::scale(glm::vec3(0.1f));
 		MVP = VP * T * S;
 
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
@@ -362,7 +363,6 @@ void Graphics::Update()
 		glBindVertexArray(m.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, m.nIndices);
 	}
-	glUseProgram(0);
 
 	points.clear();
 	lines.clear();

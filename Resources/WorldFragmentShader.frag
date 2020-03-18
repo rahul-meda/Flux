@@ -34,7 +34,7 @@ void main()
 	lightColors[0] = vec3(1.0f, 0.0f, 0.0f);
 	lightColors[1] = vec3(0.0f, 1.0f, 0.0f);
 	lightColors[2] = vec3(0.0f, 0.0f, 1.0f);
-	lightColors[3] = vec3(0.7f, 0.1f, 1.0f);
+	lightColors[3] = vec3(1.0f, 1.0f, 0.0f);
 	lightColors[4] = vec3(1.0f);
 
 	float ambientStr = 0.2f;

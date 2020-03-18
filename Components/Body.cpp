@@ -19,6 +19,8 @@ Body::Body(const BodyDef& bd)
 
 	force = glm::vec3(0.0f);
 	torque = glm::vec3(0.0f);
+
+	filterID = bd.filterID;
 }
 
 void Body::SynchronizeTransform(int i)
@@ -78,5 +80,15 @@ bool Body::ShouldCollide(Body* other) const
 {
 	if (isStatic && other->isStatic)
 		return false;
+
+	if ((filterID != 0 || other->filterID != 0) && (filterID == other->filterID))
+		return false;
+
 	return true;
+}
+
+void Body::FixRotation()
+{
+	iitL = glm::mat3(0.0f);
+	iitW = glm::mat3(0.0f);
 }

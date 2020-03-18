@@ -4,10 +4,12 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+class Body;
+
 class Camera
 {
 public:
-	enum DIR {FWD, REV, RIGHT, LEFT, UP, DOWN};
+	enum DIR {FWD, REV, RIGHT, LEFT, UP, DOWN, IDLE};
 
 	Camera();
 
@@ -17,12 +19,16 @@ public:
 	glm::vec3 velocity;
 
 	glm::vec3 fwd;
-
 	glm::vec3 up;
+	glm::vec3 right;
+	glm::vec3 target;
 
-	glm::mat4 ViewSpace();
+	bool follow;
+	Body* body;
 
 	void Translate(DIR mode);
 
 	void Rotate(float yaw, float pitch);
+
+	glm::mat4 ViewSpace();
 };

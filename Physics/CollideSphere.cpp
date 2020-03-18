@@ -4,6 +4,7 @@
 #include "SphereCollider.h"
 #include "HullCollider.h"
 #include "CapsuleCollider.h"
+#include <iostream>
 
 void CollideSpheres(Manifold* manifold, SphereCollider* sphereA, SphereCollider* sphereB,
 										const Transform& txA, const Transform& txB)
@@ -49,7 +50,7 @@ void CollideSphereHull(Manifold* manifold, SphereCollider* sphereA, HullCollider
 
 	if (output.distance <= 0.0f)	// deep contact // todo: fix it!
 	{
-		int x = 1;
+		std::cout << "deep contact" << std::endl;
 		return;
 
 		glm::vec3 C = txB.R * sphereA->com + txB.position;

@@ -3,6 +3,8 @@
 #include "../Components/Body.h"
 #include "../Physics/Physics.h"
 #include "../Physics/HullCollider.h"
+#include "../Physics/SphereCollider.h"
+#include "../Physics/CapsuleCollider.h"
 #include "../Mesh/ObjParser.h"
 #include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
@@ -19,15 +21,18 @@ void BoxStack::Init()
 	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
+
+	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
+	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
+	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
 
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
-	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
+	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
+	unsigned int linkTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
 	Material material;
 	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
+	material.specularMap = boxDfTxt;
 	material.count = 2;
 
 	Transform tx;
@@ -37,48 +42,144 @@ void BoxStack::Init()
 	R_Object obj;
 
 	glm::vec3 s(1.2f, 0.56f, 0.35f);
-	s *= 3.0f;
+	//s *= 1.5f;
 
-	for (int k = 0; k < 1; ++k)
+	for (int k = 0; k < 5; ++k)
 	{
-		for (int j = 0; j < 10; ++j)
+		for (int j = 0; j < 11; ++j)
 		{
 			for (int i = 0; i < 10; ++i)
 			{
 				float x = 2.0f * s.x * (float)i;
 				float y = 0.5f + s.y + 2.0f * s.y * (float)j;
-				float z = -2.0f * s.z * (float)k;
+				float z = -(2.0f * s.z + 2.0f) * (float)k;
+				glm::quat q = glm::identity<glm::quat>();
+				if (j % 2 == 1)
+					x -= s.x;
+				else if (i == 9)
+					q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 1.0f, 0.0f));
 				glm::vec3 p(x, y, z);
-				tx = Transform(p);
+
+				tx = Transform(p, q);
 				bd.tx = tx;
 				bd.isStatic = false;
 				bID = Physics::GetInstance().AddBody(bd);
 				boxCollider = new HullCollider();
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(glm::vec3(s));
+				boxCollider->massData->density = 2.0f;
 				Physics::GetInstance().AddCollider(bID, boxCollider);
+				obj.pos = tx.position;
+				obj.rot = tx.R;
+				obj.posOffsets.push_back(glm::vec3(0.0f));
+				obj.rotOffsets.push_back(glm::mat3(1.0f));
+				obj.scales.push_back(s);
 				obj.modelIDs.push_back(boxModel);
 				obj.materials.push_back(material);
-				obj.scale = s;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
 			}
 		}
 	}
 
-	tx = Transform(glm::vec3(10.0f, 10.0f, 50.0f));
+	tx = Transform(glm::vec3(10.0f, 35.0f, 10.0f));
 	bd.tx = tx;
-	bd.isStatic = false;
-	//bd.velocity = glm::vec3(0.0f, 0.0f, -50.0f);
+	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	boxCollider = new HullCollider();
-	boxCollider->massData->density = 1.0f;
 	mesh.GetColliderData(boxCollider);
-	boxCollider->Scale(glm::vec3(2.0f, 1.0f, 1.0f));
+	boxCollider->Scale(glm::vec3(1.0f, 0.1f, 1.0f));
+	boxCollider->massData->density = 2.0f;
 	Physics::GetInstance().AddCollider(bID, boxCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(1.0f, 0.1f, 1.0f));
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scale = glm::vec3(2.0f, 1.0f, 1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
+
+	unsigned int bID1 = bID;
+	glm::vec3 p;
+	float gap = 0.1f;
+	int NL = 10;
+	material.diffuseMap = linkTxt;
+	material.specularMap = linkTxt;
+	material.count = 2;
+
+	for (int i = 0; i < NL; ++i)
+	{
+		p = glm::vec3(10.0f, 34.0f, 10.75f + (float)i * (2.0f + gap));
+		tx = Transform(p, glm::angleAxis(-PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
+		bd.tx = tx;
+		bd.isStatic = false;
+		unsigned int bID2 = Physics::GetInstance().AddBody(bd);
+		CapsuleCollider* c = new CapsuleCollider();
+		c->Scale(0.5f);
+		c->H = 0.5f;
+		c->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+		c->massData->density = 100.0f;
+		Physics::GetInstance().AddCollider(bID2, c);
+		obj.pos = tx.position;
+		obj.rot = tx.R;
+		obj.posOffsets.push_back(glm::vec3(0.0f));
+		obj.rotOffsets.push_back(glm::mat3(1.0f));
+		obj.scales.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+		obj.modelIDs.push_back(cylinderModel);
+		obj.materials.push_back(material);
+		obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
+		obj.rotOffsets.push_back(glm::mat3(1.0f));
+		obj.scales.push_back(glm::vec3(0.5f));
+		obj.modelIDs.push_back(sphereModel);
+		obj.materials.push_back(material);
+		obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
+		obj.rotOffsets.push_back(glm::mat3(1.0f));
+		obj.scales.push_back(glm::vec3(0.5f));
+		obj.modelIDs.push_back(sphereModel);
+		obj.materials.push_back(material);
+		Graphics::GetInstance().objects.push_back(obj);
+		obj.Clear();
+
+		PositionJointDef pjd;
+		std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
+
+		pjd.Initialize((*bodies)[bID1], (*bodies)[bID2], glm::vec3(p.x, p.y, 10.0f -gap + (float)i * (2.0f + gap)));
+		bID1 = bID2;
+
+		PositionJoint pj(&pjd);
+		Physics::GetInstance().posJoints.push_back(pj);
+	}
+
+	material.diffuseMap = metalTxt;
+	material.specularMap = metalTxt;
+	material.count = 2;
+	p.z += 3.75f + gap + 4.0f;
+	tx = Transform(p);
+	bd.tx = tx;
+	bd.isStatic = false;
+	unsigned int bID2 = Physics::GetInstance().AddBody(bd);
+	SphereCollider* sphereCollider = new SphereCollider();
+	sphereCollider->Scale(3.0f);
+	sphereCollider->massData->density = 10.0f;
+	Physics::GetInstance().AddCollider(bID2, sphereCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(3.0f));
+	obj.modelIDs.push_back(sphereModel);
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+
+	PositionJointDef pjd;
+	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
+
+	pjd.Initialize((*bodies)[bID1], (*bodies)[bID2], glm::vec3(p.x, p.y, 10.0f -gap + (float)NL * (2.0f + gap)));
+	bID1 = bID2;
+
+	PositionJoint pj(&pjd);
+	Physics::GetInstance().posJoints.push_back(pj);
 }

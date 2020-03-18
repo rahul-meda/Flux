@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <iostream>
 #include "Simulation.h"
-#include "../input.h"
 #include "../Graphics/Shader.h"
 #include "../Components/Model.h"
 #include "../Mesh/Geometry.h"
@@ -23,42 +22,39 @@ Simulation::~Simulation()
 	glfwTerminate();
 }
 
-Simulation& Simulation::GetInstance()
-{
-	static Simulation instance;
-	return instance;
-}
-
 void Simulation::Init(GLFWwindow* window, int w, int h)
 {
-	glfwSetFramebufferSizeCallback(window, InputEvent::WindowResizeCallback);
-	glfwSetKeyCallback(window, InputEvent::KeyboardCallback);
-	glfwSetCursorPosCallback(window, InputEvent::MouseMoveCallback);
+	width = w;
+	height = h;
+	glViewport(0, 0, width, height);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
+	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().Initialize();
 	Physics::GetInstance().Initialize();
 
-	width = w;
-	height = h;
-	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
-	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", "Resources/WorldFragmentShader.frag");
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									"Resources/WorldFragmentShader.frag");
-
-	ModelDef box, sphere, cylinder;
+	ModelDef floor;
 	HMesh mesh;
 
 	ParseObj("Resources/Models/Box.obj", mesh);
 	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
+	mesh.GetModelData(floor);
+	int N = floor.textureCoords.size();
+	for (int i = 0; i < N; ++i)
+	{
+		floor.textureCoords[i] *= 32.0f;
+	}
+	unsigned int floorModel = Graphics::GetInstance().CreateModel(floor);
 
-	unsigned int floorTexture = Graphics::GetInstance().CreateTexture("resources/textures/wood1.jpg");
+	unsigned int floorTexture = Graphics::GetInstance().CreateTexture("resources/textures/sci_fi1.jpg");
 	Material floorMaterial;
 	floorMaterial.diffuseMap = floorTexture;
 	floorMaterial.specularMap = floorTexture;
 	floorMaterial.count = 2;
 
-	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/earth_10k.jpg");
+	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 	unsigned int ballEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
 	material.diffuseMap = ballDfTxt;
 	material.specularMap = ballDfTxt;
@@ -72,22 +68,21 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	R_Object obj;
 	glm::vec3 s1(100.0f, 0.5f, 100.0f);
 
-	tx = Transform(glm::vec3(0.0f), glm::identity<glm::quat>());
+	tx = Transform(glm::vec3(0.0f, -0.5f, 0.0f), glm::identity<glm::quat>());
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
-	obj.modelIDs.push_back(boxModel);
+	obj.modelIDs.push_back(floorModel);
 	obj.materials.push_back(floorMaterial);
-	obj.scale = s1;
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -182,10 +177,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 20.0f, 50.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 20.0f, -50.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3(50.0f, 20.0f, -50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(0.0f, 20.0f, 0.0f));
 }
 
-void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods)
+void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -210,14 +204,14 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		bd.velocity = 20.0f * camera.fwd;
 		unsigned int bID = Physics::GetInstance().AddBody(bd);
 		SphereCollider* sphereCollider = new SphereCollider();
-		sphereCollider->Scale(1.0f);
-		sphereCollider->massData->density = 2.0f;
+		sphereCollider->Scale(0.25f);
+		sphereCollider->massData->density = 1.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
 		unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
 		R_Object obj;
 		obj.pos = tx.position;
 		obj.rot = tx.R;
-		obj.scales.push_back(glm::vec3(1.0f));
+		obj.scales.push_back(glm::vec3(0.25f));
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.modelIDs.push_back(sphereModel);
@@ -225,29 +219,54 @@ void Simulation::OnKeyPress(GLFWwindow* window, int key, int scanCode, int actio
 		obj.scale = glm::vec3(1.0f);
 		Graphics::GetInstance().objects.push_back(obj);
 	}
-	if (key == GLFW_KEY_T)
+	if (key == GLFW_KEY_J && action == GLFW_PRESS)
 	{
-		Body* b = Physics::GetInstance().bodies[0];
-		glm::vec3 v = b->GetVelocity();
-		v = 25.0f * glm::vec3(1.0f, 0.0f, 0.0f);
-		b->ApplyForce(glm::vec3(0.0f, 0.0f, -250.0f), glm::vec3(0.0f, 14.5f, 0.0f));
+		HingeJoint* hj = &Physics::GetInstance().hingeJoints[0];
+		float speed = hj->GetMotorSpeed();
+
+		if (speed <= 4.0f)
+			speed += 0.1f;
+
+		hj->SetMotorSpeed(speed);
+	}
+	if (key == GLFW_KEY_K && action == GLFW_PRESS)
+	{
+		HingeJoint* hj = &Physics::GetInstance().hingeJoints[0];
+		float speed = hj->GetMotorSpeed();
+
+		if (speed > 0.0f)
+			speed -= 0.1f;
+		if (speed < 0.0f)
+			speed = 0.0f;
+
+		hj->SetMotorSpeed(speed);
+	}
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		camera.follow = true;
+		int n = Physics::GetInstance().bodies.size();
+		camera.body = Physics::GetInstance().bodies[n - 1];
+	}
+	if (key == GLFW_KEY_U && action == GLFW_PRESS)
+	{
+		camera.follow = false;
 	}
 }
 
-void Simulation::OnKeyPressHold(GLFWwindow* window)
+void Simulation::OnKeyPress(GLFWwindow* window)
 {
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::FWD);
+		camera.Translate(Camera::FWD);
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::REV);
+		camera.Translate(Camera::REV);
 	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::LEFT);
+		camera.Translate(Camera::LEFT);
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::RIGHT);
+		camera.Translate(Camera::RIGHT);
 	else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::UP);
+		camera.Translate(Camera::UP);
 	else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		Simulation::GetInstance().camera.Translate(Camera::DOWN);
+		camera.Translate(Camera::DOWN);
 	else
 		camera.velocity = glm::vec3(0.0f);
 }
@@ -257,7 +276,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f,1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 1000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
@@ -306,11 +325,9 @@ void Simulation::Update(GLFWwindow* window)
 	double delta = currFrame - prevFrame;
 	prevFrame = currFrame;
 
-	static const float dt = 1.0f / hertz;
+	/*static const float dt = 1.0f / hertz;
 
-	OnKeyPressHold(window);
-
-	Physics::GetInstance().Update(dt);
+	Physics::GetInstance().Update(dt);*/
 
 	switch (mouseData.pan)
 	{
@@ -332,7 +349,14 @@ void Simulation::Update(GLFWwindow* window)
 		break;
 	}
 
-	Graphics::GetInstance().Update();
+	if (camera.follow)
+	{
+		Transform tx = camera.body->GetTransform();
+		camera.target = tx.position;
+		camera.position = tx.R * glm::vec3(-10.0f, 2.0f, 0.0f) + tx.position;
+	}
+
+	Graphics::GetInstance().Update(camera);
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

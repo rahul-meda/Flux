@@ -15,3 +15,7 @@
 #include "DoorHinge.h"
 #include "BridgeHinge.h"
 #include "CRB_Test.h"
+#include "Machines.h"
+#include "Domino1.h"
+#include "Bike.h"
+#include "Car_Test.h"

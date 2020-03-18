@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "../Components/Model.h"
+#include "Camera.h"
 
 struct Material
 {
@@ -80,15 +81,17 @@ private:
 public:
 	static Graphics& GetInstance();
 
-	void Initialize();
+	void Initialize();	// init stuff before any object is added
+
+	void PostInit();	// init stuff after all objects are added
 
 	unsigned int CreateModel(const ModelDef& modelDef);
 
-	unsigned int CreateTexture(const char* filePath);
+	unsigned int CreateTexture(const char* filePath, bool flip = false);
 
 	void AddPointLight(glm::vec3 pos);
 
-	void Update();
+	void Update(Camera& camera);
 
 	glm::mat4 P;
 
@@ -111,8 +114,6 @@ public:
 	unsigned int cylinderModelID;
 	unsigned int capsuleModelID;
 	unsigned int soupModelID;
-	//unsigned int tangentsModelID;
-	//unsigned int jointsModelID;
 
 	Material hingeMaterial;
 	std::vector<R_Hinge> hinges;

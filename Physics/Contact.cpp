@@ -1,6 +1,7 @@
 
 #include "Contact.h"
 #include "NarrowPhase.h"
+#include "HullContact.h"
 
 Contact::Contact(Collider* colliderA, Collider* colliderB)
 	: colliderA(colliderA), colliderB(colliderB)
@@ -51,6 +52,7 @@ void Contact::Update()
 	Transform txB = colliderB->body->GetTransform();
 
 	Evaluate(&manifold, txA, txB);	// virtual call!! (why is box2D using virtual call?)
+
 	touching = manifold.nPoints > 0;
 
 	for (int i = 0; i < manifold.nPoints; ++i)

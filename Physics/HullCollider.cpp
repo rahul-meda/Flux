@@ -36,7 +36,7 @@ HullCollider::HullCollider()
 	radius = hullRadius;
 	massData = new MassData();
 	restitution = 0.2f;
-	friction = 0.4f;
+	friction = 0.7f;
 	txB.position = glm::vec3(0.0f);
 	txB.R = glm::mat3(1.0f);
 	aabbIndex = 0;

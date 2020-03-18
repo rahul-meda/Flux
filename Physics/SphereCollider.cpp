@@ -7,7 +7,7 @@ SphereCollider::SphereCollider()
 	massData = new MassData();
 	com = glm::vec3(0.0f);
 	restitution = 0.3f;
-	friction = 0.4f;
+	friction = 0.7f;
 	radius = 1.0f;
 	aabbIndex = 0;
 }

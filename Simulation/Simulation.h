@@ -25,15 +25,14 @@ struct MouseInfo
 
 class Simulation
 {
-private:
+public:
 	Simulation();
 	~Simulation();
-public:
-	static Simulation& GetInstance();
+
 	void Init(GLFWwindow* window, int width, int height);
 
-	void OnKeyPress(GLFWwindow* window, int key, int scanCode, int action, int mods);
-	void OnKeyPressHold(GLFWwindow* window);
+	void OnKeyTap(GLFWwindow* window, int key, int scanCode, int action, int mods);
+	void OnKeyPress(GLFWwindow* window);
 	void OnWindowResize(GLFWwindow* window, int width, int height);
 	void OnMouseMove(GLFWwindow* window, double x, double y);
 
@@ -43,8 +42,8 @@ public:
 	int height;
 	double prevFrame;
 
-	std::map<int, std::pair<int, int>> bufferIDmap;
 	Camera camera;
+	std::map<int, std::pair<int, int>> bufferIDmap;
 	MouseInfo mouseData;
 	Material material;
 };

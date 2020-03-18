@@ -9,8 +9,8 @@ CapsuleCollider::CapsuleCollider()
 	com = glm::vec3(0.0f);
 	upB = glm::vec3(0.0f, 1.0f, 0.0f);
 	H = 1.0f;
-	restitution = 0.3f;
-	friction = 0.4f;
+	restitution = 0.2f;
+	friction = 0.7f;
 	radius = 1.0f;
 	aabbIndex = 0;
 }

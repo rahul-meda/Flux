@@ -21,8 +21,7 @@ void DoorHinge::Init()
 	HMesh mesh;
 
 	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
+	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
 
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
@@ -44,6 +43,7 @@ void DoorHinge::Init()
 
 	float gap = 0.25f;
 	glm::vec3 s1(1.0f, 0.05f, 0.05f);
+	glm::vec3 s2(2.5f, 1.5f, 0.25f);
 	glm::vec3 p1 = glm::vec3(0.0f, 10.0f, 0.0f);
 	tx = Transform(p1);
 	bd.tx = tx;
@@ -60,17 +60,13 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s1);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s1);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
-
-	CreateSphere(sphere);
-	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
-	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
-	glm::vec3 disco(0.2f, 0.7f, 1.0f);
-	glm::vec3 s2(2.5f, 1.5f, 0.25f);
 
 	glm::vec3 p2 = p1;
 	p2.y -= s1.y + gap + s2.y;
@@ -88,21 +84,24 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s2);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	Body* b1 = (*bodies)[bid1];
 	Body* b2 = (*bodies)[bid2];
 	glm::vec3 anchor(p1);
-	//anchor.z += s1.z + gap * 0.5f;
-	//anchor.y -= s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(1.0f, 0.0f, 0.0f));
 	hjd.enableLimit = true;
 	hjd.lowerLimit = -PI * 0.5f;
 	hjd.upperLimit = PI * 0.5f;
+	hjd.enableMotor = true;
+	hjd.motorSpeed = 0.0f;
+	hjd.maxMotorTorque = 0.1f;
 	hjd.scale = s1.x;
 
 	HingeJoint hj(&hjd);
@@ -123,9 +122,11 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s1);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s1);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -145,17 +146,20 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s2);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	b1 = (*bodies)[bid1];
 	b2 = (*bodies)[bid2];
 	anchor = p1;
-	//anchor.x += s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
+	hjd.enableLimit = false;
+	hjd.maxMotorTorque = 1.0f;
 	hjd.scale = s1.x;
 
 	hj = HingeJoint(&hjd);
@@ -177,9 +181,11 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s1);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s1);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -199,16 +205,17 @@ void DoorHinge::Init()
 	material.count = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(s2);
 	obj.modelIDs.push_back(boxModel);
 	obj.materials.push_back(material);
-	obj.scales.push_back(s2);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	b1 = (*bodies)[bid1];
 	b2 = (*bodies)[bid2];
 	anchor = p1;
-	//anchor.x -= s1.y + gap * 0.5f;
 	hjd.Initialize(b1, b2, anchor, glm::vec3(0.0f, 1.0f, 0.0f));
 	hjd.scale = s1.x;
 

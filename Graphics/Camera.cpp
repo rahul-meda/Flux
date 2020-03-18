@@ -1,5 +1,6 @@
 
 #include "Camera.h"
+#include "../Components/Body.h"
 
 #define CAM_SPEED 100.0f
 
@@ -7,8 +8,10 @@ Camera::Camera()
 {}
 
 Camera::Camera(glm::vec3 pos, glm::vec3 fwd, glm::vec3 up)
-	: position(pos), velocity(0.0f), fwd(fwd), up(up)
-{}
+	: position(pos), velocity(0.0f), fwd(fwd), up(up), follow(false)
+{
+	target = position + fwd;
+}
 
 void Camera::Translate(DIR mode)
 {
@@ -43,6 +46,8 @@ void Camera::Translate(DIR mode)
 	velocity += 10.0f * dt * dir;
 
 	position += velocity * dt;
+
+	target = position + fwd;
 }
 
 void Camera::Rotate(float yaw, float pitch)
@@ -52,9 +57,13 @@ void Camera::Rotate(float yaw, float pitch)
 	fwd.z = sin(glm::radians(yaw - 90.0f)) * cos(glm::radians(pitch));
 
 	fwd = glm::normalize(fwd);
+	right = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), fwd));
+	up = glm::cross(fwd, right);
+
+	target = position + fwd;
 }
 
 glm::mat4 Camera::ViewSpace()
 {
-	return glm::lookAt(position, position + fwd, up);
+	return glm::lookAt(position, target, up);
 }

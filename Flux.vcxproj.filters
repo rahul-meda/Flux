@@ -10,7 +10,6 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Graphics\Shader.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -137,6 +136,21 @@
     <ClCompile Include="Physics\CapsuleContact.cpp">
       <Filter>Physics\Collision\Contact</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\Machines.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\Domino1.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\UniversalJoint.cpp">
+      <Filter>Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\Bike.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\Car_Test.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -146,7 +160,6 @@
     <ClInclude Include="Simulation\Simulation.h">
       <Filter>Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h" />
     <ClInclude Include="Graphics\Graphics.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -278,6 +291,21 @@
     </ClInclude>
     <ClInclude Include="Physics\CapsuleContact.h">
       <Filter>Physics\Collision\Contact</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Machines.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Domino1.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\UniversalJoint.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Car_Test.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Bike.h">
+      <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,6 +7,7 @@
 #include "ContactManager.h"
 #include "PositionJoint.h"
 #include "HingeJoint.h"
+#include "UniversalJoint.h"
 
 class Physics
 {
@@ -38,6 +39,7 @@ public:
 	std::vector<Collider*> colliders;
 	std::vector<PositionJoint> posJoints;
 	std::vector<HingeJoint> hingeJoints;
+	std::vector<UniversalJoint> uniJoints;
 
 	ContactManager contactManager;
 };
