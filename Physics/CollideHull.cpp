@@ -4,6 +4,7 @@
 #include "HullCollider.h"
 #include "Settings.h"
 #include "../Mesh/Geometry.h"
+#include <iostream>
 
 struct FaceQuery
 {
@@ -359,8 +360,10 @@ void QueryEdgeAxes(EdgeQuery* query, const HullCollider* A, const HullCollider* 
 				glm::vec3 axis = glm::cross(EA, EB);
 				
 				float l2 = glm::length2(axis);
-				if (l2 < linearSlop2)	// skip parallel edges	// todo: fails when edge lengths are huge
+				if (l2 < linearSlop2)	// skip parallel edges	// todo: fails when edge lengths are very small
+				{
 					continue;
+				}
 
 				axis = glm::normalize(axis);
 
@@ -368,6 +371,8 @@ void QueryEdgeAxes(EdgeQuery* query, const HullCollider* A, const HullCollider* 
 					axis = -axis;
 
 				float sep = glm::dot(PB -PA, axis);
+				if (sep > hullRadiusSum)
+					continue;
 				if (sep > maxSep)
 				{
 					bestAxis = axis;
