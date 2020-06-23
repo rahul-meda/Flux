@@ -252,6 +252,7 @@ void ContactSolver::SolveVelocityConstraints()
 			VelocityConstraintPoint* vcp = vc->points + j;
 
 			// Relative velocity at contact
+			// todo: could avoid this cross product - use the result from init step and use scalar triple product trick
 			glm::vec3 dv = vB + glm::cross(wB, vcp->rB) - vA - glm::cross(wA, vcp->rA);
 
 			for (int i = 0; i < 2; ++i)
@@ -290,7 +291,7 @@ void ContactSolver::SolveVelocityConstraints()
 			float vn = glm::dot(dv, normal);
 			float lambda = -vcp->normalMass * (vn - vcp->velocityBias);
 
-			// b2Clamp the accumulated impulse
+			// Clamp the accumulated impulse
 			float newImpulse = glm::max(vcp->normalImpulse + lambda, 0.0f);	// magnetic force
 			lambda = newImpulse - vcp->normalImpulse;
 			vcp->normalImpulse = newImpulse;
@@ -405,7 +406,7 @@ struct b2PositionSolverManifold
 	float separation;
 };
 
-bool ContactSolver::SolvePositionConstraints()
+float ContactSolver::SolvePositionConstraints()
 {
 	float minSeparation = 0.0f;
 
@@ -479,7 +480,7 @@ bool ContactSolver::SolvePositionConstraints()
 		(*positions)[indexB].q = qB;
 	}
 
-	// We can't expect minSpeparation >= -b2_linearSlop because we don't
-	// push the separation above -b2_linearSlop.
-	return minSeparation >= -3.0f * linearSlop;
+	// We can't expect minSpeparation >= -linearSlop because we don't
+	// push the separation above -linearSlop.
+	return minSeparation;// >= -3.0f * linearSlop;
 }

@@ -371,8 +371,7 @@ void QueryEdgeAxes(EdgeQuery* query, const HullCollider* A, const HullCollider* 
 					axis = -axis;
 
 				float sep = glm::dot(PB -PA, axis);
-				if (sep > hullRadiusSum)
-					continue;
+				
 				if (sep > maxSep)
 				{
 					bestAxis = axis;

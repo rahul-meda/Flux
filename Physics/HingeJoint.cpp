@@ -47,6 +47,8 @@ HingeJoint::HingeJoint(const HingeJointDef* def)
 
 void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 {
+	// todo: copy local data when joint is created
+	// calculate global data here
 	indexA = bodyA->index;
 	indexB = bodyB->index;
 	localCenterA = bodyA->comL;
@@ -55,6 +57,7 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	mB = bodyB->invMass;
 	iA = bodyA->iitW;
 	iB = bodyB->iitW;
+
 	std::vector<Position>* positions = def.positions;
 	std::vector<Velocity>* velocities = def.velocities;
 
@@ -92,8 +95,8 @@ void HingeJoint::InitVelocityConstraints(const SolverDef& def)
 	cr2 = glm::cross(e, f);
 	kr2 = glm::dot((iA * cr2), cr2) + glm::dot((iB * cr2), cr2);
 
-	bias1 = 2.0f * baumgarte * hertz * glm::dot(f, d);
-	bias2 = 2.0f * baumgarte * hertz * glm::dot(f, e);
+	bias1 = baumgarte * hertz * glm::dot(f, d);
+	bias2 = baumgarte * hertz * glm::dot(f, e);
 
 	kMotor = glm::dot(iA * f, f) + glm::dot(iB * f, f);
 

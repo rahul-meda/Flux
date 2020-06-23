@@ -57,7 +57,7 @@ public:
 	void SolveVelocityConstraints();
 	void StoreImpulses();
 
-	bool SolvePositionConstraints();
+	float SolvePositionConstraints();
 
 	std::vector<Contact*>* contacts;
 	std::vector<Position>* positions;

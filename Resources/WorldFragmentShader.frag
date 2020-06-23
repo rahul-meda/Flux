@@ -53,7 +53,7 @@ void main()
 	
 	result += CalcPointLight(nPointLights - 1) * lightColors[nPointLights - 1];
 
-	vec3 emission = 0.7f * lightMap.z * texture(emissionTexture, fragTexCoord + glm::vec2(0.0f, time/10.0f)).rgb;
+	vec3 emission = 0.7f * lightMap.z * texture(emissionTexture, fragTexCoord).rgb;// + glm::vec2(0.0f, time/10.0f)).rgb;
 
 	result += emission;
 
@@ -90,8 +90,8 @@ vec3 CalcPointLight(int index)
 
 	// attenuation
 	float Kc = 1.0f;
-	float Kl = 0.014;//0.022f;
-	float Kq = 0.0007;//0.0019f;
+	float Kl = 0.7f; //0.014;//0.022f;
+	float Kq = 1.8f; //0.0007;//0.0019f;
 	float dist = length(fragPos - lightPos[index]);
 	float dist2 = dist * dist;
 	float attenuation = 1.0f / (Kc + Kl * dist + Kq * dist2);

@@ -50,7 +50,9 @@
     <ClCompile Include="Physics\Physics.cpp" />
     <ClCompile Include="Physics\SphereCollider.cpp" />
     <ClCompile Include="Physics\SphereContact.cpp" />
+    <ClCompile Include="Physics\SpringConstraint.cpp" />
     <ClCompile Include="Physics\UniversalJoint.cpp" />
+    <ClCompile Include="Physics\WheelJoint.cpp" />
     <ClCompile Include="Simulation\BallStack.cpp" />
     <ClCompile Include="Simulation\Bike.cpp" />
     <ClCompile Include="Simulation\BoxStack.cpp" />
@@ -70,6 +72,7 @@
     <ClCompile Include="Simulation\Ragdoll1.cpp" />
     <ClCompile Include="Simulation\Simulation.cpp" />
     <ClCompile Include="Simulation\PlankStack.cpp" />
+    <ClCompile Include="Simulation\SpringTest.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +106,9 @@
     <ClInclude Include="Physics\Settings.h" />
     <ClInclude Include="Physics\SphereCollider.h" />
     <ClInclude Include="Physics\SphereContact.h" />
+    <ClInclude Include="Physics\SpringConstraint.h" />
     <ClInclude Include="Physics\UniversalJoint.h" />
+    <ClInclude Include="Physics\WheelJoint.h" />
     <ClInclude Include="Simulation\Ballstack.h" />
     <ClInclude Include="Simulation\Bike.h" />
     <ClInclude Include="Simulation\BoxStack.h" />
@@ -124,6 +129,7 @@
     <ClInclude Include="Simulation\Simulation.h" />
     <ClInclude Include="Simulation\PlankStack.h" />
     <ClInclude Include="Simulation\Simulations.h" />
+    <ClInclude Include="Simulation\SpringTest.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

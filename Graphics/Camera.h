@@ -11,6 +11,8 @@ class Camera
 public:
 	enum DIR {FWD, REV, RIGHT, LEFT, UP, DOWN, IDLE};
 
+	enum TRACK {LINE, CIRCLE, SPLINE};
+
 	Camera();
 
 	Camera(glm::vec3 pos, glm::vec3 fwd, glm::vec3 up);
@@ -29,6 +31,8 @@ public:
 	void Translate(DIR mode);
 
 	void Rotate(float yaw, float pitch);
+
+	void Track(TRACK mode);
 
 	glm::mat4 ViewSpace();
 };

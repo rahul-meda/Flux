@@ -64,11 +64,12 @@ private:
 
 	ContactEdge* edgeList;
 
-	bool isStatic;
-	unsigned int filterID;	// to filter collision groups	
+	bool isStatic;	
 	int index;				// index in world body list
 
 public:
+	unsigned int filterID;	// to filter collision groups
+
 	Body(const BodyDef& bd);
 
 	const float GetMass() const;
@@ -78,6 +79,7 @@ public:
 	const glm::quat& GetOrientation() const;
 	void SetOrientation(const glm::quat& q);
 	const glm::vec3& GetCentroid() const;
+	void SetCentroid(const glm::vec3& c);
 
 	void SetVelocity(const glm::vec3& v);
 	const glm::vec3& GetVelocity() const;
@@ -106,6 +108,7 @@ public:
 	friend class PositionJoint;
 	friend class HingeJoint;
 	friend class UniversalJoint;
+	friend class WheelJoint;
 };
 
 inline const float Body::GetMass() const
@@ -136,6 +139,11 @@ inline void Body::SetOrientation(const glm::quat& q)
 inline const glm::vec3& Body::GetCentroid() const
 {
 	return comW;
+}
+
+inline void Body::SetCentroid(const glm::vec3& c)
+{
+	comW = c;
 }
 
 inline void Body::SetVelocity(const glm::vec3& v)

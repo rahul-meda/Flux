@@ -16,7 +16,6 @@ void UniversalJointDef::Initialize(Body* bA, Body* bB, const glm::vec3& anchor, 
 	localAnchorB = glm::transpose(txB.R) * (anchor - txB.position);
 	localAxisA = glm::transpose(txA.R) * axisA;
 	localAxisB = glm::transpose(txB.R) * axisB;
-	q0 = glm::conjugate(glm::quat_cast(txA.R)) * glm::quat_cast(txB.R);
 }
 
 UniversalJoint::UniversalJoint(const UniversalJointDef* def)
@@ -27,21 +26,8 @@ UniversalJoint::UniversalJoint(const UniversalJointDef* def)
 	localAnchorB = def->localAnchorB;
 	localAxisA = def->localAxisA;
 	localAxisB = def->localAxisB;
-	q0 = def->q0;
-	enableLimit = def->enableLimit;
-	lowerLimit = def->lowerLimit;
-	upperLimit = def->upperLimit;
 	impulseSumT = glm::vec3(0.0f);
 	impulseSumR = 0.0f;
-	impulseSumR1 = impulseSumR2 = 0.0f;
-	kMin = kMax = 0.0f;
-	enableLimit = def->enableLimit;
-	jSign = 1.0f;
-	limitState = inactiveLimit;
-	enableMotor = def->enableMotor;
-	motorSpeed = def->motorSpeed;
-	maxMotorTorque = def->maxMotorTorque;
-	impulseMotor = 0.0f;
 	scale = def->scale;
 }
 
@@ -85,59 +71,7 @@ void UniversalJoint::InitVelocityConstraints(const SolverDef& def)
 
 	kr = glm::dot((iA * f), f) + glm::dot((iB * f), f);
 
-	bias1 = 3.0f * baumgarte * hertz * glm::dot(f1, f2);
-
-	kMotor = glm::dot(iA * f, f) + glm::dot(iB * f, f);
-
-	// check limits
-	if (enableLimit)
-	{
-		glm::quat qr = glm::conjugate(qA) * qB;
-		glm::quat rot = qr * glm::conjugate(q0);
-		glm::vec3 u(rot.x, rot.y, rot.z);
-		float jointAngle = 2.0f * atan2(glm::length(u), (rot.w));
-
-		if (glm::dot(localAxisA, u) < 0.0f)
-		{
-			jSign = -1.0f;
-		}
-		else
-		{
-			jSign = 1.0f;
-		}
-
-		if (jointAngle < lowerLimit)
-		{
-			if (limitState != atLowerLimit)
-			{
-				impulseSumR = 0.0f;
-			}
-			limitState = atLowerLimit;
-			kMin = glm::dot(iA * f, f) + glm::dot(iB * f, f);
-
-			bMin = baumgarte * hertz * (jointAngle - lowerLimit);
-		}
-		else if (jointAngle > upperLimit)
-		{
-			if (limitState != atUpperLimit)
-			{
-				impulseSumR = 0.0f;
-			}
-			limitState = atUpperLimit;
-			kMax = glm::dot(iA * f, f) + glm::dot(iB * f, f);
-
-			bMax = baumgarte * hertz * (upperLimit - jointAngle);
-		}
-		else
-		{
-			impulseSumR = 0.0f;
-			limitState = inactiveLimit;
-		}
-	}
-	else
-	{
-		limitState = inactiveLimit;
-	}
+	bias = 3.0f * baumgarte * hertz * glm::dot(f1, f2);
 
 	// warmstart
 	vA -= mA * impulseSumT;
@@ -146,14 +80,8 @@ void UniversalJoint::InitVelocityConstraints(const SolverDef& def)
 	vB += mB * impulseSumT;
 	wB += iB * glm::cross(rB, impulseSumT);
 
-	wA += iA * f * impulseSumR1;
-	wB -= iB * f * impulseSumR1;
-
-	if (enableMotor)
-	{
-		//wA += iA * f * impulseMotor;
-		//wB -= iB * f * impulseMotor;
-	}
+	wA += iA * f * impulseSumR;
+	wB -= iB * f * impulseSumR;
 
 	(*velocities)[indexA].v = vA;
 	(*velocities)[indexA].w = wA;
@@ -168,62 +96,6 @@ void UniversalJoint::SolveVelocityConstraints(const SolverDef& def)
 	glm::vec3 wA = (*velocities)[indexA].w;
 	glm::vec3 vB = (*velocities)[indexB].v;
 	glm::vec3 wB = (*velocities)[indexB].w;
-
-	if (enableMotor)
-	{
-		float cDot = glm::dot(wA - wB, f) + motorSpeed;
-		float impulse = -cDot / kMotor;
-		float oldImpulse = impulseMotor;
-		impulseMotor = glm::clamp(impulseMotor + impulse, -maxMotorTorque, maxMotorTorque);
-		impulse = impulseMotor - oldImpulse;
-
-		wA += iA * f * impulse;
-		wB -= iB * f * impulse;
-	}
-
-	if (enableLimit && limitState != inactiveLimit)
-	{
-		if (limitState == atLowerLimit)
-		{
-			glm::vec3 J = jSign * f;
-
-			float cDot = glm::dot((wB - wA), J);
-			float P = -(cDot + bMin) / kMin;
-			float newP = impulseSumR + P;
-
-			if (newP > 0.0f)
-			{
-				wA -= iA * J * P;
-				wB += iB * J * P;
-
-				impulseSumR = 0.0f;
-			}
-			else
-			{
-				impulseSumR += P;
-			}
-		}
-		else if (limitState == atUpperLimit)
-		{
-			glm::vec3 J = jSign * f;
-
-			float cDot = glm::dot((wA - wB), J);
-			float P = -(cDot + bMax) / kMax;
-			float newP = impulseSumR + P;
-
-			if (newP > 0.0f)
-			{
-				wA += iA * J * P;
-				wB -= iB * J * P;
-
-				impulseSumR = 0.0f;
-			}
-			else
-			{
-				impulseSumR += P;
-			}
-		}
-	}
 
 	glm::vec3 Cdot = vB + glm::cross(wB, rB) - vA - glm::cross(wA, rA);
 	glm::vec3 impulseL(0.0f);
@@ -240,8 +112,8 @@ void UniversalJoint::SolveVelocityConstraints(const SolverDef& def)
 
 	// angular
 	float CdotR1 = glm::dot(f, wA - wB);
-	float l1 = -(CdotR1 + bias1) / kr;
-	impulseSumR1 += l1;
+	float l1 = -(CdotR1 + bias) / kr;
+	impulseSumR += l1;
 
 	wA += iA * f * l1;
 	wB -= iB * f * l1;

@@ -63,6 +63,18 @@ void Camera::Rotate(float yaw, float pitch)
 	target = position + fwd;
 }
 
+void Camera::Track(TRACK mode)
+{
+	glm::vec3 dir;
+
+	switch (mode)
+	{
+	case LINE:
+		dir = fwd;
+		break;
+	}
+}
+
 glm::mat4 Camera::ViewSpace()
 {
 	return glm::lookAt(position, target, up);

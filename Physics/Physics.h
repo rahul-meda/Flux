@@ -8,6 +8,8 @@
 #include "PositionJoint.h"
 #include "HingeJoint.h"
 #include "UniversalJoint.h"
+#include "WheelJoint.h"
+#include "SpringConstraint.h"
 
 class Physics
 {
@@ -32,6 +34,8 @@ public:
 	bool pause;
 	bool singleStep;
 	bool debugDraw;
+	bool slowMo;
+	float minSep;
 
 	std::vector<Body*> bodies;
 	std::vector<Position> positions;
@@ -40,6 +44,8 @@ public:
 	std::vector<PositionJoint> posJoints;
 	std::vector<HingeJoint> hingeJoints;
 	std::vector<UniversalJoint> uniJoints;
+	std::vector<WheelJoint> wheelJoints;
+	std::vector<Spring> springs;
 
 	ContactManager contactManager;
 };

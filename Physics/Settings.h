@@ -26,13 +26,15 @@
 // This helps to prevent overshoot.
 #define maxLinearCorrection 0.2f
 
-#define maxTranslation 1.2f
+#define maxTranslation 2.0f
 #define maxTranslation2 (maxTranslation * maxTranslation)
 
 #define maxRotation (0.3f * PI)
 #define maxRotation2 (maxRotation * maxRotation)
 
-#define baumgarte 0.2f
+#define baumgarte 0.4f
 
 // inv_dt (fps)
 #define hertz 60.0f
+
+#define deltaT (1.0f / hertz)

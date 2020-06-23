@@ -151,6 +151,15 @@
     <ClCompile Include="Simulation\Car_Test.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\WheelJoint.cpp">
+      <Filter>Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\SpringConstraint.cpp">
+      <Filter>Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\SpringTest.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -305,6 +314,15 @@
       <Filter>Simulation</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\Bike.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\WheelJoint.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\SpringConstraint.h">
+      <Filter>Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\SpringTest.h">
       <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>

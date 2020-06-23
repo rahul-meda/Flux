@@ -11,7 +11,7 @@
 #define GRAVITY 9.8f
 
 Physics::Physics()
-	: singleStep(false), pause(true), debugDraw(false)
+	: singleStep(false), pause(true), debugDraw(false), slowMo(false)
 {}
 
 Physics& Physics::GetInstance()
@@ -55,6 +55,12 @@ void Physics::Step(float dt)
 	contactManager.Collide();
 
 	int nBodies = bodies.size();
+
+	int NS = springs.size();
+	for (int i = 0; i < NS; ++i)
+	{
+		//springs[i].Solve();
+	}
 
 	// integrate velocities
 	for (int i = 0; i < nBodies; ++i)
@@ -112,6 +118,12 @@ void Physics::Step(float dt)
 		uniJoints[i].InitVelocityConstraints(solverData);
 	}
 
+	int NW = wheelJoints.size();
+	for (int i = 0; i < NW; ++i)
+	{
+		wheelJoints[i].InitVelocityConstraints(solverData);
+	}
+
 	int velocityIters = 8;
 	for (int i = 0; i < velocityIters; ++i)
 	{
@@ -120,7 +132,7 @@ void Physics::Step(float dt)
 
 	contactSolver.StoreImpulses();
 
-	velocityIters = 25;
+	velocityIters = 10;
 	for (int i = 0; i < velocityIters; ++i)
 	{
 		for (int j = 0; j < NP; ++j)
@@ -137,9 +149,13 @@ void Physics::Step(float dt)
 		{
 			uniJoints[iu].SolveVelocityConstraints(solverData);
 		}
+
+		for (int iw = 0; iw < NW; ++iw)
+		{
+			wheelJoints[iw].SolveVelocityConstraints(solverData);
+		}
 	}
 
-	// post stabilization error correction
 
 	// integrate positions
 	for (int i = 0; i < nBodies; ++i)
@@ -173,10 +189,9 @@ void Physics::Step(float dt)
 	}
 
 	int positionIters = 3;
+	bool contactsOkay = false;
 	for (int i = 0; i < positionIters; ++i)
 	{
-		bool contactsOkay = contactSolver.SolvePositionConstraints();
-
 		for (int j = 0; j < NP; ++j)
 		{
 			posJoints[j].SolvePositionConstraints(solverData);
@@ -191,6 +206,17 @@ void Physics::Step(float dt)
 		{
 			uniJoints[iu].SolvePositionConstraints(solverData);
 		}
+
+		for (int iw = 0; iw < NW; ++iw)
+		{
+			wheelJoints[iw].SolvePositionConstraints(solverData);
+		}
+	}
+
+	positionIters = 5;
+	for (int i = 0; i < positionIters; ++i)
+	{
+		minSep = contactSolver.SolvePositionConstraints();
 	}
 
 	for (int i = 0; i < nBodies; ++i)
@@ -210,6 +236,8 @@ void Physics::Step(float dt)
 
 void Physics::Update(float dt)
 {
+	dt = slowMo ? 0.1f * dt : dt;
+
 	if (!pause)
 	{
 		Step(dt);

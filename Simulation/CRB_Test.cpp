@@ -26,6 +26,7 @@ void CRB_Test::Init()
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/sci_fi1.jpg");
+	unsigned int carTxt = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
 	Material material;
 	material.diffuseMap = ballTxt;
 	material.specularMap = ballTxt;
