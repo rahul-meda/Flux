@@ -16,8 +16,10 @@ CRB_Test& CRB_Test::GetInstance()
 	return instance;
 }
 
-void CRB_Test::Init()
+void CRB_Test::Init(GLFWwindow* window, int width, int height)
 {
+	Simulation::Init(window, width, height);
+
 	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
@@ -130,13 +132,13 @@ void CRB_Test::Init()
 	HullCollider* cylinderCollider = new HullCollider();
 	ParseObj("Resources/Models/cylinder_collider.obj", mesh);
 	mesh.GetColliderData(cylinderCollider);
-	cylinderCollider->Scale(glm::vec3(1.0f, 1.0f, 1.0f));
+	cylinderCollider->Scale(glm::vec3(1.0f, 2.0f, 1.0f));
 	Physics::GetInstance().AddCollider(bID, cylinderCollider);
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
 	obj.modelIDs.push_back(cylinderModel);
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
@@ -151,22 +153,22 @@ void CRB_Test::Init()
 	bID = Physics::GetInstance().AddBody(bd);
 	CapsuleCollider* capsuleCollider = new CapsuleCollider();
 	capsuleCollider->Scale(1.0f);
-	capsuleCollider->H = 1.0f;
+	capsuleCollider->H = 2.0f;
 	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
 	Physics::GetInstance().AddCollider(bID, capsuleCollider);
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
 	obj.modelIDs.push_back(cylinderModel);
 	obj.materials.push_back(material);
-	obj.posOffsets.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	obj.posOffsets.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.modelIDs.push_back(sphereModel);
 	obj.materials.push_back(material);
-	obj.posOffsets.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+	obj.posOffsets.push_back(glm::vec3(0.0f, -2.0f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.modelIDs.push_back(sphereModel);
@@ -205,4 +207,14 @@ void CRB_Test::Init()
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
+}
+
+void CRB_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
+{
+	Simulation::OnKeyTap(window, key, scanCode, action, mods);
+}
+
+void CRB_Test::OnKeyPress(GLFWwindow * window)
+{
+	Simulation::OnKeyPress(window);
 }

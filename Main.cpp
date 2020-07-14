@@ -6,7 +6,7 @@
 #include "Simulation/Simulations.h"
 #include "Physics/Physics.h"
 
-Car_Test simulation;
+Skeletal_Animation simulation;
 
 void KeyboardCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
 {

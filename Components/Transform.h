@@ -17,6 +17,13 @@ public:
 
 	glm::vec3 position;
 	glm::mat3 R;
+
+	glm::mat4 CombinedTransform() const
+	{
+		glm::mat4 result = glm::translate(glm::mat4(1.0f), position);
+		result *= glm::mat4(R);
+		return result;
+	}
 };
 
 #include "Transform.inl"

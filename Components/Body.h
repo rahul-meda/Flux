@@ -74,6 +74,7 @@ public:
 
 	const float GetMass() const;
 	const float GetInvMass() const;
+	void SetMass(const float mass);
 
 	const glm::vec3& GetPosition() const;
 	const glm::quat& GetOrientation() const;
@@ -87,6 +88,7 @@ public:
 	const glm::vec3& GetAngularVelocity() const;
 
 	const Transform GetTransform() const;
+	void SetTransform(const Transform& tx);
 
 	void ApplyForceCOM(const glm::vec3& f);
 	void ApplyForce(const glm::vec3& f, const glm::vec3& p);
@@ -119,6 +121,11 @@ inline const float Body::GetMass() const
 inline const float Body::GetInvMass() const
 {
 	return (invMass == 0.0f ? 0.0f : invMass);
+}
+
+inline void Body::SetMass(const float mass)
+{
+	invMass = (mass == 0.0f) ? 0.0f : 1.0f / mass;
 }
 
 inline const glm::vec3& Body::GetPosition() const
@@ -169,6 +176,11 @@ inline const glm::vec3& Body::GetAngularVelocity() const
 inline const Transform Body::GetTransform() const
 {
 	return tx;
+}
+
+inline void Body::SetTransform(const Transform& tf)
+{
+	tx = tf;
 }
 
 inline void Body::ApplyForceCOM(const glm::vec3& f)

@@ -20,3 +20,4 @@
 #include "Bike.h"
 #include "Car_Test.h"
 #include "SpringTest.h"
+#include "Skeletal_Animation.h"

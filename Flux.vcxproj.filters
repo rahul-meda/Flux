@@ -160,6 +160,12 @@
     <ClCompile Include="Simulation\SpringTest.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\Skeletal_Animation.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Animation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -325,6 +331,12 @@
     <ClInclude Include="Simulation\SpringTest.h">
       <Filter>Simulation</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\Skeletal_Animation.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Animation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -359,6 +371,9 @@
     </Filter>
     <Filter Include="Physics\Joints">
       <UniqueIdentifier>{b92ca019-0cae-441e-92ef-38731d3d9348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{858a9146-3e19-4029-8861-27585932752b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
