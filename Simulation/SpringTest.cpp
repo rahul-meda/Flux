@@ -1,7 +1,6 @@
 
 #include "SpringTest.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -16,12 +15,6 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	Simulation::Init(window, width, height);
 
 	HMesh mesh;
-
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-	unsigned int capsuleModel = Graphics::GetInstance().capsuleModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/earth_10k.jpg");
@@ -32,7 +25,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	Material material;
 	material.diffuseMap = wheelTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -41,7 +34,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	HullCollider* hull;
 	SphereCollider* sphereCollider;
 	CapsuleCollider* capsuleCollider;
-	R_Object obj;
+	R_Mesh obj;
 	
 	glm::vec3 p = glm::vec3(0.0f, 9.0f, 0.0f);
 	tx = Transform(p);
@@ -60,7 +53,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 1.0f, 0.25f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -84,7 +77,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

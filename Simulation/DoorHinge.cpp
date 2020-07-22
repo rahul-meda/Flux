@@ -1,7 +1,6 @@
 
 #include "DoorHinge.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -17,12 +16,8 @@ DoorHinge& DoorHinge::GetInstance()
 
 void DoorHinge::Init()
 {
-	ModelDef box, sphere, line;
 	HMesh mesh;
-
 	ParseObj("Resources/Models/Box.obj", mesh);
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int emissionTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
@@ -30,7 +25,7 @@ void DoorHinge::Init()
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -39,7 +34,7 @@ void DoorHinge::Init()
 	HingeJointDef hjd;
 	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
 	unsigned int bid1, bid2;
-	R_Object obj;
+	R_Mesh obj;
 
 	float gap = 0.25f;
 	glm::vec3 s1(1.0f, 0.05f, 0.05f);
@@ -57,13 +52,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -81,13 +76,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -119,13 +114,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -143,13 +138,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -178,13 +173,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = metalDfTxt;
 	material.specularMap = metalDfTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -202,13 +197,13 @@ void DoorHinge::Init()
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

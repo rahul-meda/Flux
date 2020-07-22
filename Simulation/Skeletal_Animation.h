@@ -16,6 +16,7 @@ public:
 	~Skeletal_Animation() {};
 
 	Animation walkAnimation;
+	Animation runAnimation;
 	std::vector<unsigned int> objIds;
 	bool pause;
 	glm::vec3 pos;

@@ -1,7 +1,6 @@
 
 #include "Bike.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -19,11 +18,6 @@ Bike& Bike::GetInstance()
 void Bike::Init()
 {
 	HMesh mesh;
-	
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/earth_10k.jpg");
@@ -33,7 +27,7 @@ void Bike::Init()
 	Material material;
 	material.diffuseMap = hingeTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -41,7 +35,7 @@ void Bike::Init()
 	std::vector<unsigned int> bids;
 	HullCollider* hull;
 	SphereCollider* sphereCollider;
-	R_Object obj;
+	R_Mesh obj;
 	glm::vec3 s(0.5f, 0.16f, 0.5f);
 
 	glm::vec3 p(-0.55f, 0.6f, 0.0f);
@@ -63,7 +57,7 @@ void Bike::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -87,7 +81,7 @@ void Bike::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.1f, 0.1f, 0.1f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -131,7 +125,7 @@ void Bike::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(2.5f, 0.25f, 2.5f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

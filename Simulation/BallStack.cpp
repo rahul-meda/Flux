@@ -5,7 +5,6 @@
 #include "../Physics/HullCollider.h"
 #include "../Physics/SphereCollider.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 
@@ -17,28 +16,20 @@ BallStack& BallStack::GetInstance()
 
 void BallStack::Init()
 {
-	ModelDef box, sphere, line;
 	HMesh mesh;
-	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
-	R_Object obj;
-
-	CreateSphere(sphere);
-	unsigned int sphereModel = Graphics::GetInstance().CreateModel(sphere);
+	R_Mesh obj;
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
 	glm::vec3 s(1.0f);
@@ -63,7 +54,7 @@ void BallStack::Init()
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(s));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
-					obj.modelIDs.push_back(boxModel);
+					obj.LoadModel("resources/models/box/box.obj");
 					obj.materials.push_back(material);
 					obj.scale = s;
 					Graphics::GetInstance().objects.push_back(obj);
@@ -74,7 +65,7 @@ void BallStack::Init()
 					SphereCollider* sphereCollider = new SphereCollider();
 					sphereCollider->Scale(1.0f);
 					Physics::GetInstance().AddCollider(bID, sphereCollider);
-					obj.modelIDs.push_back(sphereModel);
+					obj.LoadModel("resources/models/sphere/sphere.obj");
 					obj.materials.push_back(material);
 					obj.scale = glm::vec3(1.0f);
 					Graphics::GetInstance().objects.push_back(obj);

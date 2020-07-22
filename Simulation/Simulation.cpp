@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Simulation.h"
 #include "../Graphics/Shader.h"
-#include "../Components/Model.h"
 #include "../Mesh/Geometry.h"
 #include "../Mesh/ObjParser.h"
 #include "../Physics/Physics.h"
@@ -28,7 +27,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 1.0f, 100.0f);
 	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().Initialize();
@@ -36,18 +35,8 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", "Resources/WorldFragmentShader.frag");
 
-	ModelDef floor;
 	HMesh mesh;
-
 	ParseObj("Resources/Models/Box.obj", mesh);
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	mesh.GetModelData(floor);
-	int N = floor.textureCoords.size();
-	for (int i = 0; i < N; ++i)
-	{
-		floor.textureCoords[i] *= 20.0f;
-	}
-	unsigned int floorModel = Graphics::GetInstance().CreateModel(floor);
 
 	unsigned int floorDfTexture = Graphics::GetInstance().CreateTexture("resources/textures/chess2.jpg");
 	unsigned int floorSpTexture = Graphics::GetInstance().CreateTexture("resources/textures/carbon_fiber3_sp.jpg");
@@ -56,23 +45,23 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	floorMaterial.diffuseMap = floorDfTexture;
 	floorMaterial.specularMap = floorDfTexture;
 	floorMaterial.emissionMap = floorEmTexture;
-	floorMaterial.count = 3;
+	floorMaterial.nMaps = 3;
 
 	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 	unsigned int ballEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
 	material.diffuseMap = ballDfTxt;
 	material.specularMap = ballDfTxt;
 	material.emissionMap = ballEmTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
-	R_Object obj;
+	R_Mesh obj;
 	glm::vec3 s1(500.0f, 0.5f, 500.0f);
 
-	tx = Transform(glm::vec3(0.0f, -0.5f, 0.0f), glm::identity<glm::quat>());
+	tx = Transform(glm::vec3(0.0f, -0.5f, 0.0f), glm::angleAxis(PI, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
@@ -85,7 +74,8 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
-	obj.modelIDs.push_back(floorModel);
+	obj.LoadModel("resources/models/floor/floor.obj");
+	obj.materials.clear();
 	obj.materials.push_back(floorMaterial);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -95,7 +85,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	wallMaterial.diffuseMap = wallTexture;
 	wallMaterial.specularMap = wallTexture;
 	wallMaterial.emissionMap = ballEmTxt;
-	wallMaterial.count = 3;
+	wallMaterial.nMaps = 3;
 
 	glm::vec3 s2(0.5f, 100.0f, 50.0f);
 	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -111,7 +101,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -130,7 +120,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -150,7 +140,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -169,7 +159,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -177,7 +167,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									 "Resources/FragmentShader.frag");
 
-	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 0.5f,  50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 2.5f,  50.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3( 50.0f, 0.5f,  50.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 0.5f, -50.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3( 50.0f, 0.5f, -50.0f));
@@ -205,7 +195,6 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
 		Transform tx = Transform(camera.position + 3.0f*camera.fwd);
-		ModelDef sphere;
 		BodyDef bd;
 		bd.tx = tx;
 		bd.isStatic = false;
@@ -215,14 +204,13 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		sphereCollider->Scale(0.25f);
 		sphereCollider->massData->density = 1.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
-		unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-		R_Object obj;
+		R_Mesh obj;
 		obj.pos = tx.position;
 		obj.rot = tx.R;
 		obj.scales.push_back(glm::vec3(0.25f));
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
-		obj.modelIDs.push_back(sphereModel);
+		obj.LoadModel("resources/models/sphere/sphere.obj");
 		obj.materials.push_back(material);
 		obj.scale = glm::vec3(1.0f);
 		Graphics::GetInstance().objects.push_back(obj);

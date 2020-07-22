@@ -1,7 +1,6 @@
 
 #include "Skeletal_Animation.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -25,11 +24,8 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	pos = glm::vec3(0.0f, 3.0f, 0.0f);
 	rot = glm::angleAxis(0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	R = glm::mat3(1.0f);
-
-	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
 
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal11_sp.jpg");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal11_sp.jpg");
@@ -39,34 +35,30 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	Material material;
 	material.diffuseMap = ballTxt;
 	material.specularMap = ballTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
-	R_Object obj;
-
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-	unsigned int cubeModel = Graphics::GetInstance().cubeModelID;
+	R_Mesh obj;
 
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
 	material.emissionMap = boxEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	unsigned int objId = Graphics::GetInstance().objects.size() - 1;
 
 	// pelivs / root
 	glm::vec3 p = glm::vec3(0.0f, 3.0f, 0.0f);
-	glm::quat q = glm::angleAxis(0.0f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::quat q = glm::angleAxis(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p, q);
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	CapsuleCollider* capsuleCollider = new CapsuleCollider();
-	float r = 0.5f;
+	float r = 0.25f;
 	float h = 0.25f;
 	capsuleCollider->Scale(r);
 	capsuleCollider->H = h;
@@ -77,17 +69,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -110,17 +102,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -143,17 +135,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -176,17 +168,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -209,17 +201,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -233,10 +225,10 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	capsuleCollider = new CapsuleCollider();
-	r = 0.5f;
-	h = 0.66f;
+	r = 0.05f;
+	h = 0.05f;
 	capsuleCollider->Scale(r);
-	capsuleCollider->H = 0.66f;
+	capsuleCollider->H = h;
 	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
 	Physics::GetInstance().AddCollider(bID, capsuleCollider);
 	obj.pos = tx.position;
@@ -244,17 +236,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -277,17 +269,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -310,17 +302,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -343,17 +335,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -376,17 +368,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -400,33 +392,35 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
 	capsuleCollider = new CapsuleCollider();
-	capsuleCollider->Scale(0.2f);
-	capsuleCollider->H = 0.1f;
+	r = 0.1f;
+	h = 0.2f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
 	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
 	Physics::GetInstance().AddCollider(bID, capsuleCollider);
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(glm::vec3(0.2f, 0.1f, 0.2f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
-	obj.posOffsets.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
-	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
-	obj.posOffsets.push_back(glm::vec3(0.0f, -0.1f, 0.0f));
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
-	obj.scales.push_back(glm::vec3(0.2f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
 
 	// head
-	p = glm::vec3(0.0f, 5.9f, 0.0f);
+	p = glm::vec3(0.0f, 5.7f, 0.0f);
 	q = glm::angleAxis(0.0f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p, q);
 	bd.tx = tx;
@@ -434,25 +428,262 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	bID = Physics::GetInstance().AddBody(bd);
 	SphereCollider* sphereCollider = new SphereCollider();
 	sphereCollider->com = glm::vec3(0.0f);
-	sphereCollider->Scale(0.35f);
+	sphereCollider->Scale(0.25f);
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(glm::vec3(0.35f));
-	obj.modelIDs.push_back(cubeModel);
+	obj.scales.push_back(glm::vec3(0.25f, 0.25f, 0.3f));
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.0f, 2.5f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.25f;
+	h = 0.5f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.0f, 3.5f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.25f;
+	h = 0.25f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.0f, 4.0f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.25f;
+	h = 0.25f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.0f, 4.5f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.25f;
+	h = 0.25f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.0f, 5.0f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.25f;
+	h = 0.5f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(0.5f, 0.3f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.2f;
+	h = 0.2f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	Graphics::GetInstance().objects.push_back(obj);
+	obj.Clear();
+	objIds.push_back(++objId);
+
+	p = glm::vec3(-0.5f, 0.3f, 0.0f);
+	q = glm::angleAxis(0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f));
+	tx = Transform(p, q);
+	bd.tx = tx;
+	bd.isStatic = true;
+	bID = Physics::GetInstance().AddBody(bd);
+	capsuleCollider = new CapsuleCollider();
+	r = 0.2f;
+	h = 0.2f;
+	capsuleCollider->Scale(r);
+	capsuleCollider->H = h;
+	capsuleCollider->upB = glm::vec3(0.0f, 1.0f, 0.0f);
+	Physics::GetInstance().AddCollider(bID, capsuleCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.posOffsets.push_back(glm::vec3(0.0f));
+	obj.rotOffsets.push_back(glm::mat3(1.0f));
+	obj.scales.push_back(glm::vec3(r, h, r));
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
+	obj.materials.push_back(material);
+	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
+	obj.rotOffsets.push_back(tx.R);
+	obj.scales.push_back(glm::vec3(r));
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
 
 	std::vector<Bone> bones;
-	bones.push_back(Bone(0,  0,	 {1, 3, 5}));						// root
+	bones.push_back(Bone(0,  0,	 {1, 3, 5, 12, 13, 14, 15, 16}));	// root
 	bones.push_back(Bone(1,  0,	 {2}));								// u_rightLeg
-	bones.push_back(Bone(2,  1,	 {}));								// l_rightLeg
+	bones.push_back(Bone(2,  1,	 {17}));							// l_rightLeg
 	bones.push_back(Bone(3,  0,  {4}));							    // u_leftLeg
-	bones.push_back(Bone(4,  3,  {}));								// l_leftLeg
+	bones.push_back(Bone(4,  3,  {18}));								// l_leftLeg
 	bones.push_back(Bone(5,  0,  {6, 8, 10}));						// spine
 	bones.push_back(Bone(6,  5,  {7}));								// u_rightArm
 	bones.push_back(Bone(7,  6,  {}));								// l_rightArm
@@ -460,9 +691,16 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	bones.push_back(Bone(9,  8,  {}));								// l_leftArm
 	bones.push_back(Bone(10, 5,  {11}));							// neck
 	bones.push_back(Bone(11, 10, {}));								// head
+	bones.push_back(Bone(12, 0, {}));
+	bones.push_back(Bone(13, 0, {}));
+	bones.push_back(Bone(14, 0, {}));
+	bones.push_back(Bone(15, 0, {}));
+	bones.push_back(Bone(16, 0, {}));
+	bones.push_back(Bone(17, 2, {}));
+	bones.push_back(Bone(18, 4, {}));
 
 	std::vector<Transform> tf(bones.size());
-	tf[0] = Transform(glm::vec3(0.0f, 3.0f, 0.0f));
+	tf[0] = Transform(glm::vec3(0.0f, 0.0f, 0.0f));
 	tf[1] = Transform(glm::vec3(0.5f, -1.0f, 0.0f));
 	tf[2] = Transform(glm::vec3(0, -1.25f, 0));
 	tf[3] = Transform(glm::vec3(-0.5f, -1.0f, 0));
@@ -473,14 +711,26 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	tf[8] = Transform(glm::vec3(-0.65f, 0.15f, 0));
 	tf[9] = Transform(glm::vec3(0.0f, -0.95f, 0));
 	tf[10] = Transform(glm::vec3(0, 1.25f, 0));
-	tf[11] = Transform(glm::vec3(0, 0.45f, 0));
+	tf[11] = Transform(glm::vec3(0, 0.25f, 0));
+	tf[12] = Transform(glm::vec3(0, -0.5f, 0), glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
+	tf[13] = Transform(glm::vec3(0, 0.5f, 0), glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
+	tf[14] = Transform(glm::vec3(0, 1.0f, 0), glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
+	tf[15] = Transform(glm::vec3(0, 1.5f, 0), glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
+	tf[16] = Transform(glm::vec3(0, 2.0f, 0), glm::angleAxis(0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
+	tf[17] = Transform(glm::vec3(0.0f, -0.7f, -0.25f), glm::angleAxis(0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)));
+	tf[18] = Transform(glm::vec3(0.0f, -0.7f, -0.25f), glm::angleAxis(0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	std::vector<KeyFrame> frames(9);
+
 	frames[0].timeStamp = 0.0f;
-	for (int i = 1; i < frames.size(); ++i)
-	{
-		frames[i].timeStamp = 0.15f * i;
-	}
+	frames[1].timeStamp = 0.15f;
+	frames[2].timeStamp = 0.25f;
+	frames[3].timeStamp = 0.4f;
+	frames[4].timeStamp = 0.5f;
+	frames[5].timeStamp = 0.65f;
+	frames[6].timeStamp = 0.767f;
+	frames[7].timeStamp = 0.883f;
+	frames[8].timeStamp = 1.0f;
 
 	for (int i = 0; i < frames.size(); ++i)
 	{
@@ -490,18 +740,12 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 		}
 	}
 
-	glm::vec3 pos(0.0f, 3.0f, 0.0f);
-	for (int i = 0; i < frames.size(); ++i)
-	{
-		frames[i].pose[0] = Transform(pos);
-	}
-
 	float l = 0.5f;
-	float angle = 0.083 * PI;
+	float angle = 0.166f * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[0].pose[1] = Transform(p, q);
-	angle = 0.083 * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[0].pose[3] = Transform(p, q);
@@ -526,19 +770,19 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[0].pose[9] = Transform(p, q);
 
-	angle = 0.166f * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[1].pose[1] = Transform(p, q);
-	angle = 0.166f * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[1].pose[2] = Transform(p, q);
-	angle = 0.083 * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[1].pose[3] = Transform(p, q);
-	angle = 0.11f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[1].pose[4] = Transform(p, q);
@@ -560,10 +804,18 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	frames[1].pose[9] = Transform(p, q);
 
 	angle = 0.083f * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[2].pose[1] = Transform(p, q);
+	angle = 0.083f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[2].pose[2] = Transform(p, q);
+	angle = 0.083f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[2].pose[3] = Transform(p, q);
-	angle = 0.166f * PI;
+	angle = 0.333f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[2].pose[4] = Transform(p, q);
@@ -584,15 +836,15 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[2].pose[9] = Transform(p, q);
 
-	angle = 0.055 * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[3].pose[1] = Transform(p, q);
-	angle = 0.083f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[3].pose[3] = Transform(p, q);
-	angle = 0.083f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[3].pose[4] = Transform(p, q);
@@ -601,7 +853,7 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[3].pose[9] = Transform(p, q);
 
-	angle = 0.11 * PI;
+	angle = 0.25 * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[4].pose[1] = Transform(p, q);
@@ -609,7 +861,7 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[4].pose[2] = Transform(p, q);
-	angle = 0.083f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[4].pose[3] = Transform(p, q);
@@ -630,19 +882,20 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[4].pose[9] = Transform(p, q);
 
-	angle = 0.11 * PI;
+	frames[5].pose[0] = Transform(glm::vec3(0.0f, -0.2f, 0.0f));
+	angle = 0.25f * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[5].pose[1] = Transform(p, q);
-	angle = 0.11f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[5].pose[2] = Transform(p, q);
-	angle = 0.166f * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[5].pose[3] = Transform(p, q);
-	angle = 0.166f * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[5].pose[4] = Transform(p, q);
@@ -663,14 +916,22 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[5].pose[9] = Transform(p, q);
 
-	angle = 0.086 * PI;
+	angle = 0.083 * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[6].pose[1] = Transform(p, q);
-	angle = 0.166f * PI;
+	angle = 0.333f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[6].pose[2] = Transform(p, q);
+	angle = 0.083f * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[6].pose[3] = Transform(p, q);
+	angle = 0.083f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[6].pose[4] = Transform(p, q);
 	angle = 0.055 * PI;
 	p = glm::vec3(0.65f, 0.15f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -688,15 +949,16 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[6].pose[9] = Transform(p, q);
 
-	angle = 0.086 * PI;
+	frames[7].pose[0] = Transform(glm::vec3(0.0f, 0.2f, 0.0f));
+	angle = 0.166 * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[7].pose[1] = Transform(p, q);
-	angle = 0.086f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[7].pose[2] = Transform(p, q);
-	angle = 0.055f * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[7].pose[3] = Transform(p, q);
@@ -705,15 +967,15 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[7].pose[7] = Transform(p, q);
 
-	angle = 0.086 * PI;
+	angle = 0.166f * PI;
 	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[8].pose[1] = Transform(p, q);
-	angle = 0.11f * PI;
+	angle = 0.25f * PI;
 	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[8].pose[3] = Transform(p, q);
-	angle = 0.055f * PI;
+	angle = 0.083f * PI;
 	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
 	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[8].pose[4] = Transform(p, q);
@@ -735,6 +997,130 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	frames[8].pose[9] = Transform(p, q);
 
 	walkAnimation.Init(bones, frames);
+
+	/*frames.clear();
+	frames = std::vector<KeyFrame>(9);
+
+	frames[0].timeStamp = 0.0f;
+	frames[1].timeStamp = 0.15f;
+	frames[2].timeStamp = 0.25f;
+	frames[3].timeStamp = 0.4f;
+	frames[4].timeStamp = 0.5f;
+	frames[5].timeStamp = 0.65f;
+	frames[6].timeStamp = 0.767f;
+	frames[7].timeStamp = 0.883f;
+	frames[8].timeStamp = 1.0f;
+
+	for (int i = 0; i < frames.size(); ++i)
+	{
+		for (int j = 0; j < tf.size(); ++j)
+		{
+			frames[i].pose.push_back(tf[j]);
+		}
+	}
+
+	angle = 0.25 * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[0].pose[1] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[0].pose[2] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[0].pose[3] = Transform(p, q);
+
+	angle = 0.5f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[1].pose[2] = Transform(p, q);
+
+	angle = 0.25 * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[2].pose[1] = Transform(p, q);
+	angle = 0.5f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[2].pose[2] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[2].pose[3] = Transform(p, q);
+
+	angle = 0.25 * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[3].pose[1] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[3].pose[2] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[3].pose[3] = Transform(p, q);
+
+	angle = 0.166 * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[4].pose[1] = Transform(p, q);
+	angle = 0.166f * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[4].pose[3] = Transform(p, q);
+	angle = 0.33f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[4].pose[4] = Transform(p, q);
+
+	angle = 0.5f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[5].pose[4] = Transform(p, q);
+
+	angle = 0.25f * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[6].pose[1] = Transform(p, q);
+	angle = 0.25 * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[6].pose[3] = Transform(p, q);
+	angle = 0.5f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[6].pose[4] = Transform(p, q);
+
+	angle = 0.25f * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[7].pose[1] = Transform(p, q);
+	angle = 0.25 * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[7].pose[3] = Transform(p, q);
+	angle = 0.25f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[7].pose[4] = Transform(p, q);
+
+	angle = 0.166f * PI;
+	p = glm::vec3(0.5f, -1.0f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[8].pose[1] = Transform(p, q);
+	angle = 0.33f * PI;
+	p = glm::vec3(0.0f, -1.25f + (l - l * cosf(angle)), l * sinf(angle));
+	q = glm::angleAxis(-angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[8].pose[2] = Transform(p, q);
+	angle = 0.166 * PI;
+	p = glm::vec3(-0.5f, -1.0f + (l - l * cosf(angle)), -l * sinf(angle));
+	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	frames[8].pose[3] = Transform(p, q);
+
+	runAnimation.Init(bones, frames);*/
 }
 
 void Skeletal_Animation::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
@@ -754,7 +1140,7 @@ void Skeletal_Animation::OnKeyPress(GLFWwindow * window)
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
 		glm::vec3 fwd = -R[2];
-		const static float t = 0.025;
+		const static float t = 0.05;
 		pos += t * fwd;
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -774,9 +1160,8 @@ void Skeletal_Animation::Update(GLFWwindow* window)
 	Simulation::Update(window);
 
 	R = glm::toMat3(rot);
-
-	Physics::GetInstance().bodies[objIds[0]]->SetTransform(Transform(pos, rot));
-	Physics::GetInstance().positions[objIds[0]] = Position(pos, rot);
+	//Physics::GetInstance().bodies[objIds[0]]->SetTransform(Transform(pos, rot));
+	//Physics::GetInstance().positions[objIds[0]] = Position(pos, rot);
 
 	for (int i = 0; i < walkAnimation.frames.size(); ++i)
 	{
@@ -786,6 +1171,7 @@ void Skeletal_Animation::Update(GLFWwindow* window)
 	if (!pause)
 	{
 		walkAnimation.Update();
+		//runAnimation.Update();
 	}
 	
 	int i = objIds[0];

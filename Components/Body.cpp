@@ -29,7 +29,7 @@ void Body::SynchronizeTransform(int i)
 	tx.R = glm::toMat3(orientation);
 	tx.position = comW - (tx.R * comL);
 
-	R_Object* obj = &Graphics::GetInstance().objects[i];
+	R_Mesh* obj = &Graphics::GetInstance().objects[i];
 	obj->pos = tx.position;
 	obj->rot = tx.R;
 }

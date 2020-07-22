@@ -53,11 +53,8 @@ struct HMesh
 	std::vector<HVertex*> vertices;
 	std::vector<HEdge*> edges;
 	std::vector<HFace*> faces;
-	std::vector<glm::vec3> vt;	// texture coords
 
 	void Scale(const glm::vec3& scale);
-
-	void GetModelData(ModelDef& md) const;
 
 	void GetColliderData(HullCollider* c) const;
 

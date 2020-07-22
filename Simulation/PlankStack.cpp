@@ -4,7 +4,6 @@
 #include "../Physics/Physics.h"
 #include "../Physics/HullCollider.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 
@@ -16,25 +15,21 @@ PlankStack& PlankStack::GetInstance()
 
 void PlankStack::Init()
 {
-	ModelDef box, sphere, line;
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
-	mesh.GetModelData(box);
-	unsigned int boxModel = Graphics::GetInstance().CreateModel(box);
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
-	R_Object obj;
+	R_Mesh obj;
 
 	glm::vec3 s(1.0f, 0.5f, 0.1f);
 
@@ -56,7 +51,7 @@ void PlankStack::Init()
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				obj.modelIDs.push_back(boxModel);
+				obj.LoadModel("resources/models/box/box.obj");
 				obj.materials.push_back(material);
 				obj.scale = s;
 				Graphics::GetInstance().objects.push_back(obj);
@@ -76,7 +71,7 @@ void PlankStack::Init()
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				obj.modelIDs.push_back(boxModel);
+				obj.LoadModel("resources/models/box/box.obj");
 				obj.materials.push_back(material);
 				obj.scale = s;
 				Graphics::GetInstance().objects.push_back(obj);

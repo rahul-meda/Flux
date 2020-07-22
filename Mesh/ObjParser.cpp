@@ -79,7 +79,6 @@ void ParseLine(std::vector<ObjFace>& objFaces, HMesh& mesh, const std::string& l
 	{
 		glm::vec3 v(0.0f);
 		sscanf(line.c_str(), "vt %f %f", &v.x, &v.y);
-		mesh.vt.push_back(v);
 	}
 }
 

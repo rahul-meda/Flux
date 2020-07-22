@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Components/Model.h"
 #include <vector>
+#include <glm/glm.hpp>
 
 #define PI 3.14159265359f
 
@@ -43,15 +43,5 @@ struct AABB
 bool Overlap(AABB* A, AABB* B);
 
 void ComputeBasis(const glm::vec3& v1, glm::vec3* v2, glm::vec3* v3);
-
-void CreateLine(ModelDef& md);
-
-void CreateSphere(ModelDef& md);
-
-void CreateCapsule(ModelDef& md);
-
-void CreateCircle(std::vector<glm::vec3>& verts);
-
-void CreateCylinder(ModelDef& md);
 
 #include "Geometry.inl"

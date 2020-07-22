@@ -1,7 +1,6 @@
 
 #include "Machines.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -18,23 +17,20 @@ Machines& Machines::GetInstance()
 
 void Machines::Init()
 {
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
 	Material material;
 	material.diffuseMap = metalTxt;
 	material.specularMap = metalTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	HMesh mesh;
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* hull;
-	R_Object obj;
+	R_Mesh obj;
 
 	float H = 50.0f;
 	glm::vec3 p = glm::vec3(0.0f, H, 0.0f);
@@ -58,7 +54,7 @@ void Machines::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 
 	int N = 4;
@@ -78,7 +74,7 @@ void Machines::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(s);
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 	}
 	for (int i = 1; i < N - 1; ++i)
@@ -97,7 +93,7 @@ void Machines::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(s);
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 	}
 
@@ -112,7 +108,7 @@ void Machines::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -132,7 +128,7 @@ void Machines::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.5f * H, 0.5f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	hull = new HullCollider();
 	mesh.GetColliderData(hull);
@@ -141,7 +137,7 @@ void Machines::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.0f, -6.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.5f * H, 0.5f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -159,7 +155,7 @@ void Machines::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.1f, 0.1f, 0.5f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -181,7 +177,7 @@ void Machines::Init()
 
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	float step = (2.0f * PI) / (4 * (N - 1));
 
 	for (int i = 0; i < 4 * (N - 1); ++i)
@@ -204,7 +200,7 @@ void Machines::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(1.0f));
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();

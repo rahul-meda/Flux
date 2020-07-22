@@ -1,8 +1,8 @@
 #include "Window.h"
 #include <iostream>
 
-#define WIDTH 1920
-#define HEIGHT 1080
+#define WIDTH 1280
+#define HEIGHT 1024
 
 GLFWwindow * Window::CreateWindow(int& width, int& height)
 {

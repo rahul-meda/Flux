@@ -1,7 +1,6 @@
 
 #include "Domino1.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -20,9 +19,6 @@ void Domino1::Init()
 {
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/earth_10k.jpg");
@@ -31,14 +27,14 @@ void Domino1::Init()
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 	SphereCollider* sphereCollider;
-	R_Object obj;
+	R_Mesh obj;
 	glm::vec3 s(0.35f, 0.7f, 0.05f);
 	float gap = s.y * 0.5f;
 	float r = 12.0f;
@@ -68,7 +64,7 @@ void Domino1::Init()
 			obj.posOffsets.push_back(glm::vec3(0.0f));
 			obj.rotOffsets.push_back(glm::mat3(1.0f));
 			obj.scales.push_back(s);
-			obj.modelIDs.push_back(boxModel);
+			obj.LoadModel("resources/models/box/box.obj");
 			obj.materials.push_back(material);
 			Graphics::GetInstance().objects.push_back(obj);
 			obj.Clear();
@@ -77,7 +73,7 @@ void Domino1::Init()
 
 	material.diffuseMap = hingeTxt;
 	material.specularMap = hingeTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	glm::vec3 p(12.0f + s.x + 1.0f - 0.25f, 2.0f * s.y - 0.1f, s.z + 0.1f);
 	for (int j = 0; j < 5; ++j)
 	{
@@ -99,7 +95,7 @@ void Domino1::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
@@ -121,7 +117,7 @@ void Domino1::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
@@ -146,7 +142,7 @@ void Domino1::Init()
 
 	material.diffuseMap = rampTxt;
 	material.specularMap = rampTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	p = glm::vec3(12.0f + s.x + 1.0f - 0.25f - 1.0f, 2.0f * s.y - 0.1f + 3.0f, s.z + 0.1f + 5.0f);
 	tx = Transform(p, glm::angleAxis(-PI * 0.1f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
@@ -161,7 +157,7 @@ void Domino1::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.1f, 5.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

@@ -54,6 +54,7 @@
     <ClCompile Include="Physics\SpringConstraint.cpp" />
     <ClCompile Include="Physics\UniversalJoint.cpp" />
     <ClCompile Include="Physics\WheelJoint.cpp" />
+    <ClCompile Include="Simulation\Assimp_Test.cpp" />
     <ClCompile Include="Simulation\BallStack.cpp" />
     <ClCompile Include="Simulation\Bike.cpp" />
     <ClCompile Include="Simulation\BoxStack.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Physics\SpringConstraint.h" />
     <ClInclude Include="Physics\UniversalJoint.h" />
     <ClInclude Include="Physics\WheelJoint.h" />
+    <ClInclude Include="Simulation\Assimp_Test.h" />
     <ClInclude Include="Simulation\Ballstack.h" />
     <ClInclude Include="Simulation\Bike.h" />
     <ClInclude Include="Simulation\BoxStack.h" />
@@ -217,7 +219,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -227,7 +229,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -241,7 +243,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -255,7 +257,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

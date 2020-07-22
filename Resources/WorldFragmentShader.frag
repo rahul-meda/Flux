@@ -29,7 +29,7 @@ void main()
 {
 	normal = normalize(vNormal);
 	viewDir = normalize(eyePos - fragPos);
-	globalLightDir = normalize(vec3(-0.2f, -1.0f, -0.3f));
+	globalLightDir = normalize(vec3(-0.0f, -1.0f, -0.0f));
 
 	lightColors[0] = vec3(1.0f, 0.0f, 0.0f);
 	lightColors[1] = vec3(0.0f, 1.0f, 0.0f);

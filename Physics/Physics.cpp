@@ -2,7 +2,6 @@
 #include "Physics.h"
 #include "../Graphics/Graphics.h"
 #include "../Components/Body.h"
-#include "../Components/Model.h"
 #include "NarrowPhase.h"
 #include "ContactSolver.h"
 #include <ctime>

@@ -3,7 +3,6 @@
 #include "ContactManager.h"
 #include "Contact.h"
 #include "../Graphics/Graphics.h"
-#include "../Components/Model.h"
 #include <iostream>
 
 ContactManager::ContactManager()

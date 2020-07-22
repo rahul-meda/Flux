@@ -41,12 +41,6 @@ public:
 
 	void Init(const std::vector<Bone>& bones, const std::vector<KeyFrame>& frames);
 
-	// boneId  - generate poses for this bone
-	// l       - length of the bone
-	// angle   - list of angles at specific keyframes
-	// nFrames - no.of frames generated for a pair of angles
-	void GeneratePoses(unsigned int boneId, float l, std::vector<float> angle, int nFrames);
-
 	void Update();
 
 	std::vector<glm::mat4>& GetFinalTransforms();

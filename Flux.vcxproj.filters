@@ -166,6 +166,9 @@
     <ClCompile Include="Animation\Animation.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\Assimp_Test.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -336,6 +339,9 @@
     </ClInclude>
     <ClInclude Include="Animation\Animation.h">
       <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\Assimp_Test.h">
+      <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@
 void Animation::Init(const std::vector<Bone>& bones, const std::vector<KeyFrame>& keyFrames)
 {
 	frames = keyFrames;
-	duration = 1.2f;
+	duration = 1.0f;
 	elapsed = 0.0f;
 	nBones = bones.size();
 	this->bones = bones;

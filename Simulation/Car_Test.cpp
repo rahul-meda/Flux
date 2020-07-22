@@ -1,7 +1,6 @@
 
 #include "Car_Test.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
@@ -22,11 +21,6 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	steerFactor = 0.25f;
 
 	HMesh mesh;
-
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-	unsigned int capsuleModel = Graphics::GetInstance().capsuleModelID;
 
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
@@ -52,7 +46,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	material.diffuseMap = wheelDfTxt;
 	material.specularMap = boxSpTxt;
 	material.emissionMap = wheelEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	Transform tx;
 	BodyDef bd;
@@ -61,7 +55,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	HullCollider* hull;
 	SphereCollider* sphereCollider;
 	CapsuleCollider* capsuleCollider;
-	R_Object obj;
+	R_Mesh obj;
 	std::vector<glm::vec3> anchors;
 	glm::vec3 sw(0.9f, 0.3f, 0.9f);		// wheel size
 	glm::vec3 sc(5.0f, 0.3f, 2.0f);		// chassis size
@@ -87,7 +81,6 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	hull->friction = 0.9f;
 	hull->restitution = er;
 	hull->massData->density = dw;
-	//Physics::GetInstance().AddCollider(bID, hull);
 	sphereCollider = new SphereCollider();
 	sphereCollider->Scale(sw.x);
 	sphereCollider->friction = 0.9f;
@@ -99,7 +92,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -130,7 +123,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -161,7 +154,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -192,7 +185,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
-	obj.modelIDs.push_back(cylinderModel);
+	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -202,10 +195,9 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	material.diffuseMap  = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = windowEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	// chassis
-	ModelDef carModel;
 	p = glm::vec3(0.0f, gapV + sc.y, 0.0f);
 	tx = Transform(p);
 	bd.tx = tx;
@@ -223,13 +215,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sc);
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap  = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = engineEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(0.0f, 1.0f, 0.0f);
 	tx = Transform(p);
@@ -243,7 +235,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	p = glm::vec3(0.0f, 0.9f, -sc.z - gapH);
@@ -258,7 +250,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(3.0f, 0.6f, 0.1f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	p = glm::vec3(0.0f, 0.9f, sc.z + gapH);
@@ -273,13 +265,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(3.0f, 0.6f, 0.1f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = bonetEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(sc.x + 0.1f, 0.9f, 0.0f);
 	tx = Transform(p);
@@ -293,13 +285,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.3f, 0.6f, sc.z));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = bonetEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(-sc.x - 0.2f, 0.9f, 0.0f);
 	tx = Transform(p);
@@ -313,7 +305,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 0.6f, sc.z));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	p = glm::vec3(-sc.x - 0.4f, 1.6f, 1.75f);
@@ -328,7 +320,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.05f, 0.5f, 0.05));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	p = glm::vec3(-sc.x - 0.4f, 1.6f, -1.75f);
@@ -343,13 +335,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.05f, 0.5f, 0.05));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap  = spoilerDfTxt;
 	material.specularMap = spoilerSpTxt;
 	material.emissionMap = spoilerEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(-sc.x - 1.2f, 2.0f, 0.0f);
 	tx = Transform(p);
@@ -363,13 +355,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 0.05f, 2.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap  = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = hoodEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(3.0f, 1.4f, 0.0f);
 	tx = Transform(p);
@@ -383,13 +375,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(2.0f, 0.097f, 1.97f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = spoilerEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(0.5f, 1.9f, 0.0f);
 	tx = Transform(p, glm::angleAxis(-0.25f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -403,13 +395,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.707f, 0.1f, 2.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = bonetEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(-0.9f, 2.4f, 0.0f);
 	tx = Transform(p);
@@ -423,13 +415,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.1f, 2.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = spoilerEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(-3.5f, 1.854f, 0.0f);
 	tx = Transform(p, glm::angleAxis(0.1f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -443,13 +435,13 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.732f, 0.1f, 1.97f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
 	material.emissionMap = engineEmTxt;
-	material.count = 3;
+	material.nMaps = 3;
 
 	p = glm::vec3(-sc.x + gapH + sw.x, sw.x, -sc.z - gapH + 0.1f);
 	tx = Transform(p, glm::angleAxis(0.15f, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -463,7 +455,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.6f, 0.1f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	p = glm::vec3(-sc.x + gapH + sw.x, sw.x, sc.z + gapH - 0.1f);
@@ -478,7 +470,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(tx.position);
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.57f, 0.1f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 
 	Graphics::GetInstance().objects.push_back(obj);
@@ -628,7 +620,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(10.0f, 0.25f, 10.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -659,7 +651,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
@@ -685,7 +677,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.1f, 1.0f, 0.1f));
-		obj.modelIDs.push_back(boxModel);
+		obj.LoadModel("resources/models/box/box.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
@@ -711,17 +703,17 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f, 4.0f, 0.5f));
-		obj.modelIDs.push_back(cylinderModel);
+		obj.LoadModel("resources/models/cylinder/cylinder.obj");
 		obj.materials.push_back(material);
 		obj.posOffsets.push_back(glm::vec3(0.0f, 4.0f, 0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(glm::vec3(0.5f));
-		obj.modelIDs.push_back(sphereModel);
+		obj.LoadModel("resources/models/sphere/sphere.obj"); 
 		obj.materials.push_back(material);
 		obj.posOffsets.push_back(glm::vec3(0.0f, -4.0f, 0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(glm::vec3(0.5f));
-		obj.modelIDs.push_back(sphereModel);
+		obj.LoadModel("resources/models/sphere/sphere.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();

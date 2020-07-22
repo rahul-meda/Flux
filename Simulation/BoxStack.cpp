@@ -6,7 +6,6 @@
 #include "../Physics/SphereCollider.h"
 #include "../Physics/CapsuleCollider.h"
 #include "../Mesh/ObjParser.h"
-#include "../Components/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Mesh/Geometry.h"
 
@@ -18,14 +17,7 @@ BoxStack& BoxStack::GetInstance()
 
 void BoxStack::Init()
 {
-	ModelDef box, sphere, line;
 	HMesh mesh;
-	ParseObj("Resources/Models/Box.obj", mesh);
-
-	unsigned int boxModel = Graphics::GetInstance().cubeModelID;
-	unsigned int sphereModel = Graphics::GetInstance().sphereModelID;
-	unsigned int cylinderModel = Graphics::GetInstance().cylinderModelID;
-
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
@@ -33,13 +25,13 @@ void BoxStack::Init()
 	Material material;
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxDfTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
-	R_Object obj;
+	R_Mesh obj;
 
 	glm::vec3 s(1.2f, 0.56f, 0.35f);
 	//s *= 1.5f;
@@ -74,7 +66,7 @@ void BoxStack::Init()
 				obj.posOffsets.push_back(glm::vec3(0.0f));
 				obj.rotOffsets.push_back(glm::mat3(1.0f));
 				obj.scales.push_back(s);
-				obj.modelIDs.push_back(boxModel);
+				obj.LoadModel("resources/models/box/box.obj");
 				obj.materials.push_back(material);
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -96,7 +88,7 @@ void BoxStack::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f, 0.1f, 1.0f));
-	obj.modelIDs.push_back(boxModel);
+	obj.LoadModel("resources/models/box/box.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -107,7 +99,7 @@ void BoxStack::Init()
 	int NL = 10;
 	material.diffuseMap = linkTxt;
 	material.specularMap = linkTxt;
-	material.count = 2;
+	material.nMaps = 2;
 
 	for (int i = 0; i < NL; ++i)
 	{
@@ -127,17 +119,17 @@ void BoxStack::Init()
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-		obj.modelIDs.push_back(cylinderModel);
+		obj.LoadModel("resources/models/cylinder/cylinder.obj");
 		obj.materials.push_back(material);
 		obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f));
-		obj.modelIDs.push_back(sphereModel);
+		obj.LoadModel("resources/models/sphere/sphere.obj");
 		obj.materials.push_back(material);
 		obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f));
-		obj.modelIDs.push_back(sphereModel);
+		obj.LoadModel("resources/models/sphere/sphere.obj");
 		obj.materials.push_back(material);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
@@ -154,7 +146,7 @@ void BoxStack::Init()
 
 	material.diffuseMap = metalTxt;
 	material.specularMap = metalTxt;
-	material.count = 2;
+	material.nMaps = 2;
 	p.z += 3.75f + gap + 4.0f;
 	tx = Transform(p);
 	bd.tx = tx;
@@ -169,7 +161,7 @@ void BoxStack::Init()
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(3.0f));
-	obj.modelIDs.push_back(sphereModel);
+	obj.LoadModel("resources/models/sphere/sphere.obj");
 	obj.materials.push_back(material);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

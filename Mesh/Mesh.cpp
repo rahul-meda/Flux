@@ -1,5 +1,5 @@
+
 #include "Mesh.h"
-#include "../Components/Model.h"
 #include "../Physics/HullCollider.h"
 
 glm::vec3 HEdge::GetDirection() const
@@ -36,68 +36,6 @@ void HMesh::Scale(const glm::vec3& scale)
 		v->position.x *= scale.x;
 		v->position.y *= scale.y;
 		v->position.z *= scale.z;
-	}
-}
-
-void HMesh::GetModelData(ModelDef& md) const
-{
-	for (HFace* f : faces)
-	{
-		HEdge* start = f->edge;
-		HEdge* e = start;
-		glm::vec3 first, second, third;
-		first = e->tail->position;
-		do		// triangle fan
-		{
-			second = e->next->tail->position;
-			e = e->next;
-			third = e->next->tail->position;
-
-			md.vertices.push_back(first);
-			md.normals.push_back(f->normal);
-			md.vertices.push_back(second);
-			md.normals.push_back(f->normal);
-			md.vertices.push_back(third);
-			md.normals.push_back(f->normal);
-		} while (e->next->next != start);
-	}
-
-	int N = md.vertices.size();
-	if (N == 36)
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			md.textureCoords.push_back(glm::vec3(0.0f));
-			if (abs(md.normals[i].x) > 0.5f)
-			{
-				if (md.vertices[i].y > 0.0f)
-					md.textureCoords[i].x = 1.0f;
-				if (md.vertices[i].z > 0.0f)
-					md.textureCoords[i].y = 1.0f;
-			}
-			else if (abs(md.normals[i].y) > 0.5f)
-			{
-				if (md.vertices[i].x > 0.0f)
-					md.textureCoords[i].x = 1.0f;
-				if (md.vertices[i].z > 0.0f)
-					md.textureCoords[i].y = 1.0f;
-			}
-			else if (abs(md.normals[i].z) > 0.5f)
-			{
-				if (md.vertices[i].x > 0.0f)
-					md.textureCoords[i].x = 1.0f;
-				if (md.vertices[i].y > 0.0f)
-					md.textureCoords[i].y = 1.0f;
-			}
-			//md.textureCoords[i] *= 10.0f;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			md.textureCoords.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
-		}
 	}
 }
 

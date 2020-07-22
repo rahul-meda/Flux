@@ -3,16 +3,31 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "../Components/Model.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "Camera.h"
+
+struct R_Vertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 textureCoords;
+};
 
 struct Material
 {
 	unsigned int diffuseMap;
 	unsigned int specularMap;
 	unsigned int emissionMap;
+	unsigned int nMaps;
+};
 
-	unsigned int count;	// 1, 2 or 3
+// debug rendering
+struct R_Debug
+{
+	unsigned int VAO;
+	unsigned int nIndices;
 };
 
 struct R_Point
@@ -52,7 +67,7 @@ struct R_Hinge
 	float scale;
 };
 
-struct R_Object
+struct R_Mesh
 {
 	glm::vec3 pos;
 	glm::mat3 rot;
@@ -60,17 +75,26 @@ struct R_Object
 	std::vector<glm::mat3> rotOffsets;
 	std::vector<glm::vec3> scales;
 	glm::vec3 scale;
-	std::vector<unsigned int> modelIDs;
+	std::vector<unsigned int> VAOs;
+	std::vector<unsigned int> nIndices;
 	std::vector<Material> materials;
+	std::string directory;
 
 	void Clear()
 	{
 		posOffsets.clear();
 		rotOffsets.clear();
 		scales.clear();
-		modelIDs.clear();
+		VAOs.clear();
 		materials.clear();
+		nIndices.clear();
+		directory = "";
 	}
+
+	void ProcessNode(aiNode *node, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
+	void ProcessMesh(aiMesh *mesh, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
+	unsigned int CreateTexture(const char* path, bool gamma = false);
+	void LoadModel(const std::string& fileName);
 };
 
 class Graphics
@@ -80,24 +104,17 @@ private:
 
 public:
 	static Graphics& GetInstance();
-
 	void Initialize();	// init stuff before any object is added
-
 	void PostInit();	// init stuff after all objects are added
-
-	unsigned int CreateModel(const ModelDef& modelDef);
-
+	unsigned int CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateTexture(const char* filePath, bool flip = false);
-
 	void AddPointLight(glm::vec3 pos);
-
 	void Update(Camera& camera);
 
 	glm::mat4 P;
 
-	std::vector<R_Object> objects;
+	std::vector<R_Mesh> objects;
 
-	std::vector<Model> models;
 	std::vector<glm::vec3> lightPos;
 
 	// debug draw
@@ -108,12 +125,12 @@ public:
 	unsigned int worldShader;
 	unsigned int lightShader;
 
-	unsigned int cubeModelID;
-	unsigned int lineModelID;
-	unsigned int sphereModelID;
-	unsigned int cylinderModelID;
-	unsigned int capsuleModelID;
-	unsigned int soupModelID;
+	R_Mesh dCube;
+	R_Mesh dLine;
+	R_Mesh dSphere;
+	R_Mesh dCylinder;
+	R_Mesh dCapsule;
+	R_Mesh dSoup;
 
 	Material hingeMaterial;
 	std::vector<R_Hinge> hinges;
