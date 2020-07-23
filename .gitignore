@@ -217,3 +217,5 @@ pip-log.txt
 .mr.developer.cfg
 /Resources/Models
 /Resources/Textures
+*.db
+*.opendb
