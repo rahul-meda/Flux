@@ -93,7 +93,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -124,7 +124,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -155,7 +155,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -186,7 +186,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sw);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -216,7 +216,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(sc);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap  = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -236,7 +236,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	p = glm::vec3(0.0f, 0.9f, -sc.z - gapH);
 	tx = Transform(p);
@@ -251,7 +251,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(3.0f, 0.6f, 0.1f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	p = glm::vec3(0.0f, 0.9f, sc.z + gapH);
 	tx = Transform(p);
@@ -266,7 +266,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(3.0f, 0.6f, 0.1f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -286,7 +286,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.3f, 0.6f, sc.z));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -306,7 +306,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 0.6f, sc.z));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	p = glm::vec3(-sc.x - 0.4f, 1.6f, 1.75f);
 	tx = Transform(p, glm::angleAxis(0.25f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -321,7 +321,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.05f, 0.5f, 0.05));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	p = glm::vec3(-sc.x - 0.4f, 1.6f, -1.75f);
 	tx = Transform(p, glm::angleAxis(0.25f * PI, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -336,7 +336,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.05f, 0.5f, 0.05));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap  = spoilerDfTxt;
 	material.specularMap = spoilerSpTxt;
@@ -356,7 +356,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 0.05f, 2.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap  = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -376,7 +376,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(2.0f, 0.097f, 1.97f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -396,7 +396,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.707f, 0.1f, 2.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -416,7 +416,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.1f, 2.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -436,7 +436,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.732f, 0.1f, 1.97f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	material.diffuseMap = bodyDfTxt;
 	material.specularMap = bodySpTxt;
@@ -456,7 +456,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.6f, 0.1f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	p = glm::vec3(-sc.x + gapH + sw.x, sw.x, sc.z + gapH - 0.1f);
 	tx = Transform(p, glm::angleAxis(-0.15f, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -471,7 +471,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 0.57f, 0.1f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -621,7 +621,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(10.0f, 0.25f, 10.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -652,7 +652,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 	}
@@ -678,7 +678,7 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.1f, 1.0f, 0.1f));
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 	}
@@ -704,17 +704,17 @@ void Car_Test::Init(GLFWwindow* window, int width, int height)
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f, 4.0f, 0.5f));
 		obj.LoadModel("resources/models/cylinder/cylinder.obj");
-		obj.materials.push_back(material);
+		
 		obj.posOffsets.push_back(glm::vec3(0.0f, 4.0f, 0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(glm::vec3(0.5f));
 		obj.LoadModel("resources/models/sphere/sphere.obj"); 
-		obj.materials.push_back(material);
+		
 		obj.posOffsets.push_back(glm::vec3(0.0f, -4.0f, 0.0f));
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(glm::vec3(0.5f));
 		obj.LoadModel("resources/models/sphere/sphere.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 	}

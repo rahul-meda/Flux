@@ -54,7 +54,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 1.0f, 0.25f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -78,7 +78,7 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);

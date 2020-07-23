@@ -75,8 +75,6 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
 	obj.LoadModel("resources/models/floor/floor.obj");
-	obj.materials.clear();
-	obj.materials.push_back(floorMaterial);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -102,7 +100,6 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -121,7 +118,6 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -141,7 +137,6 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -160,7 +155,6 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(wallMaterial);
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -211,7 +205,7 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.LoadModel("resources/models/sphere/sphere.obj");
-		obj.materials.push_back(material);
+		
 		obj.scale = glm::vec3(1.0f);
 		Graphics::GetInstance().objects.push_back(obj);
 	}

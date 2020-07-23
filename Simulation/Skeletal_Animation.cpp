@@ -70,17 +70,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -103,17 +103,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -136,17 +136,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -169,17 +169,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -202,17 +202,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.5f, 0.25f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.25f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -237,17 +237,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -270,17 +270,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -303,17 +303,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -336,17 +336,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -369,17 +369,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.2f, 0.4f, 0.2f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -0.4f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.2f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -404,17 +404,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -435,7 +435,7 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.25f, 0.25f, 0.3f));
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -459,17 +459,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -493,17 +493,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -527,17 +527,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -561,17 +561,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -595,17 +595,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -629,17 +629,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);
@@ -663,17 +663,17 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(r, h, r));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -h, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(r));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	objIds.push_back(++objId);

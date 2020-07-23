@@ -45,7 +45,7 @@ void GJK_Test::Init()
 	boxCollider->Scale(glm::vec3(1.0f, 3.0f, 1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	obj.scale = glm::vec3(1.0f, 3.0f, 1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -63,7 +63,7 @@ void GJK_Test::Init()
 	sphereCollider->Scale(1.0f);
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.scale = glm::vec3(1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

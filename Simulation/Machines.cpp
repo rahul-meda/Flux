@@ -55,7 +55,7 @@ void Machines::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 
 	int N = 4;
 	for (int i = 1; i < N; ++i)
@@ -75,7 +75,7 @@ void Machines::Init()
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(s);
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 	}
 	for (int i = 1; i < N - 1; ++i)
 	{
@@ -94,7 +94,7 @@ void Machines::Init()
 		obj.rotOffsets.push_back(tx.R);
 		obj.scales.push_back(s);
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 	}
 
 	tx = Transform(p, glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -109,7 +109,7 @@ void Machines::Init()
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -129,7 +129,7 @@ void Machines::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.5f * H, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	hull = new HullCollider();
 	mesh.GetColliderData(hull);
 	hull->Scale(glm::vec3(0.5f, 0.5f * H, 0.5f));
@@ -138,7 +138,7 @@ void Machines::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.5f * H, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -156,7 +156,7 @@ void Machines::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.1f, 0.1f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -201,7 +201,7 @@ void Machines::Init()
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(1.0f));
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 

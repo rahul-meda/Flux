@@ -58,7 +58,7 @@ void Bike::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -82,7 +82,7 @@ void Bike::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.1f, 0.1f, 0.1f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);
@@ -126,7 +126,7 @@ void Bike::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(2.5f, 0.25f, 2.5f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 	bids.push_back(bID);

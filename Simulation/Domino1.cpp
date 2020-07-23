@@ -65,7 +65,7 @@ void Domino1::Init()
 			obj.rotOffsets.push_back(glm::mat3(1.0f));
 			obj.scales.push_back(s);
 			obj.LoadModel("resources/models/box/box.obj");
-			obj.materials.push_back(material);
+			
 			Graphics::GetInstance().objects.push_back(obj);
 			obj.Clear();
 		}
@@ -96,7 +96,7 @@ void Domino1::Init()
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 		unsigned int bid1 = bID;
@@ -118,7 +118,7 @@ void Domino1::Init()
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(s);
 		obj.LoadModel("resources/models/box/box.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 
@@ -158,7 +158,7 @@ void Domino1::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 0.1f, 5.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 }

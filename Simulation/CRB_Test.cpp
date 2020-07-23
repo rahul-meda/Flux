@@ -54,7 +54,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	q = glm::angleAxis(0.75f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p1, q);
@@ -68,7 +68,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	q = glm::angleAxis(-0.75f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p1, q);
@@ -82,7 +82,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
@@ -100,7 +100,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 
 	p2 = glm::vec3(0.0f, -4.0f, 0.0f);
 	tx = Transform(p2);
@@ -112,7 +112,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -134,7 +134,7 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -156,17 +156,17 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f, 2.0f, 1.0f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -2.0f, 0.0f));
 	obj.rotOffsets.push_back(tx.R);
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -188,17 +188,17 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.posOffsets.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 }

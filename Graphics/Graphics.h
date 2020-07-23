@@ -17,10 +17,26 @@ struct R_Vertex
 
 struct Material
 {
+	Material()
+	 : diffuseMap(0), specularMap(0), emissionMap(0), nMaps(0){}
+
 	unsigned int diffuseMap;
 	unsigned int specularMap;
 	unsigned int emissionMap;
 	unsigned int nMaps;
+
+	unsigned int GetMap(const int i) const
+	{
+		switch (i)
+		{
+		case 0:
+			return diffuseMap;
+		case 1:
+			return specularMap;
+		case 2:
+			return emissionMap;
+		}
+	}
 };
 
 // debug rendering
@@ -67,6 +83,21 @@ struct R_Hinge
 	float scale;
 };
 
+struct SubMesh {
+	SubMesh()
+	{
+		nIndices = 0;
+		vertexOffset = 0;
+		indexOffset = 0;
+		materialID = 0;
+	}
+
+	unsigned int nIndices;
+	unsigned int vertexOffset;
+	unsigned int indexOffset;
+	unsigned int materialID;
+};
+
 struct R_Mesh
 {
 	glm::vec3 pos;
@@ -75,26 +106,19 @@ struct R_Mesh
 	std::vector<glm::mat3> rotOffsets;
 	std::vector<glm::vec3> scales;
 	glm::vec3 scale;
-	std::vector<unsigned int> VAOs;
-	std::vector<unsigned int> nIndices;
+	unsigned int VAO;
+	std::vector<SubMesh> subMeshes;
 	std::vector<Material> materials;
-	std::string directory;
 
 	void Clear()
 	{
 		posOffsets.clear();
 		rotOffsets.clear();
 		scales.clear();
-		VAOs.clear();
-		materials.clear();
-		nIndices.clear();
-		directory = "";
 	}
 
-	void ProcessNode(aiNode *node, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
-	void ProcessMesh(aiMesh *mesh, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
-	unsigned int CreateTexture(const char* path, bool gamma = false);
-	void LoadModel(const std::string& fileName);
+	void LoadModel(const std::string& fileName, bool flip = false);
+	void LoadTextures(const aiScene* scene, const std::string& file, bool flip = false);
 };
 
 class Graphics

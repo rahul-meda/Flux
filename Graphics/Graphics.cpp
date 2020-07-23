@@ -101,12 +101,13 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 	return VAO;
 }
 
-void R_Mesh::LoadModel(const std::string& file)
+void R_Mesh::LoadModel(const std::string& file, bool flip)
 {
+	VAO = 0;
+	subMeshes.clear();
+	materials.clear();
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
-
-	directory = file.substr(0, file.find_last_of('/'));
 
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -117,121 +118,141 @@ void R_Mesh::LoadModel(const std::string& file)
 
 	std::vector<R_Vertex> vertices;
 	std::vector<unsigned int> indices;
+	unsigned int nVertices = 0;
+	unsigned int nIndices = 0;
 
-	// process ASSIMP's root node recursively
-	ProcessNode(scene->mRootNode, scene, vertices, indices);
+	subMeshes.resize(scene->mNumMeshes);
+	materials.resize(scene->mNumMaterials);
 
-	VAOs.push_back(Graphics::GetInstance().CreateModel(vertices, indices));
-	nIndices.push_back(indices.size());
-}
-
-void R_Mesh::ProcessNode(aiNode *node, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices)
-{
-	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	for (unsigned int i = 0; i < subMeshes.size(); ++i) 
 	{
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		ProcessMesh(mesh, scene, vertices, indices);
+		subMeshes[i].materialID = scene->mMeshes[i]->mMaterialIndex;
+		subMeshes[i].nIndices = scene->mMeshes[i]->mNumFaces * 3;
+		subMeshes[i].vertexOffset = nVertices;
+		subMeshes[i].indexOffset = nIndices;
+
+		nVertices += scene->mMeshes[i]->mNumVertices;
+		nIndices += subMeshes[i].nIndices;
 	}
 
-	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
-	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	vertices.reserve(nVertices);
+	indices.reserve(nIndices);
+
+	for (unsigned int i = 0; i < subMeshes.size(); ++i)
 	{
-		ProcessNode(node->mChildren[i], scene, vertices, indices);
-	}
-}
-
-void R_Mesh::ProcessMesh(aiMesh *mesh, const aiScene *scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices)
-{
-	R_Vertex vertex;
-	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
-	{
-		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
-		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-
-		// texture coordinates
-		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		const aiMesh* aiMesh = scene->mMeshes[i];
+		for (unsigned int j = 0; j < aiMesh->mNumVertices; ++j) 
 		{
-			vertex.textureCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			R_Vertex v;
+			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
+			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
+			if (aiMesh->HasTextureCoords(0))
+			{
+				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
+			}
+			else
+			{
+				v.textureCoords = glm::vec2(0.0f);
+			}
+			vertices.push_back(v);
 		}
-		else
+
+		for (unsigned int j = 0; j < aiMesh->mNumFaces; ++j) 
 		{
-			vertex.textureCoords = glm::vec2(0.0f, 0.0f);
-		}
-		vertices.push_back(vertex);
-	}
-	
-	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
-	{
-		aiFace face = mesh->mFaces[i];
-		
-		for (unsigned int j = 0; j < face.mNumIndices; j++)
-		{
-			indices.push_back(face.mIndices[j]);
+			const aiFace& face = aiMesh->mFaces[j];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
 		}
 	}
 
-	// process materials
-	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	Material m;
+	VAO = Graphics::GetInstance().CreateModel(vertices, indices);
 
-	for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++)
-	{
-		aiString str;
-		material->GetTexture(aiTextureType_DIFFUSE, i, &str);
-		m.diffuseMap = CreateTexture(str.C_Str());
-	}
-
-	for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_SPECULAR); i++)
-	{
-		aiString str;
-		material->GetTexture(aiTextureType_SPECULAR, i, &str);
-		m.specularMap = CreateTexture(str.C_Str());
-	}
-
-	m.nMaps = 2;
-	materials.push_back(m);
+	LoadTextures(scene, file, flip);
 }
 
-unsigned int R_Mesh::CreateTexture(const char* path, bool gamma)
+void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool flip)
 {
-	stbi_set_flip_vertically_on_load(false);
+	stbi_set_flip_vertically_on_load(flip);
 
-	std::string file = directory + '/' + std::string(path);
+	std::string::size_type slashIndex = file.find_last_of("/");
+	std::string dir;
 
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char *data = stbi_load(file.c_str(), &width, &height, &nrComponents, 0);
-	if (data)
+	if (slashIndex == std::string::npos)
 	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
+		dir = ".";
 	}
-	else
+	else if (slashIndex == 0) {
+		dir = "/";
+	}
+	else 
 	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
+		dir = file.substr(0, slashIndex);
 	}
 
-	return textureID;
+	// Initialize the materials
+	if (scene->mNumMaterials > 1)
+		std::cout << file << " " << scene->mNumMaterials << std::endl;
+	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	{
+		const aiMaterial* pMaterial = scene->mMaterials[i];
+		Material m;
+		unsigned int nMaps = 0;
+		aiString path;
+
+		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				std::string p(path.data);
+
+				if (p.substr(0, 2) == ".\\") 
+				{
+					p = p.substr(2, p.size() - 2);
+				}
+
+				std::string fullPath = dir + "/" + p;
+				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				nMaps++;
+			}
+		}
+		if (pMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0)
+		{
+			if (pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				std::string p(path.data);
+
+				if (p.substr(0, 2) == ".\\")
+				{
+					p = p.substr(2, p.size() - 2);
+				}
+
+				std::string fullPath = dir + "/" + p;
+				m.specularMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				nMaps++;
+			}
+		}
+		if (pMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0)
+		{
+			if (pMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				std::string p(path.data);
+
+				if (p.substr(0, 2) == ".\\")
+				{
+					p = p.substr(2, p.size() - 2);
+				}
+
+				std::string fullPath = dir + "/" + p;
+				m.emissionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				nMaps++;
+			}
+		}
+
+		m.nMaps = nMaps;
+		materials[i] = m;
+	}
 }
 
 unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
@@ -312,30 +333,30 @@ void Graphics::Update(Camera& camera)
 	for (int i = 0; i < N; i++)
 	{
 		R_Mesh obj = objects[i];
-		int nModels = obj.VAOs.size();
+		int nSub = obj.subMeshes.size();
 
-		for (int j = 0; j < nModels; ++j)
+		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), obj.pos + obj.rot * obj.posOffsets[j]);
-			R = glm::mat4(obj.rot * obj.rotOffsets[j]);
-			S = glm::scale(obj.scales[j]);
+			T = glm::translate(glm::mat4(1.0f), obj.pos);
+			R = glm::mat4(obj.rot);
+			S = glm::scale(obj.scales[0]);
 			M = T * R * S;
 			MVP = VP * M;
 
 			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 
-			Material material = obj.materials[j];
-			unsigned int* mapID = &material.diffuseMap;
+			unsigned int mID = obj.subMeshes[j].materialID;
+			//assert(mID < obj.materials.size());
+			Material material = obj.materials[mID];
 			int nMaps = material.nMaps;
-			for (unsigned int n = 0; n < nMaps; ++n)
+			for (int k = 0; k < nMaps; ++k)
 			{
-				unsigned int tID = *(mapID + n);
-				glActiveTexture(GL_TEXTURE0 + tID - 1);
-				glBindTexture(GL_TEXTURE_2D, tID);
-
-				glUniform1i(glGetUniformLocation(worldShader, textureLocs[n]), tID - 1);
+				glActiveTexture(GL_TEXTURE0 + k);
+				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
+				glUniform1i(glGetUniformLocation(worldShader, textureLocs[k]), k);
 			}
+			glActiveTexture(GL_TEXTURE0);
 
 			glm::vec3 lightMap(1.0f);
 			if (nMaps == 1)
@@ -344,9 +365,9 @@ void Graphics::Update(Camera& camera)
 				lightMap.z = 0.0f;
 
 			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
-			glBindVertexArray(obj.VAOs[j]);
-			glLineWidth(2.0f);
-			glDrawArrays(GL_TRIANGLES, 0, obj.nIndices[j]);
+			glBindVertexArray(obj.VAO);
+			glDrawElementsBaseVertex(GL_TRIANGLES, obj.subMeshes[j].nIndices, GL_UNSIGNED_INT,
+									(void*)(sizeof(unsigned int) * obj.subMeshes[j].indexOffset), obj.subMeshes[j].vertexOffset);
 		}
 	}
 
@@ -382,9 +403,9 @@ void Graphics::Update(Camera& camera)
 			lightMap.z = 0.0f;
 
 		glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
-		glBindVertexArray(dCylinder.VAOs[0]);
+		glBindVertexArray(dCylinder.VAO);
 		glLineWidth(2.0f);
-		glDrawArrays(GL_TRIANGLES, 0, dCylinder.nIndices[0]);
+		glDrawArrays(GL_TRIANGLES, 0, dCylinder.subMeshes[0].nIndices);
 	}
 	glUseProgram(0);
 
@@ -404,8 +425,8 @@ void Graphics::Update(Camera& camera)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(p.color));
-		glBindVertexArray(dCube.VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, dCube.nIndices[0]);
+		glBindVertexArray(dCube.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, dCube.subMeshes[0].nIndices);
 	}
 
 	N = lines.size();
@@ -420,8 +441,8 @@ void Graphics::Update(Camera& camera)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(l.color));
-		glBindVertexArray(dLine.VAOs[0]);
-		glDrawArrays(GL_LINES, 0, dLine.nIndices[0]);
+		glBindVertexArray(dLine.VAO);
+		glDrawArrays(GL_LINES, 0, dLine.subMeshes[0].nIndices);
 	}
 
 	N = aabbs.size();
@@ -435,9 +456,9 @@ void Graphics::Update(Camera& camera)
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(aabb.color));
-		glBindVertexArray(dCube.VAOs[0]);
+		glBindVertexArray(dCube.VAO);
 		glLineWidth(2.5f);
-		glDrawArrays(GL_TRIANGLES, 0, dCube.nIndices[0]);
+		glDrawArrays(GL_TRIANGLES, 0, dCube.subMeshes[0].nIndices);
 	}
 	
 	for (int i = 0; i < lightPos.size() - 1; i++)
@@ -448,8 +469,8 @@ void Graphics::Update(Camera& camera)
 
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(lightColors[i]));
-		glBindVertexArray(dCube.VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, dCube.nIndices[0]);
+		glBindVertexArray(dCube.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, dCube.subMeshes[0].nIndices);
 	}
 
 	points.clear();

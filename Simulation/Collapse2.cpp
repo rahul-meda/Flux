@@ -58,7 +58,7 @@ void Collapse2::Init()
 				boxCollider->Scale(sv);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				obj.scale = sv;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -80,7 +80,7 @@ void Collapse2::Init()
 				boxCollider->Scale(sh);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				obj.scale = sh;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -104,7 +104,7 @@ void Collapse2::Init()
 			boxCollider->Scale(sh);
 			Physics::GetInstance().AddCollider(bID, boxCollider);
 			obj.LoadModel("resources/models/box/box.obj");
-			obj.materials.push_back(material);
+			
 			obj.scale = sh;
 			Graphics::GetInstance().objects.push_back(obj);
 			obj.Clear();
@@ -124,7 +124,7 @@ void Collapse2::Init()
 			boxCollider->Scale(sh);
 			Physics::GetInstance().AddCollider(bID, boxCollider);
 			obj.LoadModel("resources/models/box/box.obj");
-			obj.materials.push_back(material);
+			
 			obj.scale = sh;
 			Graphics::GetInstance().objects.push_back(obj);
 			obj.Clear();
@@ -144,7 +144,7 @@ void Collapse2::Init()
 	sphereCollider->massData->density = 10.0f;
 	Physics::GetInstance().AddCollider(bID, sphereCollider);
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	obj.scale = glm::vec3(1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

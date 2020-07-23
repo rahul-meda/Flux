@@ -52,7 +52,7 @@ void PlankStack::Init()
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				obj.scale = s;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -72,7 +72,7 @@ void PlankStack::Init()
 				boxCollider->Scale(s);
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				obj.scale = s;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();

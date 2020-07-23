@@ -43,7 +43,7 @@ void PositionJointTest::Init()
 	boxCollider->Scale(glm::vec3(25.0f, 0.05f, 0.05f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	obj.scale = glm::vec3(25.0f, 0.05f, 0.05f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -64,7 +64,7 @@ void PositionJointTest::Init()
 		sphereCollider->Scale(1.0f);
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
 		obj.LoadModel("resources/models/sphere/sphere.obj");
-		obj.materials.push_back(material);
+		
 		obj.scale = glm::vec3(1.0f);
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();

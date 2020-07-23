@@ -61,7 +61,7 @@ void Collapse1::Init()
 					boxCollider->Scale(glm::vec3(sv));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
 					obj.LoadModel("resources/models/box/box.obj");
-					obj.materials.push_back(material);
+					
 					obj.scale = sv;
 					Graphics::GetInstance().objects.push_back(obj);
 					obj.Clear();
@@ -79,7 +79,7 @@ void Collapse1::Init()
 				boxCollider->Scale(glm::vec3(sh));
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				obj.scale = sh;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -98,7 +98,7 @@ void Collapse1::Init()
 	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	obj.scale = glm::vec3(1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

@@ -67,7 +67,7 @@ void BoxStack::Init()
 				obj.rotOffsets.push_back(glm::mat3(1.0f));
 				obj.scales.push_back(s);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
 			}
@@ -89,7 +89,7 @@ void BoxStack::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f, 0.1f, 1.0f));
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -120,17 +120,17 @@ void BoxStack::Init()
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
 		obj.LoadModel("resources/models/cylinder/cylinder.obj");
-		obj.materials.push_back(material);
+		
 		obj.posOffsets.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f));
 		obj.LoadModel("resources/models/sphere/sphere.obj");
-		obj.materials.push_back(material);
+		
 		obj.posOffsets.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.scales.push_back(glm::vec3(0.5f));
 		obj.LoadModel("resources/models/sphere/sphere.obj");
-		obj.materials.push_back(material);
+		
 		Graphics::GetInstance().objects.push_back(obj);
 		obj.Clear();
 
@@ -162,7 +162,7 @@ void BoxStack::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(3.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 

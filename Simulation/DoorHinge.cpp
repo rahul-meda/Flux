@@ -59,7 +59,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -83,7 +83,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -121,7 +121,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -145,7 +145,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -180,7 +180,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s1);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
@@ -204,7 +204,7 @@ void DoorHinge::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(s2);
 	obj.LoadModel("resources/models/box/box.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 

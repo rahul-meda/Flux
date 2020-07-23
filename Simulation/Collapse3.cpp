@@ -67,7 +67,7 @@ void Collapse3::Init()
 				obj.rotOffsets.push_back(glm::mat3(1.0f));
 				obj.scales.push_back(s);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
 
@@ -88,7 +88,7 @@ void Collapse3::Init()
 				obj.rotOffsets.push_back(glm::mat3(1.0f));
 				obj.scales.push_back(s);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
 			}
@@ -114,7 +114,7 @@ void Collapse3::Init()
 				obj.rotOffsets.push_back(glm::mat3(1.0f));
 				obj.scales.push_back(sh);
 				obj.LoadModel("resources/models/box/box.obj");
-				obj.materials.push_back(material);
+				
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
 			}
@@ -139,7 +139,7 @@ void Collapse3::Init()
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
-	obj.materials.push_back(material);
+	
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 }
