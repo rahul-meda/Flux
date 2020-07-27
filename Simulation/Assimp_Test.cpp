@@ -44,10 +44,8 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	material.emissionMap = boxEmTxt;
 	material.nMaps = 3;
 
-	unsigned int objId = Graphics::GetInstance().objects.size() - 1;
-
 	glm::vec3 p(0.0f, 5.0f, 0.0f);
-	tx = Transform(p, glm::angleAxis(-PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	tx = Transform(p, glm::angleAxis(PI * 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = false;
 	bd.filterID = 1;
@@ -62,10 +60,15 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(glm::vec3(1.0f));
-	obj.LoadModel("Resources/Models/dragon/dragon.fbx");
-	Graphics::GetInstance().objects.push_back(obj);
+	obj.scales.push_back(glm::vec3(0.1f));
+	std::string path = "Resources/Models/sandy/erika_archer_bow_arrow.fbx";
+	obj.LoadModel(path);
+	Graphics::GetInstance().animModels.push_back(obj);
 	obj.Clear();
+
+	objID = Graphics::GetInstance().animModels.size() - 1;
+
+	walkAnimation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
@@ -81,4 +84,6 @@ void Assimp_Test::OnKeyPress(GLFWwindow * window)
 void Assimp_Test::Update(GLFWwindow* window)
 {
 	Simulation::Update(window);
+
+	walkAnimation.Update();
 }

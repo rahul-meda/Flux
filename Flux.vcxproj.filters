@@ -398,5 +398,11 @@
     <None Include="Mesh\Geometry.inl">
       <Filter>Mesh</Filter>
     </None>
+    <None Include="Resources\AnimVertexShader.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\AnimFragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

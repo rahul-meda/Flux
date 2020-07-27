@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Simulation.h"
+#include "../Animation/Animation.h"
 
 class Assimp_Test : public Simulation
 {
@@ -13,4 +14,7 @@ public:
 
 	Assimp_Test() {};
 	~Assimp_Test() {};
+
+	Animation walkAnimation;
+	unsigned int objID;
 };

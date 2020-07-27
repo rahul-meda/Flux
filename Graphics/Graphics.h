@@ -1,18 +1,65 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Camera.h"
+
+#define MAX_BONES 100
 
 struct R_Vertex
 {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 textureCoords;
+};
+
+struct BoneVertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 textureCoords;
+	glm::vec4 boneWeights;
+	glm::ivec4 boneIDs;
+
+	BoneVertex() 
+	 : boneWeights(glm::vec4(0.0f)), boneIDs(glm::ivec4(0)) {}
+
+	void AssignWeights(unsigned int id, float weight)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (boneWeights[i] == 0.0f)
+			{
+				boneIDs[i] = id;
+				boneWeights[i] = weight;
+				return;
+			}
+		}
+		assert(0);
+	}
+
+	bool VerifyWeights()
+	{
+		return (boneWeights[0] + boneWeights[1] + boneWeights[2] + boneWeights[3] == 1.0f);
+	}
+
+	bool VerifyBoneIDs()
+	{
+		if (boneIDs[0] < 0 || boneIDs[0] > 31)
+			return false;
+		if (boneIDs[1] < 0 || boneIDs[1] > 31)
+			return false;
+		if (boneIDs[2] < 0 || boneIDs[2] > 31)
+			return false;
+		if (boneIDs[3] < 0 || boneIDs[3] > 31)
+			return false;
+		return true;
+	}
 };
 
 struct Material
@@ -83,7 +130,8 @@ struct R_Hinge
 	float scale;
 };
 
-struct SubMesh {
+struct SubMesh 
+{
 	SubMesh()
 	{
 		nIndices = 0;
@@ -98,8 +146,21 @@ struct SubMesh {
 	unsigned int materialID;
 };
 
-struct R_Mesh
+struct BoneTx
 {
+	BoneTx()
+	{
+		offset = glm::mat4(1.0f);
+		tx = glm::mat4(1.0f);
+	}
+
+	glm::mat4 offset;
+	glm::mat4 tx;
+};
+
+class R_Mesh
+{
+public:
 	glm::vec3 pos;
 	glm::mat3 rot;
 	std::vector<glm::vec3> posOffsets;
@@ -109,6 +170,17 @@ struct R_Mesh
 	unsigned int VAO;
 	std::vector<SubMesh> subMeshes;
 	std::vector<Material> materials;
+	unsigned int nBones;
+	std::vector<glm::mat4> boneOffsets;
+	std::map<std::string, unsigned int> boneMap;
+	glm::mat4 invBindTx;
+	const aiScene* scene;
+
+	void LoadModel(const std::string& fileName, bool flip = false);
+	void LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
+	void LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertices, std::vector<unsigned int>& indices);
+	void LoadTextures(const aiScene* scene, const std::string& file, bool flip = false);
+	void LoadBones(unsigned int meshIndex, const aiMesh* aiMesh, std::vector<BoneVertex>& vertices);
 
 	void Clear()
 	{
@@ -116,10 +188,9 @@ struct R_Mesh
 		rotOffsets.clear();
 		scales.clear();
 	}
-
-	void LoadModel(const std::string& fileName, bool flip = false);
-	void LoadTextures(const aiScene* scene, const std::string& file, bool flip = false);
 };
+
+void AssimpToGlmMat4(const aiMatrix4x4& from, glm::mat4& to);
 
 class Graphics
 {
@@ -131,13 +202,16 @@ public:
 	void Initialize();	// init stuff before any object is added
 	void PostInit();	// init stuff after all objects are added
 	unsigned int CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices);
+	unsigned int CreateModel(const std::vector<BoneVertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateTexture(const char* filePath, bool flip = false);
 	void AddPointLight(glm::vec3 pos);
+	void SetBoneTransform(const int i, const glm::mat4& transform);
 	void Update(Camera& camera);
 
 	glm::mat4 P;
 
 	std::vector<R_Mesh> objects;
+	std::vector<R_Mesh> animModels;
 
 	std::vector<glm::vec3> lightPos;
 
@@ -148,6 +222,7 @@ public:
 
 	unsigned int worldShader;
 	unsigned int lightShader;
+	unsigned int animShader;
 
 	R_Mesh dCube;
 	R_Mesh dLine;
@@ -161,4 +236,6 @@ public:
 
 	char* textureLocs[3];
 	glm::vec3 lightColors[4];
+
+	unsigned int boneLocs[MAX_BONES];
 };

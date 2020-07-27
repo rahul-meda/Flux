@@ -996,7 +996,7 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	q = glm::angleAxis(angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	frames[8].pose[9] = Transform(p, q);
 
-	walkAnimation.Init(bones, frames);
+	//walkAnimation.Init(bones, frames);
 
 	/*frames.clear();
 	frames = std::vector<KeyFrame>(9);
@@ -1175,7 +1175,7 @@ void Skeletal_Animation::Update(GLFWwindow* window)
 	}
 	
 	int i = objIds[0];
-	for (glm::mat4& tx : walkAnimation.finalTransforms)
+	/*for (glm::mat4& tx : walkAnimation.finalTransforms)
 	{
 		glm::vec3 scale;
 		glm::quat rotation;
@@ -1190,5 +1190,5 @@ void Skeletal_Animation::Update(GLFWwindow* window)
 		Graphics::GetInstance().objects[i].pos = translation;
 		Graphics::GetInstance().objects[i].rot = glm::toMat3(rotation);
 		++i;
-	}
+	}*/
 }

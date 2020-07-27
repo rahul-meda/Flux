@@ -22,6 +22,8 @@
 #include "../Mesh/Geometry.h"
 #include "../Mesh/ObjParser.h"
 
+#define INVALID_UNIFORM_LOCATION 0xffffffff
+
 Graphics::Graphics()
 {}
 
@@ -65,6 +67,16 @@ void Graphics::Initialize()
 void Graphics::PostInit()
 {
 	AddPointLight(glm::vec3(0.0f));
+
+	glUseProgram(animShader);
+	for (unsigned int i = 0; i < MAX_BONES; ++i)
+	{
+		char name[128];
+		memset(name, 0, sizeof(name));
+		_snprintf_s(name, sizeof(name), "boneTransforms[%d]", i);
+		boneLocs[i] = glGetUniformLocation(animShader, name);
+	}
+	glUseProgram(0);
 }
 
 unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices)
@@ -79,7 +91,7 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 	glBindVertexArray(VAO);
 	// load data into vertex buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	
+	unsigned int sz = sizeof(R_Vertex);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(R_Vertex), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -91,10 +103,50 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)0);
 	// vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)offsetof(R_Vertex, normal));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(3 * sizeof(float)));
 	// vertex texture coords
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)offsetof(R_Vertex, textureCoords));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(6 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	return VAO;
+}
+
+unsigned int Graphics::CreateModel(const std::vector<BoneVertex>& vertices, const std::vector<unsigned int>& indices)
+{
+	unsigned int VAO, VBO, EBO;
+
+	// create buffers/arrays
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+	// load data into vertex buffers
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	unsigned int sz = sizeof(BoneVertex);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(BoneVertex), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+	// set the vertex attribute pointers
+	// vertex Positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)0);
+	// vertex normals
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(3 * sizeof(float)));
+	// vertex texture coords
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(6 * sizeof(float)));
+	// bone weights
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(8 * sizeof(float)));
+	// bone ids
+	glEnableVertexAttribArray(4);
+	glVertexAttribIPointer(4, 4, GL_INT, sizeof(BoneVertex), (void*)(12 * sizeof(float)));
 
 	glBindVertexArray(0);
 
@@ -104,10 +156,15 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 void R_Mesh::LoadModel(const std::string& file, bool flip)
 {
 	VAO = 0;
+	nBones = 0;
 	subMeshes.clear();
 	materials.clear();
+
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+	scene = importer.ReadFile(file,
+		aiProcess_Triangulate | aiProcess_GenNormals |
+	    aiProcess_FlipUVs     | aiProcess_RemoveRedundantMaterials |
+		aiProcess_JoinIdenticalVertices | aiProcess_ValidateDataStructure);
 
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -116,8 +173,9 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 		return;
 	}
 
-	std::vector<R_Vertex> vertices;
-	std::vector<unsigned int> indices;
+	AssimpToGlmMat4(scene->mRootNode->mTransformation, invBindTx);
+	glm::inverse(invBindTx);
+
 	unsigned int nVertices = 0;
 	unsigned int nIndices = 0;
 
@@ -135,13 +193,50 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 		nIndices += subMeshes[i].nIndices;
 	}
 
+	std::vector<R_Vertex> vertices;
+	std::vector<BoneVertex> boneVerts;
+	std::vector<unsigned int> indices;
 	vertices.reserve(nVertices);
+	boneVerts.reserve(nVertices);
 	indices.reserve(nIndices);
 
+	bool hasAnims = scene->HasAnimations();
+
+	if (!hasAnims)
+	{
+		LoadGeometry(scene, vertices, indices);
+		VAO = Graphics::GetInstance().CreateModel(vertices, indices);
+	}
+	else
+	{
+		LoadGeometry(scene, boneVerts, indices);
+		for (int i = 0; i < nVertices; ++i)
+		{
+			/*std::cout << "bone weigths: " << boneVerts[i].boneWeights[0] << "," << boneVerts[i].boneWeights[1]
+				<< "," << boneVerts[i].boneWeights[2] << "," << boneVerts[i].boneWeights[3] << std::endl;
+			std::cout << "bone IDs: " << boneVerts[i].boneIDs[0] << "," << boneVerts[i].boneIDs[1]
+					<< "," << boneVerts[i].boneIDs[2] << "," << boneVerts[i].boneIDs[3] << std::endl;*/
+			/*if (!boneVerts[i].VerifyWeights())
+			{
+				std::cout << "invalid bone weigths in vertex: " << i << std::endl;
+			}
+			if (!boneVerts[i].VerifyBoneIDs())
+			{
+				std::cout << "invalid bone IDs in vertex: " << i << std::endl;
+			}*/
+		}
+		VAO = Graphics::GetInstance().CreateModel(boneVerts, indices);
+	}
+
+	LoadTextures(scene, file, flip);
+}
+
+void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices)
+{
 	for (unsigned int i = 0; i < subMeshes.size(); ++i)
 	{
 		const aiMesh* aiMesh = scene->mMeshes[i];
-		for (unsigned int j = 0; j < aiMesh->mNumVertices; ++j) 
+		for (unsigned int j = 0; j < aiMesh->mNumVertices; ++j)
 		{
 			R_Vertex v;
 			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
@@ -157,7 +252,7 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 			vertices.push_back(v);
 		}
 
-		for (unsigned int j = 0; j < aiMesh->mNumFaces; ++j) 
+		for (unsigned int j = 0; j < aiMesh->mNumFaces; ++j)
 		{
 			const aiFace& face = aiMesh->mFaces[j];
 			assert(face.mNumIndices == 3);
@@ -166,10 +261,40 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 			indices.push_back(face.mIndices[2]);
 		}
 	}
+}
 
-	VAO = Graphics::GetInstance().CreateModel(vertices, indices);
+void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertices, std::vector<unsigned int>& indices)
+{
+	for (unsigned int i = 0; i < subMeshes.size(); ++i)
+	{
+		const aiMesh* aiMesh = scene->mMeshes[i];
+		for (unsigned int j = 0; j < aiMesh->mNumVertices; ++j)
+		{
+			BoneVertex v;
+			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
+			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
+			if (aiMesh->HasTextureCoords(0))
+			{
+				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
+			}
+			else
+			{
+				v.textureCoords = glm::vec2(0.0f);
+			}
+			vertices.push_back(v);
+		}
 
-	LoadTextures(scene, file, flip);
+		for (unsigned int j = 0; j < aiMesh->mNumFaces; ++j)
+		{
+			const aiFace& face = aiMesh->mFaces[j];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+		}
+
+		LoadBones(i, aiMesh, vertices);
+	}
 }
 
 void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool flip)
@@ -200,7 +325,7 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 		Material m;
 		unsigned int nMaps = 0;
 		aiString path;
-
+		
 		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 		{
 			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
@@ -212,9 +337,25 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 					p = p.substr(2, p.size() - 2);
 				}
 
+				slashIndex = p.find_last_of("/");
+				if (slashIndex != std::string::npos)
+				{
+					p = p.substr(slashIndex + 1, p.size() - 2);
+				}
+				std::string::size_type dotIndex = p.find_last_of(".");
+				std::string ext = p.substr(dotIndex + 1, p.size() - 2);
+				bool stb_supported = false;
+				if (ext == "jpg" || ext == "png" || ext == "bmp" || ext == "psd")	// stb only supports these ext
+				{
+					stb_supported = true;
+				}
+				if (!stb_supported)
+				{
+					p.replace(dotIndex + 1, ext.size(), "jpg");
+				}
 				std::string fullPath = dir + "/" + p;
 				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps++;
+				nMaps = 1;
 			}
 		}
 		if (pMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0)
@@ -230,7 +371,7 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 
 				std::string fullPath = dir + "/" + p;
 				m.specularMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps++;
+				nMaps = 2;
 			}
 		}
 		if (pMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0)
@@ -246,13 +387,52 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 
 				std::string fullPath = dir + "/" + p;
 				m.emissionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps++;
+				nMaps = 3;
 			}
 		}
 
 		m.nMaps = nMaps;
 		materials[i] = m;
 	}
+}
+
+void R_Mesh::LoadBones(unsigned int meshIndex, const aiMesh* aiMesh, std::vector<BoneVertex>& vertices)
+{
+	for (unsigned int i = 0; i < aiMesh->mNumBones; ++i)
+	{
+		unsigned int boneIndex = 0;
+		std::string boneName(aiMesh->mBones[i]->mName.data);
+		
+		if (boneMap.find(boneName) == boneMap.end()) 
+		{
+			boneIndex = nBones;
+			nBones++;
+			glm::mat4 boneOffset;
+			AssimpToGlmMat4(aiMesh->mBones[i]->mOffsetMatrix, boneOffset);
+			boneOffsets.push_back(glm::mat4(1.0f));
+			boneOffsets[boneIndex] = boneOffset;
+			boneMap[boneName] = boneIndex;
+		}
+		else 
+		{
+			boneIndex = boneMap[boneName];
+		}
+
+		for (unsigned int j = 0; j < aiMesh->mBones[i]->mNumWeights; j++) 
+		{
+			unsigned int vertexID = subMeshes[meshIndex].vertexOffset + aiMesh->mBones[i]->mWeights[j].mVertexId;
+			float weight = aiMesh->mBones[i]->mWeights[j].mWeight;
+			vertices[vertexID].AssignWeights(boneIndex, weight);
+		}
+	}
+}
+
+void AssimpToGlmMat4(const aiMatrix4x4& from, glm::mat4& to)
+{
+	to[0][0] = (float)from.a1; to[0][1] = (float)from.b1; to[0][2] = (float)from.c1; to[0][3] = (float)from.d1;
+	to[1][0] = (float)from.a2; to[1][1] = (float)from.b2; to[1][2] = (float)from.c2; to[1][3] = (float)from.d2;
+	to[2][0] = (float)from.a3; to[2][1] = (float)from.b3; to[2][2] = (float)from.c3; to[2][3] = (float)from.d3;
+	to[3][0] = (float)from.a4; to[3][1] = (float)from.b4; to[3][2] = (float)from.c4; to[3][3] = (float)from.d4;
 }
 
 unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
@@ -302,6 +482,18 @@ void Graphics::AddPointLight(glm::vec3 pos)
 	glUseProgram(0);
 }
 
+void Graphics::SetBoneTransform(const int i, const glm::mat4& transform)
+{
+	glUseProgram(animShader);
+	glUniformMatrix4fv(boneLocs[i], 1, GL_FALSE, glm::value_ptr(transform));
+	glUseProgram(0);
+}
+
+void Render(const std::vector<R_Mesh>& models, const unsigned int shader)
+{
+
+}
+
 void Graphics::Update(Camera& camera)
 {
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
@@ -332,23 +524,23 @@ void Graphics::Update(Camera& camera)
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
-		R_Mesh obj = objects[i];
-		int nSub = obj.subMeshes.size();
+		R_Mesh m = objects[i];
+		int nSub = m.subMeshes.size();
 
 		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), obj.pos);
-			R = glm::mat4(obj.rot);
-			S = glm::scale(obj.scales[0]);
+			T = glm::translate(glm::mat4(1.0f), m.pos);
+			R = glm::mat4(m.rot);
+			S = glm::scale(m.scales[0]);
 			M = T * R * S;
 			MVP = VP * M;
 
 			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 
-			unsigned int mID = obj.subMeshes[j].materialID;
-			//assert(mID < obj.materials.size());
-			Material material = obj.materials[mID];
+			unsigned int mID = m.subMeshes[j].materialID;
+			assert(mID < m.materials.size());
+			Material material = m.materials[mID];
 			int nMaps = material.nMaps;
 			for (int k = 0; k < nMaps; ++k)
 			{
@@ -365,12 +557,72 @@ void Graphics::Update(Camera& camera)
 				lightMap.z = 0.0f;
 
 			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
-			glBindVertexArray(obj.VAO);
-			glDrawElementsBaseVertex(GL_TRIANGLES, obj.subMeshes[j].nIndices, GL_UNSIGNED_INT,
-									(void*)(sizeof(unsigned int) * obj.subMeshes[j].indexOffset), obj.subMeshes[j].vertexOffset);
+			glBindVertexArray(m.VAO);
+			glDrawElementsBaseVertex(GL_TRIANGLES,
+									m.subMeshes[j].nIndices, 
+									GL_UNSIGNED_INT,
+									(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
+									m.subMeshes[j].vertexOffset);
 		}
 	}
+	glUseProgram(0);
 
+	glUseProgram(animShader);
+	mvpLoc = glGetUniformLocation(animShader, "MVP");
+	mLoc = glGetUniformLocation(animShader, "M");
+	eyeLoc = glGetUniformLocation(animShader, "eyePos");
+	lightMapLoc = glGetUniformLocation(animShader, "lightMap");
+	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
+	glUniform3fv(glGetUniformLocation(animShader, "lightPos[4]"), 1, glm::value_ptr(eye));
+	glUniform1f(glGetUniformLocation(animShader, "time"), glfwGetTime());
+
+	N = animModels.size();
+	for (int i = 0; i < N; i++)
+	{
+		R_Mesh m = animModels[i];
+		int nSub = m.subMeshes.size();
+
+		for (int j = 0; j < nSub; ++j)
+		{
+			T = glm::translate(glm::mat4(1.0f), m.pos);
+			R = glm::mat4(m.rot);
+			S = glm::scale(m.scales[0]);
+			M = T * R * S;
+			MVP = VP * M;
+
+			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+
+			unsigned int mID = m.subMeshes[j].materialID;
+			assert(mID < m.materials.size());
+			Material material = m.materials[mID];
+			int nMaps = material.nMaps;
+			for (int k = 0; k < nMaps; ++k)
+			{
+				glActiveTexture(GL_TEXTURE0 + k);
+				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
+				glUniform1i(glGetUniformLocation(animShader, textureLocs[k]), k);
+			}
+			glActiveTexture(GL_TEXTURE0);
+
+			glm::vec3 lightMap(1.0f);
+			if (nMaps == 1)
+				lightMap.y = lightMap.z = 0.0f;
+			else if (nMaps == 2)
+				lightMap.z = 0.0f;
+
+			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
+			glBindVertexArray(m.VAO);
+			glDrawElementsBaseVertex(GL_TRIANGLES,
+									m.subMeshes[j].nIndices,
+									GL_UNSIGNED_INT,
+									(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
+									m.subMeshes[j].vertexOffset);
+		}
+	}
+	glUseProgram(0);
+
+	glUseProgram(worldShader);
 	N = hinges.size();
 	for (int i = 0; i < N; ++i)
 	{
@@ -472,6 +724,7 @@ void Graphics::Update(Camera& camera)
 		glBindVertexArray(dCube.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, dCube.subMeshes[0].nIndices);
 	}
+	glUseProgram(0);
 
 	points.clear();
 	lines.clear();
