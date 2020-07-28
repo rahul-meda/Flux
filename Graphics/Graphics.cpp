@@ -62,10 +62,34 @@ void Graphics::Initialize()
 	lightColors[1] = glm::vec3(0.0f, 1.0f, 0.0f);
 	lightColors[2] = glm::vec3(0.0f, 0.0f, 1.0f);
 	lightColors[3] = glm::vec3(1.0f, 1.0f, 0.0f);
+
+	stbExtensions = {"jpg", "png", "tga", "bmp", "psd"};
 }
 
 void Graphics::PostInit()
 {
+	GLint max_attribs;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
+	std::cout << max_attribs << std::endl;
+
+	glUseProgram(worldShader);
+	mvpLocW = glGetUniformLocation(worldShader, "MVP");
+	mLocW = glGetUniformLocation(worldShader, "M");
+	eyeLocW = glGetUniformLocation(worldShader, "eyePos");
+	lightMapLocW = glGetUniformLocation(worldShader, "lightMap");
+	camLightLocW = glGetUniformLocation(worldShader, "lightPos[4]");
+	timeLocW = glGetUniformLocation(worldShader, "time");
+	glUseProgram(0);
+
+	glUseProgram(animShader);
+	mvpLocA = glGetUniformLocation(animShader, "MVP");
+	mLocA = glGetUniformLocation(animShader, "M");
+	eyeLocA = glGetUniformLocation(animShader, "eyePos");
+	lightMapLocA = glGetUniformLocation(animShader, "lightMap");
+	camLightLocA = glGetUniformLocation(animShader, "lightPos[4]");
+	timeLocA = glGetUniformLocation(animShader, "time");
+	glUseProgram(0);
+
 	AddPointLight(glm::vec3(0.0f));
 
 	glUseProgram(animShader);
@@ -77,6 +101,16 @@ void Graphics::PostInit()
 		boneLocs[i] = glGetUniformLocation(animShader, name);
 	}
 	glUseProgram(0);
+}
+
+bool Graphics::STBI_Supported(const std::string& ext)
+{
+	for (std::string& s : stbExtensions)
+	{
+		if (s == ext)
+			return true;
+	}
+	return false;
 }
 
 unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices)
@@ -142,11 +176,17 @@ unsigned int Graphics::CreateModel(const std::vector<BoneVertex>& vertices, cons
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(6 * sizeof(float)));
 	// bone weights
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(8 * sizeof(float)));
+	for (int i = 0; i < MAX_WEIGHTS; ++i)
+	{
+		glEnableVertexAttribArray(3 + i);
+		glVertexAttribPointer(3 + i, 1, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)((8 + i) * sizeof(float)));
+	}
 	// bone ids
-	glEnableVertexAttribArray(4);
-	glVertexAttribIPointer(4, 4, GL_INT, sizeof(BoneVertex), (void*)(12 * sizeof(float)));
+	for (int i = 0; i < MAX_WEIGHTS; ++i)
+	{
+		glEnableVertexAttribArray(9 + i);
+		glVertexAttribIPointer(9 + i, 1, GL_INT, sizeof(BoneVertex), (void*)(14 * sizeof(float) + i * sizeof(int)));
+	}
 
 	glBindVertexArray(0);
 
@@ -210,21 +250,21 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 	else
 	{
 		LoadGeometry(scene, boneVerts, indices);
-		for (int i = 0; i < nVertices; ++i)
+		/*for (int i = 0; i < nVertices; ++i)
 		{
-			/*std::cout << "bone weigths: " << boneVerts[i].boneWeights[0] << "," << boneVerts[i].boneWeights[1]
+			std::cout << "bone weigths: " << boneVerts[i].boneWeights[0] << "," << boneVerts[i].boneWeights[1]
 				<< "," << boneVerts[i].boneWeights[2] << "," << boneVerts[i].boneWeights[3] << std::endl;
 			std::cout << "bone IDs: " << boneVerts[i].boneIDs[0] << "," << boneVerts[i].boneIDs[1]
-					<< "," << boneVerts[i].boneIDs[2] << "," << boneVerts[i].boneIDs[3] << std::endl;*/
-			/*if (!boneVerts[i].VerifyWeights())
+					<< "," << boneVerts[i].boneIDs[2] << "," << boneVerts[i].boneIDs[3] << std::endl;
+			if (!boneVerts[i].VerifyWeights())
 			{
 				std::cout << "invalid bone weigths in vertex: " << i << std::endl;
 			}
 			if (!boneVerts[i].VerifyBoneIDs())
 			{
 				std::cout << "invalid bone IDs in vertex: " << i << std::endl;
-			}*/
-		}
+			}
+		}*/
 		VAO = Graphics::GetInstance().CreateModel(boneVerts, indices);
 	}
 
@@ -345,14 +385,11 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 				std::string::size_type dotIndex = p.find_last_of(".");
 				std::string ext = p.substr(dotIndex + 1, p.size() - 2);
 				bool stb_supported = false;
-				if (ext == "jpg" || ext == "png" || ext == "bmp" || ext == "psd")	// stb only supports these ext
+				if (!Graphics::GetInstance().STBI_Supported(ext))
 				{
-					stb_supported = true;
+					p.replace(dotIndex + 1, ext.size(), "jpg");	// force-load jpg
 				}
-				if (!stb_supported)
-				{
-					p.replace(dotIndex + 1, ext.size(), "jpg");
-				}
+				
 				std::string fullPath = dir + "/" + p;
 				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
 				nMaps = 1;
@@ -489,11 +526,6 @@ void Graphics::SetBoneTransform(const int i, const glm::mat4& transform)
 	glUseProgram(0);
 }
 
-void Render(const std::vector<R_Mesh>& models, const unsigned int shader)
-{
-
-}
-
 void Graphics::Update(Camera& camera)
 {
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
@@ -512,14 +544,10 @@ void Graphics::Update(Camera& camera)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glUseProgram(worldShader);
-	unsigned int mvpLoc = glGetUniformLocation(worldShader, "MVP");
-	unsigned int mLoc = glGetUniformLocation(worldShader, "M");
-	unsigned int eyeLoc = glGetUniformLocation(worldShader, "eyePos");
-	unsigned int lightMapLoc = glGetUniformLocation(worldShader, "lightMap");
 	glm::vec3 eye = camera.position;
-	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
-	glUniform3fv(glGetUniformLocation(worldShader, "lightPos[4]"), 1, glm::value_ptr(eye));
-	glUniform1f(glGetUniformLocation(worldShader, "time"), glfwGetTime());
+	glUniform3fv(eyeLocW, 1, glm::value_ptr(eye));
+	glUniform3fv(camLightLocW, 1, glm::value_ptr(eye));
+	glUniform1f(timeLocW, glfwGetTime());
 
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
@@ -535,8 +563,8 @@ void Graphics::Update(Camera& camera)
 			M = T * R * S;
 			MVP = VP * M;
 
-			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+			glUniformMatrix4fv(mvpLocW, 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(mLocW, 1, GL_FALSE, glm::value_ptr(M));
 
 			unsigned int mID = m.subMeshes[j].materialID;
 			assert(mID < m.materials.size());
@@ -556,7 +584,7 @@ void Graphics::Update(Camera& camera)
 			else if (nMaps == 2)
 				lightMap.z = 0.0f;
 
-			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
+			glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
 			glBindVertexArray(m.VAO);
 			glDrawElementsBaseVertex(GL_TRIANGLES,
 									m.subMeshes[j].nIndices, 
@@ -568,13 +596,9 @@ void Graphics::Update(Camera& camera)
 	glUseProgram(0);
 
 	glUseProgram(animShader);
-	mvpLoc = glGetUniformLocation(animShader, "MVP");
-	mLoc = glGetUniformLocation(animShader, "M");
-	eyeLoc = glGetUniformLocation(animShader, "eyePos");
-	lightMapLoc = glGetUniformLocation(animShader, "lightMap");
-	glUniform3fv(eyeLoc, 1, glm::value_ptr(eye));
-	glUniform3fv(glGetUniformLocation(animShader, "lightPos[4]"), 1, glm::value_ptr(eye));
-	glUniform1f(glGetUniformLocation(animShader, "time"), glfwGetTime());
+	glUniform3fv(eyeLocA, 1, glm::value_ptr(eye));
+	glUniform3fv(camLightLocA, 1, glm::value_ptr(eye));
+	glUniform1f(timeLocA, glfwGetTime());
 
 	N = animModels.size();
 	for (int i = 0; i < N; i++)
@@ -590,8 +614,8 @@ void Graphics::Update(Camera& camera)
 			M = T * R * S;
 			MVP = VP * M;
 
-			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+			glUniformMatrix4fv(mvpLocA, 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(mLocA, 1, GL_FALSE, glm::value_ptr(M));
 
 			unsigned int mID = m.subMeshes[j].materialID;
 			assert(mID < m.materials.size());
@@ -611,7 +635,7 @@ void Graphics::Update(Camera& camera)
 			else if (nMaps == 2)
 				lightMap.z = 0.0f;
 
-			glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
+			glUniform3fv(lightMapLocA, 1, glm::value_ptr(lightMap));
 			glBindVertexArray(m.VAO);
 			glDrawElementsBaseVertex(GL_TRIANGLES,
 									m.subMeshes[j].nIndices,
@@ -634,8 +658,8 @@ void Graphics::Update(Camera& camera)
 		M = T * R * S;
 		MVP = VP * M;
 
-		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
+		glUniformMatrix4fv(mvpLocW, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(mLocW, 1, GL_FALSE, glm::value_ptr(M));
 	
 		unsigned int* mapID = &hingeMaterial.diffuseMap;
 		int C = hingeMaterial.nMaps;
@@ -654,7 +678,7 @@ void Graphics::Update(Camera& camera)
 		else if (C == 2)
 			lightMap.z = 0.0f;
 
-		glUniform3fv(lightMapLoc, 1, glm::value_ptr(lightMap));
+		glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
 		glBindVertexArray(dCylinder.VAO);
 		glLineWidth(2.0f);
 		glDrawArrays(GL_TRIANGLES, 0, dCylinder.subMeshes[0].nIndices);
@@ -662,8 +686,8 @@ void Graphics::Update(Camera& camera)
 	glUseProgram(0);
 
 	glUseProgram(lightShader);
-	mvpLoc = glGetUniformLocation(lightShader, "MVP");
-	mLoc = glGetUniformLocation(lightShader, "M");
+	unsigned int mvpLoc = glGetUniformLocation(lightShader, "MVP");
+	unsigned int mLoc = glGetUniformLocation(lightShader, "M");
 	unsigned int colorLoc = glGetUniformLocation(lightShader, "objColor");
 
 	N = points.size();

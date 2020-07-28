@@ -15,6 +15,6 @@ public:
 	Assimp_Test() {};
 	~Assimp_Test() {};
 
-	Animation walkAnimation;
+	Animation animation;
 	unsigned int objID;
 };

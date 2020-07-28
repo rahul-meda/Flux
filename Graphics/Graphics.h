@@ -10,6 +10,7 @@
 #include "Camera.h"
 
 #define MAX_BONES 100
+#define MAX_WEIGHTS 6
 
 struct R_Vertex
 {
@@ -23,15 +24,24 @@ struct BoneVertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 textureCoords;
-	glm::vec4 boneWeights;
-	glm::ivec4 boneIDs;
+	float boneWeights[MAX_WEIGHTS];
+	int boneIDs[MAX_WEIGHTS];
 
 	BoneVertex() 
-	 : boneWeights(glm::vec4(0.0f)), boneIDs(glm::ivec4(0)) {}
+	{
+		for (int i = 0; i < MAX_WEIGHTS; ++i)
+		{
+			boneWeights[i] = 0.0f;
+		}
+		for (int i = 0; i < MAX_WEIGHTS; ++i)
+		{
+			boneIDs[i] = 0;
+		}
+	}
 
 	void AssignWeights(unsigned int id, float weight)
 	{
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < MAX_WEIGHTS; ++i)
 		{
 			if (boneWeights[i] == 0.0f)
 			{
@@ -40,24 +50,26 @@ struct BoneVertex
 				return;
 			}
 		}
-		assert(0);
+		//assert(0);
 	}
 
 	bool VerifyWeights()
 	{
-		return (boneWeights[0] + boneWeights[1] + boneWeights[2] + boneWeights[3] == 1.0f);
+		int weight = 0.0f;
+		for (int i = 0; i < MAX_WEIGHTS; ++i)
+		{
+			weight += boneWeights[i];
+		}
+		return weight == 1.0f;
 	}
 
 	bool VerifyBoneIDs()
 	{
-		if (boneIDs[0] < 0 || boneIDs[0] > 31)
-			return false;
-		if (boneIDs[1] < 0 || boneIDs[1] > 31)
-			return false;
-		if (boneIDs[2] < 0 || boneIDs[2] > 31)
-			return false;
-		if (boneIDs[3] < 0 || boneIDs[3] > 31)
-			return false;
+		for (int i = 0; i < MAX_WEIGHTS; ++i)
+		{
+			if (boneIDs[i] < 0 || boneIDs[i] > MAX_BONES)
+				return false;
+		}
 		return true;
 	}
 };
@@ -238,4 +250,20 @@ public:
 	glm::vec3 lightColors[4];
 
 	unsigned int boneLocs[MAX_BONES];
+
+	std::vector<std::string> stbExtensions;	// ext supported by stb_image
+	bool STBI_Supported(const std::string& ext);
+
+	unsigned int mvpLocW;
+	unsigned int mLocW;
+	unsigned int eyeLocW;
+	unsigned int lightMapLocW;
+	unsigned int camLightLocW;
+	unsigned int timeLocW;
+	unsigned int mvpLocA;
+	unsigned int mLocA;
+	unsigned int eyeLocA;
+	unsigned int lightMapLocA;
+	unsigned int camLightLocA;
+	unsigned int timeLocA;
 };

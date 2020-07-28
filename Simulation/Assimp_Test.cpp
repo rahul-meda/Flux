@@ -61,19 +61,31 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.1f));
-	std::string path = "Resources/Models/sandy/erika_archer_bow_arrow.fbx";
+	std::string path = "Resources/Models/sandy/sandy.fbx";
 	obj.LoadModel(path);
 	Graphics::GetInstance().animModels.push_back(obj);
 	obj.Clear();
 
 	objID = Graphics::GetInstance().animModels.size() - 1;
 
-	walkAnimation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
+	animation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
 {
 	Simulation::OnKeyTap(window, key, scanCode, action, mods);
+
+	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	{
+		
+		int i = animation.GetAnimIndex();
+		++i;
+		if (i > 4)
+		{
+			i = 0;
+		}
+		animation.SetAnimIndex(i);
+	}
 }
 
 void Assimp_Test::OnKeyPress(GLFWwindow * window)
@@ -85,5 +97,5 @@ void Assimp_Test::Update(GLFWwindow* window)
 {
 	Simulation::Update(window);
 
-	walkAnimation.Update();
+	animation.Update();
 }

@@ -17,6 +17,7 @@ void Animation::Init(const std::string& file, const std::vector<glm::mat4>& offs
 	invBindTx = tx;
 	finalTransforms = std::vector<glm::mat4>(boneOffsets.size());
 	t0 = GetTickCount();
+	animIndex = 0;
 }
 
 void Animation::Interpolate(Transform* res, const Transform& start, const Transform& end, const float t)
@@ -117,6 +118,7 @@ void Animation::InterpolateRotation(glm::quat& out, float animationTime, const a
 	glm::quat start(qs.w, qs.x, qs.y, qs.z);
 	glm::quat end(qe.w, qe.x, qe.y, qe.z);
 	out = glm::slerp(start, end, progression);
+	out = glm::normalize(out);
 	//out = out.Normalize();
 }
 
@@ -144,7 +146,7 @@ void Animation::InterpolateScaling(aiVector3D& out, float animationTime, const a
 void Animation::CalculatePose(const float animationTime, const aiNode* pNode, const glm::mat4& parentTx)
 {
 	std::string nodeName(pNode->mName.data);
-	const aiAnimation* animation = scene->mAnimations[0];
+	const aiAnimation* animation = scene->mAnimations[animIndex];
 	glm::mat4 nodeTx;
 	AssimpToGlmMat4(pNode->mTransformation, nodeTx);
 	const aiNodeAnim* nodeAnim = FindNodeAnim(animation, nodeName);
@@ -212,10 +214,21 @@ void Animation::CalculateFinalTransform(const std::vector<Transform>& pose, cons
 	finalTransforms[boneId] = modelTx;
 }
 
+int Animation::GetAnimIndex() const
+{
+	return animIndex;
+}
+
+void Animation::SetAnimIndex(const int i)
+{
+	elapsed = 0.0f;
+	animIndex = i;
+}
+
 void Animation::Update()
 {
-	/*const static float dt = 1.0f / 60.0f;
-	const static float duration = (float)scene->mAnimations[0]->mDuration;
+	const static float dt = 1.0f / 60.0f;
+	const static float duration = (float)scene->mAnimations[animIndex]->mDuration;
 	elapsed += dt;
 	if (elapsed > duration)
 	{
@@ -224,16 +237,16 @@ void Animation::Update()
 	
 	float time_sec = (float)((double)GetTickCount() - (double)t0) / 1000.0f;
 
-	float tps = (float)(scene->mAnimations[0]->mTicksPerSecond != 0 ? scene->mAnimations[0]->mTicksPerSecond : 25.0f);
-	float elapsedTicks = time_sec * tps;
-	float animationTime = fmod(elapsedTicks, (float)scene->mAnimations[0]->mDuration);
+	float tps = (float)(scene->mAnimations[animIndex]->mTicksPerSecond != 0 ? scene->mAnimations[animIndex]->mTicksPerSecond : 25.0f);
+	float elapsedTicks = elapsed * tps;
+	float animationTime = fmod(elapsedTicks, (float)scene->mAnimations[animIndex]->mDuration);
 
-	CalculatePose(animationTime, scene->mRootNode, glm::mat4(1.0f));*/
+	CalculatePose(animationTime, scene->mRootNode, glm::mat4(1.0f));
 
 	int N = finalTransforms.size();
 	for (int i = 0; i < N; ++i)
 	{
-		//Graphics::GetInstance().SetBoneTransform(i, finalTransforms[i]);
+		Graphics::GetInstance().SetBoneTransform(i, finalTransforms[i]);
 	}
 }
 
