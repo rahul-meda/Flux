@@ -55,7 +55,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
 	
-
 	q = glm::angleAxis(0.75f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p1, q);
 	boxCollider = new HullCollider();
@@ -69,7 +68,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
 	
-
 	q = glm::angleAxis(-0.75f, glm::vec3(0.0f, 0.0f, 1.0f));
 	tx = Transform(p1, q);
 	boxCollider = new HullCollider();
@@ -83,7 +81,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.scales.push_back(glm::vec3(0.5f, 3.0f, 0.5f));
 	obj.LoadModel("resources/models/box/box.obj");
 	
-
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
 
@@ -101,7 +98,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	obj.scales.push_back(glm::vec3(1.0f));
 	obj.LoadModel("resources/models/sphere/sphere.obj");
 	
-
 	p2 = glm::vec3(0.0f, -4.0f, 0.0f);
 	tx = Transform(p2);
 	sphereCollider = new SphereCollider();

@@ -30,6 +30,7 @@ struct BodyDef
 		angularVelocity = glm::vec3(0.0f);
 		isStatic = false;
 		filterID = 0;
+		lockRotation = false;
 	}
 
 	Transform tx;
@@ -37,6 +38,7 @@ struct BodyDef
 	glm::vec3 angularVelocity;
 	bool isStatic;
 	unsigned int filterID;
+	bool lockRotation;
 };
 
 class Collider;
@@ -65,6 +67,7 @@ private:
 	ContactEdge* edgeList;
 
 	bool isStatic;	
+	bool lockRotation;		// for characters
 	int index;				// index in world body list
 
 public:
@@ -99,8 +102,6 @@ public:
 	void SynchronizeTransform(int i);
 
 	bool ShouldCollide(Body* other) const;
-
-	void FixRotation();
 
 	friend class Physics;
 	friend class HullCollider;

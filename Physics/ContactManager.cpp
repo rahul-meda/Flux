@@ -240,10 +240,10 @@ void ContactManager::DebugDraw()
 		}
 	}
 
-	/*N = bp.aabbs.size();
+	N = bp.aabbs.size();
 	for (int i = 0; i < N; ++i)
 	{
 		AABB* aabb = bp.aabbs[i];
 		Graphics::GetInstance().aabbs.push_back(R_aabb(aabb->min, aabb->max));
-	}*/
+	}
 }

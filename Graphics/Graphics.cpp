@@ -75,6 +75,10 @@ void Graphics::PostInit()
 	glUseProgram(worldShader);
 	mvpLocW = glGetUniformLocation(worldShader, "MVP");
 	mLocW = glGetUniformLocation(worldShader, "M");
+	for (int i = 0; i < 3; ++i)
+	{
+		txLocW[i] = glGetUniformLocation(worldShader, textureLocs[i]);
+	}
 	eyeLocW = glGetUniformLocation(worldShader, "eyePos");
 	lightMapLocW = glGetUniformLocation(worldShader, "lightMap");
 	camLightLocW = glGetUniformLocation(worldShader, "lightPos[4]");
@@ -84,6 +88,10 @@ void Graphics::PostInit()
 	glUseProgram(animShader);
 	mvpLocA = glGetUniformLocation(animShader, "MVP");
 	mLocA = glGetUniformLocation(animShader, "M");
+	for (int i = 0; i < 3; ++i)
+	{
+		txLocA[i] = glGetUniformLocation(animShader, textureLocs[i]);
+	}
 	eyeLocA = glGetUniformLocation(animShader, "eyePos");
 	lightMapLocA = glGetUniformLocation(animShader, "lightMap");
 	camLightLocA = glGetUniformLocation(animShader, "lightPos[4]");
@@ -191,6 +199,13 @@ unsigned int Graphics::CreateModel(const std::vector<BoneVertex>& vertices, cons
 	glBindVertexArray(0);
 
 	return VAO;
+}
+
+void R_Mesh::LoadModel(const R_Mesh& mesh)
+{
+	VAO = mesh.VAO;
+	subMeshes = mesh.subMeshes;
+	materials = mesh.materials;
 }
 
 void R_Mesh::LoadModel(const std::string& file, bool flip)
@@ -377,6 +392,15 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 					p = p.substr(2, p.size() - 2);
 				}
 
+				if (p.substr(1, 2) == ":\\")
+				{
+					slashIndex = p.find_last_of("\\");
+					if (slashIndex != std::string::npos)
+					{
+						p = p.substr(slashIndex + 1, p.size() - 2);
+					}
+				}
+
 				slashIndex = p.find_last_of("/");
 				if (slashIndex != std::string::npos)
 				{
@@ -549,17 +573,20 @@ void Graphics::Update(Camera& camera)
 	glUniform3fv(camLightLocW, 1, glm::value_ptr(eye));
 	glUniform1f(timeLocW, glfwGetTime());
 
+	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
+
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
 		R_Mesh m = objects[i];
 		int nSub = m.subMeshes.size();
+		Body* b = (*bodies)[m.bodyID];
 
 		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), m.pos);
-			R = glm::mat4(m.rot);
-			S = glm::scale(m.scales[0]);
+			T = glm::translate(glm::mat4(1.0f), b->GetTransform().position);
+			R = glm::mat4(b->GetTransform().R);
+			S = glm::scale(m.scale);
 			M = T * R * S;
 			MVP = VP * M;
 
@@ -574,7 +601,7 @@ void Graphics::Update(Camera& camera)
 			{
 				glActiveTexture(GL_TEXTURE0 + k);
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
-				glUniform1i(glGetUniformLocation(worldShader, textureLocs[k]), k);
+				glUniform1i(txLocW[k], k);
 			}
 			glActiveTexture(GL_TEXTURE0);
 
@@ -605,11 +632,12 @@ void Graphics::Update(Camera& camera)
 	{
 		R_Mesh m = animModels[i];
 		int nSub = m.subMeshes.size();
+		Body* b = (*bodies)[m.bodyID];
 
 		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), m.pos);
-			R = glm::mat4(m.rot);
+			T = glm::translate(glm::mat4(1.0f), b->GetTransform().position);
+			R = glm::mat4(b->GetTransform().R);
 			S = glm::scale(m.scales[0]);
 			M = T * R * S;
 			MVP = VP * M;
@@ -625,7 +653,7 @@ void Graphics::Update(Camera& camera)
 			{
 				glActiveTexture(GL_TEXTURE0 + k);
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
-				glUniform1i(glGetUniformLocation(animShader, textureLocs[k]), k);
+				glUniform1i(txLocA[k], k);
 			}
 			glActiveTexture(GL_TEXTURE0);
 
@@ -718,7 +746,7 @@ void Graphics::Update(Camera& camera)
 		glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(M));
 		glUniform3fv(colorLoc, 1, glm::value_ptr(l.color));
 		glBindVertexArray(dLine.VAO);
-		glDrawArrays(GL_LINES, 0, dLine.subMeshes[0].nIndices);
+		//glDrawArrays(GL_LINES, 0, dLine.subMeshes[0].nIndices);
 	}
 
 	N = aabbs.size();

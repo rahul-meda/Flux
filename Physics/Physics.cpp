@@ -75,6 +75,7 @@ void Physics::Step(float dt)
 		
 		v += dt * (GRAVITY * glm::vec3(0.0f, -1.0f, 0.0f) + b->invMass * b->force);
 		w += dt * b->iitW * b->torque;
+		
 		v *= 0.9995f;
 		w *= 0.995f;
 
@@ -220,16 +221,17 @@ void Physics::Step(float dt)
 
 	for (int i = 0; i < nBodies; ++i)
 	{
-		if (bodies[i]->isStatic) continue;
-		bodies[i]->comW = positions[i].c;
-		bodies[i]->orientation = positions[i].q;
-		bodies[i]->velocity = velocities[i].v;
-		bodies[i]->angularVelocity = velocities[i].w;
-
-		bodies[i]->force = glm::vec3(0.0f);
-		bodies[i]->torque = glm::vec3(0.0f);
-
-		bodies[i]->SynchronizeTransform(i);
+		Body* b = bodies[i];
+		if (b->isStatic) continue;
+		b->comW = positions[i].c;
+		b->orientation = positions[i].q;
+		b->velocity = velocities[i].v;
+		b->angularVelocity = velocities[i].w;
+		if (b->lockRotation)
+			b->angularVelocity = glm::vec3(0.0f);
+		b->force = glm::vec3(0.0f);
+		b->torque = glm::vec3(0.0f);
+		b->SynchronizeTransform(i);
 	}
 }
 

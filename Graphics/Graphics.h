@@ -173,6 +173,7 @@ struct BoneTx
 class R_Mesh
 {
 public:
+	unsigned int bodyID;
 	glm::vec3 pos;
 	glm::mat3 rot;
 	std::vector<glm::vec3> posOffsets;
@@ -188,6 +189,7 @@ public:
 	glm::mat4 invBindTx;
 	const aiScene* scene;
 
+	void LoadModel(const R_Mesh& mesh);
 	void LoadModel(const std::string& fileName, bool flip = false);
 	void LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
 	void LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertices, std::vector<unsigned int>& indices);
@@ -256,12 +258,14 @@ public:
 
 	unsigned int mvpLocW;
 	unsigned int mLocW;
+	unsigned int txLocW[3];
 	unsigned int eyeLocW;
 	unsigned int lightMapLocW;
 	unsigned int camLightLocW;
 	unsigned int timeLocW;
 	unsigned int mvpLocA;
 	unsigned int mLocA;
+	unsigned int txLocA[3];
 	unsigned int eyeLocA;
 	unsigned int lightMapLocA;
 	unsigned int camLightLocA;

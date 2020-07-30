@@ -61,21 +61,20 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 	R_Mesh obj;
-	glm::vec3 s1(500.0f, 0.5f, 500.0f);
+	glm::vec3 s1(50.0f, 0.5f, 50.0f);
 
 	tx = Transform(glm::vec3(0.0f, -0.5f, 0.0f), glm::angleAxis(PI, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
+	obj.bodyID = bID;
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(s1);
+	obj.scale = s1;
 	obj.LoadModel("resources/models/floor/floor.obj");
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
@@ -88,7 +87,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	wallMaterial.nMaps = 3;
 
 	glm::vec3 s2(0.5f, 100.0f, 50.0f);
-	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.25f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
@@ -96,11 +95,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
+	obj.bodyID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(s2);
+	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -114,11 +112,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
+	obj.bodyID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(s2);
+	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -133,11 +130,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
+	obj.bodyID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(s2);
+	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -151,11 +147,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.pos = tx.position;
-	obj.rot = tx.R;
+	obj.bodyID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
-	obj.scales.push_back(s2);
+	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
 	Graphics::GetInstance().objects.push_back(obj);
@@ -197,18 +192,15 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		bd.velocity = 20.0f * camera.fwd;
 		unsigned int bID = Physics::GetInstance().AddBody(bd);
 		SphereCollider* sphereCollider = new SphereCollider();
-		sphereCollider->Scale(0.25f);
+		sphereCollider->Scale(0.5f);
 		sphereCollider->massData->density = 1.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
 		R_Mesh obj;
-		obj.pos = tx.position;
-		obj.rot = tx.R;
-		obj.scales.push_back(glm::vec3(0.25f));
+		obj.bodyID = bID;
+		obj.scale = (glm::vec3(0.5f));
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
-		obj.LoadModel("resources/models/sphere/sphere.obj");
-		
-		obj.scale = glm::vec3(1.0f);
+		obj.LoadModel(Graphics::GetInstance().dSphere);
 		Graphics::GetInstance().objects.push_back(obj);
 	}
 	if (key == GLFW_KEY_U && action == GLFW_PRESS)
@@ -219,17 +211,17 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 
 void Simulation::OnKeyPress(GLFWwindow* window)
 {
-	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if(glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		camera.Translate(Camera::FWD);
-	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		camera.Translate(Camera::REV);
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		camera.Translate(Camera::LEFT);
-	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
 		camera.Translate(Camera::RIGHT);
-	else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
 		camera.Translate(Camera::UP);
-	else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
 		camera.Translate(Camera::DOWN);
 	else
 		camera.velocity = glm::vec3(0.0f);

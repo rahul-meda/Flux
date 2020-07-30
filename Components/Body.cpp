@@ -21,6 +21,12 @@ Body::Body(const BodyDef& bd)
 	torque = glm::vec3(0.0f);
 
 	filterID = bd.filterID;
+	lockRotation = bd.lockRotation;
+	if (lockRotation)
+	{
+		iitL = glm::mat3(0.0f);
+		iitW = glm::mat3(0.0f);
+	}
 }
 
 void Body::SynchronizeTransform(int i)
@@ -29,9 +35,9 @@ void Body::SynchronizeTransform(int i)
 	tx.R = glm::toMat3(orientation);
 	tx.position = comW - (tx.R * comL);
 
-	R_Mesh* obj = &Graphics::GetInstance().objects[i];
+	/*R_Mesh* obj = &Graphics::GetInstance().objects[i];
 	obj->pos = tx.position;
-	obj->rot = tx.R;
+	obj->rot = tx.R;*/
 }
 
 void Body::AddCollider(Collider* collider)
@@ -41,6 +47,13 @@ void Body::AddCollider(Collider* collider)
 
 	if (isStatic)
 		return;
+
+	if (lockRotation)
+	{
+		invMass = 0.0001;
+		FixRotation();
+		return;
+	}
 
 	collider->ComputeMass();
 
@@ -85,10 +98,4 @@ bool Body::ShouldCollide(Body* other) const
 		return false;
 
 	return true;
-}
-
-void Body::FixRotation()
-{
-	iitL = glm::mat3(0.0f);
-	iitW = glm::mat3(0.0f);
 }

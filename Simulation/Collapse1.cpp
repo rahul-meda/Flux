@@ -13,8 +13,10 @@ Collapse1& Collapse1::GetInstance()
 	return instance;
 }
 
-void Collapse1::Init()
+void Collapse1::Init(GLFWwindow* window, int width, int height)
 {
+	Simulation::Init(window, width, height);
+
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
@@ -24,6 +26,8 @@ void Collapse1::Init()
 	material.diffuseMap = boxDfTxt;
 	material.specularMap = boxSpTxt;
 	material.nMaps = 2;
+
+	R_Mesh cube = Graphics::GetInstance().dCube;
 
 	Transform tx;
 	BodyDef bd;
@@ -39,10 +43,10 @@ void Collapse1::Init()
 	for (int k = 0; k < 1; ++k)
 	{
 		float dz = 2.0f * sh.z * (float)k;
-		for (int j = 0; j < 8; ++j)
+		for (int j = 0; j < 9; ++j)
 		{
 			float dy = 2.0f * (sv.y + sh.y) * float(j);
-			for (int i = 0; i < 9; ++i)
+			for (int i = 0; i < 22; ++i)
 			{
 				float dx = 2.0f * sh.x * (float)i;
 				for (int v = 0; v < 4; ++v)
@@ -60,8 +64,8 @@ void Collapse1::Init()
 					mesh.GetColliderData(boxCollider);
 					boxCollider->Scale(glm::vec3(sv));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
-					obj.LoadModel("resources/models/box/box.obj");
-					
+					obj.LoadModel(cube);
+					obj.bodyID = bID;
 					obj.scale = sv;
 					Graphics::GetInstance().objects.push_back(obj);
 					obj.Clear();
@@ -78,8 +82,8 @@ void Collapse1::Init()
 				mesh.GetColliderData(boxCollider);
 				boxCollider->Scale(glm::vec3(sh));
 				Physics::GetInstance().AddCollider(bID, boxCollider);
-				obj.LoadModel("resources/models/box/box.obj");
-				
+				obj.LoadModel(cube);
+				obj.bodyID = bID;
 				obj.scale = sh;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -97,9 +101,24 @@ void Collapse1::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.LoadModel("resources/models/box/box.obj");
-	
+	obj.LoadModel(cube);
+	obj.bodyID = bID;
 	obj.scale = glm::vec3(1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
+}
+
+void Collapse1::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
+{
+	Simulation::OnKeyTap(window, key, scanCode, action, mods);
+}
+
+void Collapse1::OnKeyPress(GLFWwindow * window)
+{
+	Simulation::OnKeyPress(window);
+}
+
+void Collapse1::Update(GLFWwindow* window)
+{
+	Simulation::Update(window);
 }
