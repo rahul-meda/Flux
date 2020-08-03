@@ -915,9 +915,9 @@ void Car_Test::Update(GLFWwindow* window)
 
 	txC = camera.body->GetTransform();
 	glm::mat3 R = txC.R;
-	fwd = R * glm::vec3(1.0f, 0.0f, 0.0f);
-	up = R * glm::vec3(0.0f, 1.0f, 0.0f);
-	right = R * glm::vec3(0.0f, 0.0f, 1.0f);
+	fwd = R[0];
+	up = R[1];
+	right = R[2];
 
 	if (!Physics::GetInstance().pause && IsGripping())
 	{

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation\Animation.cpp" />
+    <ClCompile Include="Animation\AnimFSM.cpp" />
     <ClCompile Include="Components\Body.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Graphics\Camera.cpp" />
@@ -80,6 +81,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation\Animation.h" />
+    <ClInclude Include="Animation\AnimFSM.h" />
+    <ClInclude Include="Animation\AnimState.h" />
+    <ClInclude Include="Animation\IdleState.h" />
+    <ClInclude Include="Animation\MoveState.h" />
     <ClInclude Include="Components\Body.h" />
     <ClInclude Include="Components\Model.h" />
     <ClInclude Include="Components\Transform.h" />

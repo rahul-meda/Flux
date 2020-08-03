@@ -169,6 +169,9 @@
     <ClCompile Include="Simulation\Assimp_Test.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Animation\AnimFSM.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -343,6 +346,18 @@
     <ClInclude Include="Simulation\Assimp_Test.h">
       <Filter>Simulation</Filter>
     </ClInclude>
+    <ClInclude Include="Animation\IdleState.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimState.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimFSM.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\MoveState.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -380,6 +395,9 @@
     </Filter>
     <Filter Include="Animation">
       <UniqueIdentifier>{858a9146-3e19-4029-8861-27585932752b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{1259789e-4aec-47b2-bbeb-c7b6113f3403}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

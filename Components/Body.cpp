@@ -51,7 +51,8 @@ void Body::AddCollider(Collider* collider)
 	if (lockRotation)
 	{
 		invMass = 0.0001;
-		FixRotation();
+		iitL = glm::mat3(0.0f);
+		iitW = glm::mat3(0.0f);
 		return;
 	}
 

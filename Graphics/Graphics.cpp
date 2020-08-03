@@ -38,6 +38,7 @@ void Graphics::Initialize()
 	// draw the pixel only if the object is closer to the viewer
 	glEnable(GL_DEPTH_TEST); // enables depth-testing
 	glDepthFunc(GL_LESS);    // interpret smaller values as closer
+	glEnable(GL_CULL_FACE);
 
 	std::vector<R_Vertex> vertices;
 	std::vector<unsigned int> indices;

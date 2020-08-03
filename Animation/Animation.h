@@ -36,7 +36,6 @@ private:
 	std::vector<glm::mat4> boneOffsets;
 	std::map<std::string, unsigned int> boneMap;
 	glm::mat4 invBindTx;
-	int animIndex;
 
 	void Interpolate(Transform* res, const Transform& start, const Transform& end, const float t);
 
@@ -59,6 +58,7 @@ private:
 public:
 	std::vector<KeyFrame> frames;
 	std::vector<glm::mat4> finalTransforms;
+	int animIndex;
 
 	void Init(const std::string& file, const std::vector<glm::mat4>& offsets, 
 		      const std::map<std::string, unsigned int>& bMap, const glm::mat4& tx);

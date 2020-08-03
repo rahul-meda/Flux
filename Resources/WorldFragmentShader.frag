@@ -24,7 +24,7 @@ vec3 lightColors[5];
 
 vec3 CalcGlobalLight();
 vec3 CalcPointLight(int index);
-
+ 
 void main()
 {
 	normal = normalize(vNormal);

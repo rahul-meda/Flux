@@ -76,6 +76,9 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	objID = Graphics::GetInstance().animModels.size() - 1;
 
 	animation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
+	Body* body = Physics::GetInstance().bodies[bID];
+	animFSM.body = body;
+	camera.body = body;
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
@@ -92,6 +95,10 @@ void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int actio
 		}
 		animation.SetAnimIndex(i);
 	}
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		camera.follow = !camera.follow;
+	}
 }
 
 void Assimp_Test::OnKeyPress(GLFWwindow * window)
@@ -100,10 +107,12 @@ void Assimp_Test::OnKeyPress(GLFWwindow * window)
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		unsigned int bID = Graphics::GetInstance().animModels[objID].bodyID;
+		/*unsigned int bID = Graphics::GetInstance().animModels[objID].bodyID;
 		Body* body = Physics::GetInstance().bodies[bID];
 		glm::vec3 fwd = body->GetTransform().R[2]; 
-		body->ApplyForceCOM(body->GetMass() * 10.0f * fwd);
+		body->ApplyForceCOM(body->GetMass() * 10.0f * fwd);*/
+	
+		animFSM.transition = T_MOVE;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
@@ -117,6 +126,9 @@ void Assimp_Test::OnKeyPress(GLFWwindow * window)
 		Body* body = Physics::GetInstance().bodies[bID];
 		body->ApplyTorque(body->GetInvMass() * 10.0f * (glm::vec3(0.0f, -1.0f, 0.0f)));
 	}
+
+	animFSM.Update();
+	animation.animIndex = animFSM.animID;
 }
 
 void Assimp_Test::Update(GLFWwindow* window)
@@ -124,4 +136,13 @@ void Assimp_Test::Update(GLFWwindow* window)
 	Simulation::Update(window);
 
 	animation.Update();
+
+	Transform tx = camera.body->GetTransform();
+	if (camera.follow)
+	{
+		camera.fwd = tx.R[2];
+		camera.up = glm::vec3(0.0f, 1.0f, 0.0f);
+		camera.position = (tx.R * glm::vec3(0.0f, 5.0f, -5.0f) + tx.position);
+		camera.target = camera.position + camera.fwd;
+	}
 }

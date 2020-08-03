@@ -7,6 +7,9 @@
 #include "../Graphics/Camera.h"
 #include "../Graphics/Graphics.h"
 #include "../Components/Transform.h"
+#include "../Animation/AnimFSM.h"
+
+class AnimState;
 
 struct MouseInfo
 {
@@ -46,4 +49,7 @@ public:
 	std::map<int, std::pair<int, int>> bufferIDmap;
 	MouseInfo mouseData;
 	Material material;
+
+	AnimFSM animFSM;
+	std::vector<AnimState*> states;
 };

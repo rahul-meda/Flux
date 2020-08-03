@@ -1,5 +1,6 @@
 
 #include <glad/glad.h>
+//#include <glm/gtx/compatibility.hpp>
 #include <iostream>
 #include "Simulation.h"
 #include "../Graphics/Shader.h"
@@ -9,7 +10,6 @@
 #include "../Components/Body.h"
 #include "../Physics/HullCollider.h"
 #include "../Physics/SphereCollider.h"
-#include <glm/gtx/compatibility.hpp>
 
 #define MARGIN 30
 
@@ -87,7 +87,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	wallMaterial.nMaps = 3;
 
 	glm::vec3 s2(0.5f, 100.0f, 50.0f);
-	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.25f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
