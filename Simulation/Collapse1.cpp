@@ -65,7 +65,7 @@ void Collapse1::Init(GLFWwindow* window, int width, int height)
 					boxCollider->Scale(glm::vec3(sv));
 					Physics::GetInstance().AddCollider(bID, boxCollider);
 					obj.LoadModel(cube);
-					obj.bodyID = bID;
+					obj.txID = bID;
 					obj.scale = sv;
 					Graphics::GetInstance().objects.push_back(obj);
 					obj.Clear();
@@ -83,7 +83,7 @@ void Collapse1::Init(GLFWwindow* window, int width, int height)
 				boxCollider->Scale(glm::vec3(sh));
 				Physics::GetInstance().AddCollider(bID, boxCollider);
 				obj.LoadModel(cube);
-				obj.bodyID = bID;
+				obj.txID = bID;
 				obj.scale = sh;
 				Graphics::GetInstance().objects.push_back(obj);
 				obj.Clear();
@@ -102,7 +102,7 @@ void Collapse1::Init(GLFWwindow* window, int width, int height)
 	boxCollider->Scale(glm::vec3(1.0f));
 	Physics::GetInstance().AddCollider(bID, boxCollider);
 	obj.LoadModel(cube);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.scale = glm::vec3(1.0f);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();

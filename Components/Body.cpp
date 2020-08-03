@@ -1,6 +1,7 @@
 
 #include "Body.h"
 #include "../Physics/Collider.h"
+#include "../Physics/Physics.h"
 #include "../Graphics/Graphics.h"
 
 Body::Body(const BodyDef& bd)
@@ -27,17 +28,6 @@ Body::Body(const BodyDef& bd)
 		iitL = glm::mat3(0.0f);
 		iitW = glm::mat3(0.0f);
 	}
-}
-
-void Body::SynchronizeTransform(int i)
-{
-	orientation = glm::normalize(orientation);	// needed every frame?
-	tx.R = glm::toMat3(orientation);
-	tx.position = comW - (tx.R * comL);
-
-	/*R_Mesh* obj = &Graphics::GetInstance().objects[i];
-	obj->pos = tx.position;
-	obj->rot = tx.R;*/
 }
 
 void Body::AddCollider(Collider* collider)

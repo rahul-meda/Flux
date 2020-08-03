@@ -99,8 +99,6 @@ public:
 
 	void AddCollider(Collider* collider);
 
-	void SynchronizeTransform(int i);
-
 	bool ShouldCollide(Body* other) const;
 
 	friend class Physics;

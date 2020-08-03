@@ -173,7 +173,7 @@ struct BoneTx
 class R_Mesh
 {
 public:
-	unsigned int bodyID;
+	unsigned int txID;
 	glm::vec3 pos;
 	glm::mat3 rot;
 	std::vector<glm::vec3> posOffsets;

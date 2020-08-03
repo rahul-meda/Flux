@@ -38,6 +38,7 @@ public:
 	float minSep;
 
 	std::vector<Body*> bodies;
+	std::vector<Transform> transforms;
 	std::vector<Position> positions;
 	std::vector<Velocity> velocities;
 	std::vector<Collider*> colliders;

@@ -26,6 +26,7 @@ unsigned int Physics::AddBody(const BodyDef& bd)
 	b->index = bodies.size() - 1;
 	positions.push_back(Position(b->comW, b->orientation));
 	velocities.push_back(Velocity(b->velocity, b->angularVelocity));
+	transforms.push_back(bd.tx);
 
 	return b->index;
 }
@@ -231,7 +232,10 @@ void Physics::Step(float dt)
 			b->angularVelocity = glm::vec3(0.0f);
 		b->force = glm::vec3(0.0f);
 		b->torque = glm::vec3(0.0f);
-		b->SynchronizeTransform(i);
+		b->orientation = glm::normalize(b->orientation);	// needed every frame?
+		b->tx.R = glm::toMat3(b->orientation);
+		b->tx.position = b->comW - (transforms[i].R * b->comL);
+		transforms[i] = b->tx;
 	}
 }
 

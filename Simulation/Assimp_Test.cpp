@@ -63,7 +63,7 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	Physics::GetInstance().AddCollider(bID, capsuleCollider);
 	obj.pos = tx.position;
 	obj.rot = tx.R;
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.025f));
@@ -116,13 +116,13 @@ void Assimp_Test::OnKeyPress(GLFWwindow * window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		unsigned int bID = Graphics::GetInstance().animModels[objID].bodyID;
+		unsigned int bID = Graphics::GetInstance().animModels[objID].txID;
 		Body* body = Physics::GetInstance().bodies[bID];
 		body->ApplyTorque(body->GetInvMass() * 10.0f * (glm::vec3(0.0f, 1.0f, 0.0f)));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		unsigned int bID = Graphics::GetInstance().animModels[objID].bodyID;
+		unsigned int bID = Graphics::GetInstance().animModels[objID].txID;
 		Body* body = Physics::GetInstance().bodies[bID];
 		body->ApplyTorque(body->GetInvMass() * 10.0f * (glm::vec3(0.0f, -1.0f, 0.0f)));
 	}
@@ -140,8 +140,6 @@ void Assimp_Test::Update(GLFWwindow* window)
 	Transform tx = camera.body->GetTransform();
 	if (camera.follow)
 	{
-		camera.fwd = tx.R[2];
-		camera.up = glm::vec3(0.0f, 1.0f, 0.0f);
 		camera.position = (tx.R * glm::vec3(0.0f, 5.0f, -5.0f) + tx.position);
 		camera.target = camera.position + camera.fwd;
 	}

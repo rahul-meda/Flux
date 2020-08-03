@@ -558,7 +558,7 @@ void Graphics::Update(Camera& camera)
 	
 	glm::mat4 T, R, S, M, VP, MVP;
 	VP = P * camera.ViewSpace();
-
+	
 	if (Physics::GetInstance().debugDraw)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -574,19 +574,19 @@ void Graphics::Update(Camera& camera)
 	glUniform3fv(camLightLocW, 1, glm::value_ptr(eye));
 	glUniform1f(timeLocW, glfwGetTime());
 
-	std::vector<Body*>* bodies = &Physics::GetInstance().bodies;
+	std::vector<Transform>* transforms = &Physics::GetInstance().transforms;
 
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{
 		R_Mesh m = objects[i];
 		int nSub = m.subMeshes.size();
-		Body* b = (*bodies)[m.bodyID];
+		Transform tx = (*transforms)[m.txID];
 
 		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), b->GetTransform().position);
-			R = glm::mat4(b->GetTransform().R);
+			T = glm::translate(glm::mat4(1.0f), tx.position);
+			R = glm::mat4(tx.R);
 			S = glm::scale(m.scale);
 			M = T * R * S;
 			MVP = VP * M;
@@ -633,12 +633,12 @@ void Graphics::Update(Camera& camera)
 	{
 		R_Mesh m = animModels[i];
 		int nSub = m.subMeshes.size();
-		Body* b = (*bodies)[m.bodyID];
+		Transform tx = (*transforms)[m.txID];
 
 		for (int j = 0; j < nSub; ++j)
 		{
-			T = glm::translate(glm::mat4(1.0f), b->GetTransform().position);
-			R = glm::mat4(b->GetTransform().R);
+			T = glm::translate(glm::mat4(1.0f), tx.position);
+			R = glm::mat4(tx.R);
 			S = glm::scale(m.scales[0]);
 			M = T * R * S;
 			MVP = VP * M;

@@ -67,7 +67,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	bd.tx = tx;
 	bd.isStatic = true;
 	bID = Physics::GetInstance().AddBody(bd);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	boxCollider = new HullCollider();
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
@@ -95,7 +95,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj. scale = (s2);
@@ -112,7 +112,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj. scale = (s2);
@@ -130,7 +130,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj. scale = (s2);
@@ -147,7 +147,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	obj.bodyID = bID;
+	obj.txID = bID;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj. scale = (s2);
@@ -196,7 +196,7 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		sphereCollider->massData->density = 1.0f;
 		Physics::GetInstance().AddCollider(bID, sphereCollider);
 		R_Mesh obj;
-		obj.bodyID = bID;
+		obj.txID = bID;
 		obj.scale = (glm::vec3(0.5f));
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
@@ -281,22 +281,23 @@ void Simulation::Update(GLFWwindow* window)
 	double delta = currFrame - prevFrame;
 	prevFrame = currFrame;
 
+	float panScale = 10.0f;
 	switch (mouseData.pan)
 	{
 	case MouseInfo::PAN_LEFT:
-		mouseData.lateral -= mouseData.sensitivity * 5.0;
+		mouseData.lateral -= mouseData.sensitivity * panScale;
 		camera.Rotate(mouseData.lateral, mouseData.vertical);
 		break;
 	case MouseInfo::PAN_RIGHT:
-		mouseData.lateral += mouseData.sensitivity * 5.0;
+		mouseData.lateral += mouseData.sensitivity * panScale;
 		camera.Rotate(mouseData.lateral, mouseData.vertical);
 		break;
 	case MouseInfo::PAN_UP:
-		mouseData.vertical -= mouseData.sensitivity * 5.0;
+		mouseData.vertical -= mouseData.sensitivity * panScale;
 		camera.Rotate(mouseData.lateral, mouseData.vertical);
 		break;
 	case MouseInfo::PAN_DOWN:
-		mouseData.vertical += mouseData.sensitivity * 5.0;
+		mouseData.vertical += mouseData.sensitivity * panScale;
 		camera.Rotate(mouseData.lateral, mouseData.vertical);
 		break;
 	}
