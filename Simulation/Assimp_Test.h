@@ -20,5 +20,5 @@ public:
 	unsigned int objID;
 	unsigned int txID;
 	Body* bPlayer;
-	bool rot = false;
+	bool alwaysRun;
 };

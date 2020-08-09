@@ -20,6 +20,8 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 {
 	Simulation::Init(window, width, height);
 
+	alwaysRun = true;
+
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
 
@@ -78,7 +80,7 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 
 	animation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
 	bPlayer = Physics::GetInstance().bodies[bID];
-	animFSM.body = bPlayer;
+	animFSM.Init(bPlayer);
 	camera.body = bPlayer;
 	camera.follow = true;
 	camera.position = glm::vec3(0.0f, 7.0f, -5.0f);
@@ -106,15 +108,28 @@ void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int actio
 	{
 		camera.follow = !camera.follow;
 	}
+	if (keyboard.IsKeyDown(GLFW_KEY_CAPS_LOCK))
+	{
+		alwaysRun = !alwaysRun;
+	}
+	if (keyboard.IsKeyDown(GLFW_KEY_SPACE))
+	{
+		animFSM.transition = T_IDLE_JUMP;
+		//animation.SetAnimIndex(IDLE_JUMP + 1);
+	}
 }
 
 void Assimp_Test::OnKeyPress(GLFWwindow * window)
 {
 	Simulation::OnKeyPress(window);
 	
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (keyboard.IsKeyDown(GLFW_KEY_W) && keyboard.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 	{
-		animFSM.transition = T_WALK;
+		animFSM.transition = T_SPRINT;
+	}
+	else if (keyboard.IsKeyDown(GLFW_KEY_W))
+	{
+		animFSM.transition = alwaysRun ? T_RUN : T_WALK;
 	}
 	if (keyboard.IsKeyReleased(GLFW_KEY_W))
 	{
@@ -132,9 +147,6 @@ void Assimp_Test::OnKeyPress(GLFWwindow * window)
 		q += deltaT * 0.5f * glm::quat(0.0f, glm::vec3(0.0f, -1.0f, 0.0f)) * q;
 		bPlayer->SetOrientation(q);
 	}
-
-	animFSM.Update();
-	animation.animIndex = animFSM.animID;
 }
 
 void Assimp_Test::OnMouseMove(GLFWwindow* window, double x, double y)
@@ -151,11 +163,16 @@ void Assimp_Test::Update(GLFWwindow* window)
 {
 	Simulation::Update(window);
 
-	animation.Update();
-
 	if (camera.follow)
 	{
 		camera.Follow(mouseData.dx, mouseData.dy);
 	}
 	camera.isIdle = true;
+
+	if (animFSM.Update())
+	{
+		animation.SetAnimIndex(animFSM.animID);
+	}
+
+	animation.Update();
 }

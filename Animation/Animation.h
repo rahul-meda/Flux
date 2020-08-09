@@ -29,6 +29,7 @@ private:
 	Assimp::Importer importer;
 	const aiScene* scene;
 	float duration;
+	float tps;
 	float elapsed;
 	float t0;
 	unsigned int nBones;

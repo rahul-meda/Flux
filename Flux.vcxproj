@@ -84,8 +84,11 @@
     <ClInclude Include="Animation\Animation.h" />
     <ClInclude Include="Animation\AnimFSM.h" />
     <ClInclude Include="Animation\AnimState.h" />
+    <ClInclude Include="Animation\IdleJumpState.h" />
     <ClInclude Include="Animation\IdleState.h" />
-    <ClInclude Include="Animation\WalkLeftState.h" />
+    <ClInclude Include="Animation\RunState.h" />
+    <ClInclude Include="Animation\SprintState.h" />
+    <ClInclude Include="Animation\States.h" />
     <ClInclude Include="Animation\WalkState.h" />
     <ClInclude Include="Components\Body.h" />
     <ClInclude Include="Components\Model.h" />

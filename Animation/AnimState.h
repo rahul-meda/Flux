@@ -41,9 +41,12 @@ enum AnimID
 class AnimState
 {
 public:
-	AnimState() {};
-	virtual bool Trigger(Transition trans) = 0;
+	AnimState(Body* body)
+	: body(body) {};
+	virtual bool Trigger(Transition& transID) = 0;
 	virtual void OnEnter(unsigned int& animID) = 0;
 	virtual void OnExit() = 0;
-	virtual void Update(Body* body) = 0;
+	virtual void Update(Transition& transID) = 0;
+protected:
+	Body* body;
 };

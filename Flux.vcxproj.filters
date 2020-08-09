@@ -364,7 +364,16 @@
     <ClInclude Include="Animation\WalkState.h">
       <Filter>Animation\States</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\WalkLeftState.h">
+    <ClInclude Include="Animation\RunState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\SprintState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\IdleJumpState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\States.h">
       <Filter>Animation\States</Filter>
     </ClInclude>
   </ItemGroup>

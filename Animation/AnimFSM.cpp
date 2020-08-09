@@ -1,26 +1,40 @@
 
 #include "AnimFSM.h"
 #include "../Components/Body.h"
-#include "IdleState.h"
-#include "WalkState.h"
+#include "states.h"
 
 AnimFSM::AnimFSM()
-: state(nullptr), animID(unsigned int(IDLE)), transition(T_IDLE), body(nullptr)
+ : state(nullptr), animID(unsigned int(IDLE)), transition(T_IDLE), triggered(false), body(nullptr)
+{}
+
+void AnimFSM::Init(Body* body)
 {
-	states.push_back(new IdleState());
-	states.push_back(new WalkState());
+	states.push_back(new IdleState(body));
+	states.push_back(new WalkState(body));
+	states.push_back(new IdleState(body));
+	states.push_back(new IdleState(body));
+	states.push_back(new RunState(body));
+	states.push_back(new IdleState(body));
+	states.push_back(new IdleState(body));
+	states.push_back(new SprintState(body));
+	states.push_back(new IdleJumpState(body));
 
 	state = states[IDLE];
 }
 
-void AnimFSM::Update()
+bool AnimFSM::Update()
 {
+	triggered = false;
+
 	if (state->Trigger(transition))
 	{
+		triggered = true;
 		state->OnExit();
 		state = states[transition];
 		state->OnEnter(animID);
 	}
 
-	state->Update(body);
+	state->Update(transition);
+
+	return triggered;
 }

@@ -181,7 +181,7 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		Graphics::GetInstance().lines.clear();
 		Graphics::GetInstance().aabbs.clear();
 	}
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	if (keyboard.IsKeyDown(GLFW_KEY_F))
 	{
 		Transform tx = Transform(camera.position + 3.0f*camera.fwd);
 		BodyDef bd;
@@ -271,11 +271,8 @@ void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
 
 void Simulation::OnMouseScroll(GLFWwindow * window, double xoffset, double yoffset)
 {
-	if (camera.radius >= 5.0f && camera.radius <= 12.0f)
-	{
-		camera.radius -= yoffset;
-		camera.radius = glm::clamp(camera.radius, 2.0f, 15.0f);
-	}
+	camera.radius -= yoffset;
+	camera.radius = glm::clamp(camera.radius, 2.0f, 25.0f);
 }
 
 void Simulation::Update(GLFWwindow* window)

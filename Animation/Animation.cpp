@@ -223,22 +223,23 @@ void Animation::SetAnimIndex(const int i)
 {
 	elapsed = 0.0f;
 	animIndex = i;
+	tps = (float)(scene->mAnimations[animIndex]->mTicksPerSecond != 0 ? 
+						scene->mAnimations[animIndex]->mTicksPerSecond : 30.0f);
+	duration = (float)scene->mAnimations[animIndex]->mDuration / tps;
 }
 
 void Animation::Update()
 {
 	const static float dt = 1.0f / 60.0f;
-	const static float duration = (float)scene->mAnimations[animIndex]->mDuration;
+
 	elapsed += dt;
 	if (elapsed > duration)
 	{
 		elapsed -= duration;
 	}
 	
-	float time_sec = (float)((double)GetTickCount() - (double)t0) / 1000.0f;
-
-	float tps = (float)(scene->mAnimations[animIndex]->mTicksPerSecond != 0 ? scene->mAnimations[animIndex]->mTicksPerSecond : 25.0f);
-	float elapsedTicks = time_sec * tps;
+	//float time_sec = (float)((double)GetTickCount() - (double)t0) / 1000.0f;
+	float elapsedTicks = elapsed * tps;
 	float animationTime = fmod(elapsedTicks, (float)scene->mAnimations[animIndex]->mDuration);
 
 	CalculatePose(animationTime, scene->mRootNode, glm::mat4(1.0f));

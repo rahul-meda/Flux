@@ -5,10 +5,10 @@
 class IdleState : public AnimState
 {
 public:
-	IdleState()
-	{}
+	IdleState(Body* body)
+	: AnimState(body) {}
 
-	bool Trigger(Transition trans) override
+	bool Trigger(Transition& trans) override
 	{
 		if (trans == T_WALK      ||
 			trans == T_WALK_LEFT ||
@@ -32,6 +32,6 @@ public:
 	void OnExit() override
 	{}
 
-	void Update(Body* body) override
+	void Update(Transition& transID) override
 	{}
 };
