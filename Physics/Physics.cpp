@@ -228,13 +228,11 @@ void Physics::Step(float dt)
 		b->orientation = positions[i].q;
 		b->velocity = velocities[i].v;
 		b->angularVelocity = velocities[i].w;
-		if (b->lockRotation)
-			b->angularVelocity = glm::vec3(0.0f);
 		b->force = glm::vec3(0.0f);
 		b->torque = glm::vec3(0.0f);
 		b->orientation = glm::normalize(b->orientation);	// needed every frame?
 		b->tx.R = glm::toMat3(b->orientation);
-		b->tx.position = b->comW - (transforms[i].R * b->comL);
+		b->tx.position = b->comW - (b->tx.R * b->comL);
 		transforms[i] = b->tx;
 	}
 }

@@ -238,7 +238,7 @@ void Animation::Update()
 	float time_sec = (float)((double)GetTickCount() - (double)t0) / 1000.0f;
 
 	float tps = (float)(scene->mAnimations[animIndex]->mTicksPerSecond != 0 ? scene->mAnimations[animIndex]->mTicksPerSecond : 25.0f);
-	float elapsedTicks = elapsed * tps;
+	float elapsedTicks = time_sec * tps;
 	float animationTime = fmod(elapsedTicks, (float)scene->mAnimations[animIndex]->mDuration);
 
 	CalculatePose(animationTime, scene->mRootNode, glm::mat4(1.0f));

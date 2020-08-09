@@ -1,6 +1,5 @@
 
 #include <glad/glad.h>
-//#include <glm/gtx/compatibility.hpp>
 #include <iostream>
 #include "Simulation.h"
 #include "../Graphics/Shader.h"
@@ -14,7 +13,6 @@
 #define MARGIN 30
 
 Simulation::Simulation()
-	: prevFrame(0.0)
 {}
 
 Simulation::~Simulation()
@@ -203,10 +201,6 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		obj.LoadModel(Graphics::GetInstance().dSphere);
 		Graphics::GetInstance().objects.push_back(obj);
 	}
-	if (key == GLFW_KEY_U && action == GLFW_PRESS)
-	{
-		camera.follow = false;
-	}
 }
 
 void Simulation::OnKeyPress(GLFWwindow* window)
@@ -232,7 +226,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 1.0f, 1000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
@@ -245,16 +239,18 @@ void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
 		firstMouse = false;
 	}
 
-	float dx = x - mouseData.prevX;
-	float dy = mouseData.prevY - y;
+	mouseData.sensitivity = 0.25f;
+
+	mouseData.dx = x - mouseData.prevX;
+	mouseData.dy = mouseData.prevY - y;
 	mouseData.prevX = x;
 	mouseData.prevY = y;
 
-	dx *= mouseData.sensitivity;
-	dy *= mouseData.sensitivity;
+	mouseData.dx *= mouseData.sensitivity;
+	mouseData.dy *= mouseData.sensitivity;
 
-	mouseData.lateral += dx;
-	mouseData.vertical += dy;
+	mouseData.lateral += mouseData.dx;
+	mouseData.vertical += mouseData.dy;
 
 	if (mouseData.vertical > 89.0f)
 		mouseData.vertical = 89.0f;
@@ -270,40 +266,33 @@ void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)
 	else if (y > height - MARGIN)
 		mouseData.pan = MouseInfo::PAN_UP;
 	else
-		mouseData.pan = MouseInfo::NORMAL;
+		mouseData.pan = MouseInfo::DEFAULT;
+}
 
-	camera.Rotate(mouseData.lateral, mouseData.vertical);
+void Simulation::OnMouseScroll(GLFWwindow * window, double xoffset, double yoffset)
+{
+	if (camera.radius >= 5.0f && camera.radius <= 12.0f)
+	{
+		camera.radius -= yoffset;
+		camera.radius = glm::clamp(camera.radius, 2.0f, 15.0f);
+	}
 }
 
 void Simulation::Update(GLFWwindow* window)
 {
-	double currFrame = glfwGetTime();
-	double delta = currFrame - prevFrame;
-	prevFrame = currFrame;
+	keyboard.Update(window);
 
-	float panScale = 10.0f;
-	switch (mouseData.pan)
+	if (mouseData.pan == MouseInfo::PAN_LEFT)
 	{
-	case MouseInfo::PAN_LEFT:
-		mouseData.lateral -= mouseData.sensitivity * panScale;
-		camera.Rotate(mouseData.lateral, mouseData.vertical);
-		break;
-	case MouseInfo::PAN_RIGHT:
-		mouseData.lateral += mouseData.sensitivity * panScale;
-		camera.Rotate(mouseData.lateral, mouseData.vertical);
-		break;
-	case MouseInfo::PAN_UP:
-		mouseData.vertical -= mouseData.sensitivity * panScale;
-		camera.Rotate(mouseData.lateral, mouseData.vertical);
-		break;
-	case MouseInfo::PAN_DOWN:
-		mouseData.vertical += mouseData.sensitivity * panScale;
-		camera.Rotate(mouseData.lateral, mouseData.vertical);
-		break;
+		camera.isIdle = false;
+		mouseData.dx = -1.0f;
+	}
+	else if (mouseData.pan == MouseInfo::PAN_RIGHT)
+	{
+		camera.isIdle = false;
+		mouseData.dx = 1.0f;
 	}
 
-	Graphics::GetInstance().Update(camera);
-
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+	Graphics::GetInstance().V = camera.ViewSpace();
+	Graphics::GetInstance().eye = camera.position;
 }

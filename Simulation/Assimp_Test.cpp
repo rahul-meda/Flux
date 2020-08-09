@@ -1,4 +1,5 @@
 
+#include <glm/gtx/matrix_decompose.hpp>
 #include "Assimp_Test.h"
 #include "../Mesh/ObjParser.h"
 #include "../Graphics/Graphics.h"
@@ -8,7 +9,6 @@
 #include "../Physics/HullCollider.h"
 #include "../Physics/SphereCollider.h"
 #include "../Physics/CapsuleCollider.h"
-#include <glm/gtx/matrix_decompose.hpp>
 
 Assimp_Test& Assimp_Test::GetInstance()
 {
@@ -74,11 +74,18 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.Clear();
 
 	objID = Graphics::GetInstance().animModels.size() - 1;
+	txID = bID;
 
 	animation.Init(path, obj.boneOffsets, obj.boneMap, obj.invBindTx);
-	Body* body = Physics::GetInstance().bodies[bID];
-	animFSM.body = body;
-	camera.body = body;
+	bPlayer = Physics::GetInstance().bodies[bID];
+	animFSM.body = bPlayer;
+	camera.body = bPlayer;
+	camera.follow = true;
+	camera.position = glm::vec3(0.0f, 7.0f, -5.0f);
+	camera.up = glm::vec3(0.0f, sinf(PI/4.0f), cosf(PI/4.0f));
+	camera.target = glm::vec3(0.0f, 2.0f, 0.0f);
+	camera.offset = glm::vec3(0.0f, 2.0f, 0.0f);
+	camera.radius = glm::length(camera.position - camera.target);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
@@ -89,7 +96,7 @@ void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int actio
 	{
 		int i = animation.GetAnimIndex();
 		++i;
-		if (i > 4)
+		if (i > 11)
 		{
 			i = 0;
 		}
@@ -104,31 +111,40 @@ void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int actio
 void Assimp_Test::OnKeyPress(GLFWwindow * window)
 {
 	Simulation::OnKeyPress(window);
-
+	
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		/*unsigned int bID = Graphics::GetInstance().animModels[objID].bodyID;
-		Body* body = Physics::GetInstance().bodies[bID];
-		glm::vec3 fwd = body->GetTransform().R[2]; 
-		body->ApplyForceCOM(body->GetMass() * 10.0f * fwd);*/
-	
-		animFSM.transition = T_MOVE;
+		animFSM.transition = T_WALK;
+	}
+	if (keyboard.IsKeyReleased(GLFW_KEY_W))
+	{
+		animFSM.transition = T_IDLE;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		unsigned int bID = Graphics::GetInstance().animModels[objID].txID;
-		Body* body = Physics::GetInstance().bodies[bID];
-		body->ApplyTorque(body->GetInvMass() * 10.0f * (glm::vec3(0.0f, 1.0f, 0.0f)));
+		glm::quat q = bPlayer->GetOrientation();
+		q += deltaT * 0.5f * glm::quat(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)) * q;
+		bPlayer->SetOrientation(q);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		unsigned int bID = Graphics::GetInstance().animModels[objID].txID;
-		Body* body = Physics::GetInstance().bodies[bID];
-		body->ApplyTorque(body->GetInvMass() * 10.0f * (glm::vec3(0.0f, -1.0f, 0.0f)));
+		glm::quat q = bPlayer->GetOrientation();
+		q += deltaT * 0.5f * glm::quat(0.0f, glm::vec3(0.0f, -1.0f, 0.0f)) * q;
+		bPlayer->SetOrientation(q);
 	}
 
 	animFSM.Update();
 	animation.animIndex = animFSM.animID;
+}
+
+void Assimp_Test::OnMouseMove(GLFWwindow* window, double x, double y)
+{
+	Simulation::OnMouseMove(window, x, y);
+
+	if (!camera.follow)
+		camera.Rotate(mouseData.lateral, mouseData.vertical, mouseData.dx, mouseData.dy);
+
+	camera.isIdle = false;
 }
 
 void Assimp_Test::Update(GLFWwindow* window)
@@ -137,10 +153,9 @@ void Assimp_Test::Update(GLFWwindow* window)
 
 	animation.Update();
 
-	Transform tx = camera.body->GetTransform();
 	if (camera.follow)
 	{
-		camera.position = (tx.R * glm::vec3(0.0f, 5.0f, -5.0f) + tx.position);
-		camera.target = camera.position + camera.fwd;
+		camera.Follow(mouseData.dx, mouseData.dy);
 	}
+	camera.isIdle = true;
 }

@@ -220,9 +220,11 @@ public:
 	unsigned int CreateTexture(const char* filePath, bool flip = false);
 	void AddPointLight(glm::vec3 pos);
 	void SetBoneTransform(const int i, const glm::mat4& transform);
-	void Update(Camera& camera);
+	void Update();
 
 	glm::mat4 P;
+	glm::mat4 V;
+	glm::vec3 eye;
 
 	std::vector<R_Mesh> objects;
 	std::vector<R_Mesh> animModels;

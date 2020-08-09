@@ -2,14 +2,12 @@
 
 #include "AnimState.h"
 
-#define WALK_SPEED   2.0f
-#define RUN_SPEED    10.0f
-#define SPRINT_SPEED 20.0f
+#define WALK_SPEED 2.0f
 
-class MoveState : public AnimState
+class WalkState : public AnimState
 {
 public:
-	MoveState()
+	WalkState()
 	{}
 
 	bool Trigger(Transition trans) override
@@ -22,7 +20,7 @@ public:
 
 	void OnEnter(unsigned int& animID) override
 	{
-		animID = WALK;
+		animID = WALK + 1;
 	}
 
 	void OnExit() override
@@ -33,8 +31,4 @@ public:
 		glm::vec3 fwd = body->GetTransform().R[2];
 		body->SetVelocity(WALK_SPEED * fwd);
 	}
-
-private:
-	bool alwaysRun;
-	bool sprint;
 };

@@ -10,6 +10,7 @@ public:
 	void Init(GLFWwindow* window, int width, int height);
 	void OnKeyTap(GLFWwindow* window, int key, int scanCode, int action, int mods);
 	void OnKeyPress(GLFWwindow* window);
+	void OnMouseMove(GLFWwindow* window, double x, double y);
 	void Update(GLFWwindow* window);
 
 	Assimp_Test() {};
@@ -17,4 +18,7 @@ public:
 
 	Animation animation;
 	unsigned int objID;
+	unsigned int txID;
+	Body* bPlayer;
+	bool rot = false;
 };

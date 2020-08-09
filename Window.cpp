@@ -1,8 +1,8 @@
 #include "Window.h"
 #include <iostream>
 
-#define WIDTH 1280
-#define HEIGHT 1024
+#define WIDTH 1920	
+#define HEIGHT 1080
 
 GLFWwindow * Window::CreateWindow(int& width, int& height)
 {
@@ -13,10 +13,10 @@ GLFWwindow * Window::CreateWindow(int& width, int& height)
 
 	width = WIDTH;
 	height = HEIGHT;
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", nullptr, nullptr);
+	//GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", nullptr, nullptr);
 
-	//GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", glfwGetPrimaryMonitor(), nullptr);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", glfwGetPrimaryMonitor(), nullptr);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 	if (!window)
 	{

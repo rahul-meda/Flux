@@ -172,6 +172,9 @@
     <ClCompile Include="Animation\AnimFSM.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Input\Keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -346,17 +349,23 @@
     <ClInclude Include="Simulation\Assimp_Test.h">
       <Filter>Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\IdleState.h">
-      <Filter>Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation\AnimState.h">
-      <Filter>Animation</Filter>
-    </ClInclude>
     <ClInclude Include="Animation\AnimFSM.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\MoveState.h">
-      <Filter>Animation</Filter>
+    <ClInclude Include="Input\Keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\IdleState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\WalkState.h">
+      <Filter>Animation\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\WalkLeftState.h">
+      <Filter>Animation\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -398,6 +407,12 @@
     </Filter>
     <Filter Include="AI">
       <UniqueIdentifier>{1259789e-4aec-47b2-bbeb-c7b6113f3403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{00097dd3-ddb4-4c7c-b24c-d3fbf7c20c33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation\States">
+      <UniqueIdentifier>{457c907a-5989-479d-813d-2e77972c80e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

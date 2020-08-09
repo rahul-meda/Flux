@@ -23,6 +23,11 @@ void MouseMoveCallback(GLFWwindow* window, double x, double y)
 	simulation.OnMouseMove(window, x, y);
 }
 
+void MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	simulation.OnMouseScroll(window, xoffset, yoffset);
+}
+
 int main()
 {
 	int width, height;
@@ -36,6 +41,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, WindowResizeCallback);
 	glfwSetKeyCallback(window, KeyboardCallback);
 	glfwSetCursorPosCallback(window, MouseMoveCallback);
+	glfwSetScrollCallback(window, MouseScrollCallback);
 
 	simulation.Init(window, width, height);
 	Graphics::GetInstance().PostInit();
@@ -47,6 +53,10 @@ int main()
 		Physics::GetInstance().Update(dt);
 		simulation.OnKeyPress(window);
 		simulation.Update(window);
+		Graphics::GetInstance().Update();
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
 	return 0;

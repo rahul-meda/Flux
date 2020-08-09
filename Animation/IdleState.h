@@ -10,7 +10,11 @@ public:
 
 	bool Trigger(Transition trans) override
 	{
-		if (trans == T_MOVE      ||
+		if (trans == T_WALK      ||
+			trans == T_WALK_LEFT ||
+			trans == T_WALK_RIGHT||
+			trans == T_RUN		 ||
+			trans == T_SPRINT    ||
 			trans == T_IDLE_JUMP ||
 			trans == T_DANCE     ||
 			trans == T_ATTACK    ||
@@ -22,7 +26,7 @@ public:
 
 	void OnEnter(unsigned int& animID) override
 	{
-		animID = IDLE;
+		animID = IDLE + 1;
 	}
 
 	void OnExit() override

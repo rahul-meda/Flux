@@ -551,13 +551,13 @@ void Graphics::SetBoneTransform(const int i, const glm::mat4& transform)
 	glUseProgram(0);
 }
 
-void Graphics::Update(Camera& camera)
+void Graphics::Update()
 {
 	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glm::mat4 T, R, S, M, VP, MVP;
-	VP = P * camera.ViewSpace();
+	VP = P * V;
 	
 	if (Physics::GetInstance().debugDraw)
 	{
@@ -569,7 +569,6 @@ void Graphics::Update(Camera& camera)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glUseProgram(worldShader);
-	glm::vec3 eye = camera.position;
 	glUniform3fv(eyeLocW, 1, glm::value_ptr(eye));
 	glUniform3fv(camLightLocW, 1, glm::value_ptr(eye));
 	glUniform1f(timeLocW, glfwGetTime());
