@@ -25,15 +25,15 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 1.0f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.0f);
 	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().Initialize();
 	Physics::GetInstance().Initialize();
 
 	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", "Resources/WorldFragmentShader.frag");
-
 	Graphics::GetInstance().animShader = Shader::CreateShader("Resources/AnimVertexShader.vert", "Resources/WorldFragmentShader.frag");
+	Graphics::GetInstance().skyboxShader = Shader::CreateShader("Resources/Skybox.vert", "Resources/Skybox.frag");
 
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
@@ -99,7 +99,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
-	Graphics::GetInstance().objects.push_back(obj);
+	//Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	tx = Transform(glm::vec3(s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -116,7 +116,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
-	Graphics::GetInstance().objects.push_back(obj);
+	//Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	glm::quat q = glm::angleAxis(PI * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -134,7 +134,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
-	Graphics::GetInstance().objects.push_back(obj);
+	//Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	tx = Transform(glm::vec3(0.0f, s2.z, -s1.z), q * glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -151,7 +151,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj. scale = (s2);
 	obj.LoadModel("resources/models/box/box.obj");
 	obj.scale = s2;
-	Graphics::GetInstance().objects.push_back(obj);
+	//Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									 "Resources/FragmentShader.frag");
@@ -226,7 +226,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 1.0f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 1000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)

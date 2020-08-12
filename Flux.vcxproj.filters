@@ -175,6 +175,9 @@
     <ClCompile Include="Input\Keyboard.cpp">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\World.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -376,6 +379,9 @@
     <ClInclude Include="Animation\States.h">
       <Filter>Animation\States</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\World.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Simulation">
@@ -444,6 +450,12 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="Resources\AnimFragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\Skybox.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\Skybox.frag">
       <Filter>Resources</Filter>
     </None>
   </ItemGroup>

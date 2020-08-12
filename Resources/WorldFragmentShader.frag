@@ -21,6 +21,7 @@ vec3 normal;
 vec3 viewDir;
 vec3 globalLightDir;
 vec3 lightColors[5];
+vec4 txtColor;
 
 vec3 CalcGlobalLight();
 vec3 CalcPointLight(int index);
@@ -29,7 +30,7 @@ void main()
 {
 	normal = normalize(vNormal);
 	viewDir = normalize(eyePos - fragPos);
-	globalLightDir = normalize(vec3(-0.0f, -1.0f, -0.0f));
+	globalLightDir = normalize(vec3(-1.0f, -1.0f, -1.0f));
 
 	lightColors[0] = vec3(1.0f, 0.0f, 0.0f);
 	lightColors[1] = vec3(0.0f, 1.0f, 0.0f);
@@ -38,7 +39,10 @@ void main()
 	lightColors[4] = vec3(1.0f);
 
 	float ambientStr = 0.2f;
-	vec3 ambient = ambientStr * texture(diffuseTexture, fragTexCoord).rgb;
+	txtColor = texture(diffuseTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	vec3 ambient = ambientStr * txtColor.rgb;
 
 	vec3 result = ambient;
 	
@@ -53,7 +57,10 @@ void main()
 	
 	result += CalcPointLight(nPointLights - 1) * lightColors[nPointLights - 1];
 
-	vec3 emission = 0.7f * lightMap.z * texture(emissionTexture, fragTexCoord).rgb;// + glm::vec2(0.0f, time/10.0f)).rgb;
+	txtColor = texture(emissionTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	vec3 emission = 0.7f * lightMap.z * txtColor.rgb;// + glm::vec2(0.0f, time/10.0f)).rgb;
 
 	result += emission;
 
@@ -62,15 +69,21 @@ void main()
 
 vec3 CalcGlobalLight()
 {
-	vec3 diffuse = lightMap.x * 0.5f * max(dot(-globalLightDir, normal), 0.0f) * texture(diffuseTexture, fragTexCoord).rgb;
+	txtColor = texture(diffuseTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	vec3 diffuse = lightMap.x * 0.5f * max(dot(-globalLightDir, normal), 0.0f) * txtColor.rgb;
 
 	float specularStr = 0.5f;
 	int shininess = 64;
 	vec3 refDir = normalize(reflect(globalLightDir, normal));
 	float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
-	vec3 specular = specularStr * spec * texture(diffuseTexture, fragTexCoord).rgb;
+	vec3 specular = specularStr * spec * txtColor.rgb;
 
-	specular += 0.5f * lightMap.y * spec * texture(specularTexture, fragTexCoord).rgb;
+	txtColor = texture(specularTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
 
 	return (diffuse + specular);
 }
@@ -78,15 +91,21 @@ vec3 CalcGlobalLight()
 vec3 CalcPointLight(int index)
 {
 	vec3 lightDir = normalize(fragPos - lightPos[index]);
-	vec3 diffuse = lightMap.x * max(dot(-lightDir, normal), 0.0f) * texture(diffuseTexture, fragTexCoord).rgb;
+	txtColor = texture(diffuseTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	vec3 diffuse = lightMap.x * max(dot(-lightDir, normal), 0.0f) * txtColor.rgb;
 
 	float specularStr = 0.5f;
 	int shininess = 64;
 	vec3 refDir = normalize(reflect(lightDir, normal));
 	float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
-	vec3 specular = specularStr * spec * texture(diffuseTexture, fragTexCoord).rgb;
+	vec3 specular = specularStr * spec * txtColor.rgb;
 
-	specular += 0.5f * lightMap.y * spec * texture(specularTexture, fragTexCoord).rgb;
+	txtColor = texture(specularTexture, fragTexCoord);
+	if(txtColor.a < 0.1f)
+		discard;
+	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
 
 	// attenuation
 	float Kc = 1.0f;

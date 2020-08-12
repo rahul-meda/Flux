@@ -21,6 +21,7 @@
 #include "../Components/Transform.h"
 #include "../Mesh/Geometry.h"
 #include "../Mesh/ObjParser.h"
+#include "World.h"
 
 #define INVALID_UNIFORM_LOCATION 0xffffffff
 
@@ -38,7 +39,7 @@ void Graphics::Initialize()
 	// draw the pixel only if the object is closer to the viewer
 	glEnable(GL_DEPTH_TEST); // enables depth-testing
 	glDepthFunc(GL_LESS);    // interpret smaller values as closer
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	std::vector<R_Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -72,6 +73,13 @@ void Graphics::PostInit()
 	GLint max_attribs;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
 	std::cout << max_attribs << std::endl;
+
+	CreateSkybox(skyboxVAO, skyboxTexture);
+
+	glUseProgram(skyboxShader);
+	vpLocS = glGetUniformLocation(skyboxShader, "VP");
+	glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+	glUseProgram(0);
 
 	glUseProgram(worldShader);
 	mvpLocW = glGetUniformLocation(worldShader, "MVP");
@@ -110,6 +118,8 @@ void Graphics::PostInit()
 		boneLocs[i] = glGetUniformLocation(animShader, name);
 	}
 	glUseProgram(0);
+
+	grass.Init();
 }
 
 bool Graphics::STBI_Supported(const std::string& ext)
@@ -497,16 +507,64 @@ void AssimpToGlmMat4(const aiMatrix4x4& from, glm::mat4& to)
 	to[3][0] = (float)from.a4; to[3][1] = (float)from.b4; to[3][2] = (float)from.c4; to[3][3] = (float)from.d4;
 }
 
+void Grass::Init()
+{
+	std::vector<R_Vertex> vertices;
+	std::vector<unsigned int> indices;
+
+	//for (int i = 0; i < 6; ++i)
+	{
+		R_Vertex v;
+		v.position = glm::vec3(0.0f, 0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(v);
+		v.position = glm::vec3(0.0f, -0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(v);
+		v.position = glm::vec3(1.0f, -0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(v);
+		v.position = glm::vec3(0.0f, 0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(v);
+		v.position = glm::vec3(1.0f, -0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(v);
+		v.position = glm::vec3(1.0f, 0.5f, 0.0f);
+		v.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		v.textureCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(v);
+	}
+
+	for (int i = 0; i < 6; ++i)
+	{
+		indices.push_back(++i);
+	}
+
+	VAO = Graphics::GetInstance().CreateModel(vertices, indices);
+
+	texture = Graphics::GetInstance().CreateTexture("resources/textures/grass.png");
+
+	for (int i = 0; i < 6; ++i)
+	{
+		for (int j = 0; j < 6; ++j)
+		{
+			glm::vec3 p = glm::vec3(10.0f + 2.0f * (float)(i), 0.5f, 2.0f * (float)j);
+			glm::mat4 tx = glm::translate(glm::mat4(1.0f), p);
+			transforms.push_back(tx);
+		}
+	}
+}
+
 unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
 {
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(flip);
@@ -525,8 +583,14 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
 	else if (nrChannels == 4)
 		format = GL_RGBA;
 
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	stbi_image_free(data);
 
@@ -675,6 +739,20 @@ void Graphics::Update()
 	glUseProgram(0);
 
 	glUseProgram(worldShader);
+	glBindVertexArray(grass.VAO);
+	glBindTexture(GL_TEXTURE_2D, grass.texture);
+	glUniform1i(txLocA[0], grass.texture - 1);
+	glm::vec3 lightMap(1.0f, 0.0f, 0.0f);
+	glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
+	N = grass.transforms.size();
+	for (int i = 0; i < N; ++i)
+	{
+		MVP = VP * grass.transforms[i];
+		glUniformMatrix4fv(mvpLocW, 1, GL_FALSE, glm::value_ptr(MVP));
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+	glBindVertexArray(0);
+
 	N = hinges.size();
 	for (int i = 0; i < N; ++i)
 	{
@@ -776,6 +854,20 @@ void Graphics::Update()
 		glBindVertexArray(dCube.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, dCube.subMeshes[0].nIndices);
 	}
+	glUseProgram(0);
+
+	glUseProgram(skyboxShader);
+	// draw skybox as last
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	VP = P * glm::mat4(glm::mat3(V)); // remove translation from the view matrix
+	glUniformMatrix4fv(vpLocS, 1, GL_FALSE, glm::value_ptr(VP));
+	// skybox cube
+	glBindVertexArray(skyboxVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS); // set depth function back to default
 	glUseProgram(0);
 
 	points.clear();

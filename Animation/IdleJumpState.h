@@ -9,7 +9,7 @@ class IdleJumpState : public AnimState
 {
 public:
 	IdleJumpState(Body* body)
-	: AnimState(body), elapsed(0.0f) {}
+	: AnimState(body), elapsed(0.0f), airborne(false) {}
 
 	bool Trigger(Transition& trans) override
 	{
@@ -23,9 +23,7 @@ public:
 	{
 		animID = IDLE_JUMP + 1;
 		elapsed = 0.0f;
-		glm::vec3 v = body->GetVelocity();
-		v.y += 7.0f;
-		body->SetVelocity(v);
+		airborne = false;
 	}
 
 	void OnExit() override
@@ -34,6 +32,13 @@ public:
 	void Update(Transition& transID) override
 	{
 		elapsed += deltaT;
+		if (elapsed >= 0.5f && !airborne)
+		{
+			airborne = true;
+			glm::vec3 v = body->GetVelocity();
+			v.y += 2.5f;
+			body->SetVelocity(v);
+		}
 		if (elapsed > AIR_TIME)
 		{
 			transID = T_IDLE;
@@ -42,4 +47,5 @@ public:
 
 private:
 	float elapsed;
+	bool airborne;
 };

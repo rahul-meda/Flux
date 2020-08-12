@@ -36,8 +36,6 @@ int main()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "Failed to initialize GLAD" << std::endl;
 
-	glEnable(GL_DEPTH_TEST);
-
 	glfwSetFramebufferSizeCallback(window, WindowResizeCallback);
 	glfwSetKeyCallback(window, KeyboardCallback);
 	glfwSetCursorPosCallback(window, MouseMoveCallback);

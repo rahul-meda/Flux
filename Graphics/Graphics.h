@@ -206,6 +206,16 @@ public:
 
 void AssimpToGlmMat4(const aiMatrix4x4& from, glm::mat4& to);
 
+struct Grass
+{
+	// Grass!! :)
+	unsigned int VAO;
+	unsigned int texture;
+	std::vector<glm::mat4> transforms;
+
+	void Init();
+};
+
 class Graphics
 {
 private:
@@ -228,6 +238,7 @@ public:
 
 	std::vector<R_Mesh> objects;
 	std::vector<R_Mesh> animModels;
+	Grass grass;
 
 	std::vector<glm::vec3> lightPos;
 
@@ -239,7 +250,10 @@ public:
 	unsigned int worldShader;
 	unsigned int lightShader;
 	unsigned int animShader;
+	unsigned int skyboxShader;
 
+	unsigned int skyboxVAO;
+	unsigned int skyboxTexture;
 	R_Mesh dCube;
 	R_Mesh dLine;
 	R_Mesh dSphere;
@@ -258,6 +272,7 @@ public:
 	std::vector<std::string> stbExtensions;	// ext supported by stb_image
 	bool STBI_Supported(const std::string& ext);
 
+	unsigned int vpLocS;
 	unsigned int mvpLocW;
 	unsigned int mLocW;
 	unsigned int txLocW[3];
