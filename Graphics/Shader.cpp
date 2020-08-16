@@ -45,7 +45,7 @@ std::string Shader::ReadFile(const std::string& file)
 	}
 }
 
-unsigned int Shader::CreateShader(const char* vertShaderPath, const char* fragShaderPath)
+unsigned int Shader::CreateShader(const char* vertShaderPath, const char* fragShaderPath, const char* geomShaderPath)
 {
 	std::string src = ReadFile(vertShaderPath);
 	const char* cstr = &src[0];
@@ -55,12 +55,23 @@ unsigned int Shader::CreateShader(const char* vertShaderPath, const char* fragSh
 	cstr = &src[0];
 	unsigned int fragShader = CompileShader(GL_FRAGMENT_SHADER, cstr);
 
+	bool useGeom = geomShaderPath != nullptr;
+	unsigned int geomShader;
+	if (useGeom)
+	{
+		src = ReadFile(geomShaderPath);
+		cstr = &src[0];
+		geomShader = CompileShader(GL_GEOMETRY_SHADER, cstr);
+	}
+
 	int success;
 	char infoLog[512];
 
 	unsigned int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragShader);
+	if (useGeom)
+		glAttachShader(shaderProgram, geomShader);
 	glLinkProgram(shaderProgram);
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success)

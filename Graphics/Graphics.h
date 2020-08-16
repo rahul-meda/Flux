@@ -216,6 +216,7 @@ struct Grass
 	void Init();
 };
 
+class I_Mesh;
 class Graphics
 {
 private:
@@ -238,6 +239,9 @@ public:
 
 	std::vector<R_Mesh> objects;
 	std::vector<R_Mesh> animModels;
+	std::vector<I_Mesh> instModels;
+	std::vector<glm::mat4> instTransforms;
+
 	Grass grass;
 
 	std::vector<glm::vec3> lightPos;
@@ -250,6 +254,7 @@ public:
 	unsigned int worldShader;
 	unsigned int lightShader;
 	unsigned int animShader;
+	unsigned int instanceShader;
 	unsigned int skyboxShader;
 
 	unsigned int skyboxVAO;
@@ -287,4 +292,5 @@ public:
 	unsigned int lightMapLocA;
 	unsigned int camLightLocA;
 	unsigned int timeLocA;
+	unsigned int vpLocI;
 };

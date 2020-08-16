@@ -93,7 +93,12 @@ void Camera::Follow(const float dx, const float dy)
 		else
 		{
 			pitch += dy;
-			pitch = glm::clamp(pitch, 95.0f, 175.0f);
+			pitch = glm::clamp(pitch, 95.0f, 225.0f);
+			if (pitch > 175.0f)
+			{
+				radius -= dy;
+				radius = glm::clamp(radius, minRadius, maxRadius);
+			}
 		}
 	}
 

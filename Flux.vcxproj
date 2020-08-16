@@ -156,10 +156,13 @@
     <None Include="Mesh\Geometry.inl" />
     <None Include="Resources\AnimFragmentShader.frag" />
     <None Include="Resources\AnimVertexShader.vert" />
+    <None Include="Resources\InstanceFragmentShader.frag" />
+    <None Include="Resources\InstanceVertexShader.vert" />
     <None Include="Resources\Skybox.frag" />
     <None Include="Resources\Skybox.vert" />
     <None Include="Resources\WorldFragmentShader.frag" />
     <None Include="Resources\FragmentShader.frag" />
+    <None Include="Resources\WorldGeometryShader.geom" />
     <None Include="Resources\WorldVertexShader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

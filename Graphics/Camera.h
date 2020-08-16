@@ -29,6 +29,8 @@ public:
 	bool follow;
 	Body* body;
 	float radius;		// distance from target
+	float minRadius;
+	float maxRadius;
 	glm::vec3 offset;	// offset of target from body origin
 	float yawOff, pitch;
 	bool isIdle;

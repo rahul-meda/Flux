@@ -107,6 +107,10 @@ void Graphics::PostInit()
 	timeLocA = glGetUniformLocation(animShader, "time");
 	glUseProgram(0);
 
+	glUseProgram(instanceShader);
+	vpLocI = glGetUniformLocation(instanceShader, "VP");
+	glUseProgram(0);
+
 	AddPointLight(glm::vec3(0.0f));
 
 	glUseProgram(animShader);
@@ -225,6 +229,8 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 	nBones = 0;
 	subMeshes.clear();
 	materials.clear();
+	boneMap.clear();
+	boneOffsets.clear();
 
 	Assimp::Importer importer;
 	scene = importer.ReadFile(file,
@@ -734,6 +740,53 @@ void Graphics::Update()
 									GL_UNSIGNED_INT,
 									(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
 									m.subMeshes[j].vertexOffset);
+		}
+	}
+	glUseProgram(0);
+
+	glUseProgram(instanceShader);
+	glUniform3fv(glGetUniformLocation(instanceShader, "eyePos"), 1, glm::value_ptr(eye));
+	glUniform3fv(glGetUniformLocation(instanceShader, "lightPos[4]"), 1, glm::value_ptr(eye));
+	glUniformMatrix4fv(vpLocI, 1, GL_FALSE, glm::value_ptr(VP));
+	N = instModels.size();
+	I_Mesh m = instModels[0];
+	unsigned int mID = m.subMeshes[0].materialID;
+	Material material = m.materials[mID];
+	glUniform1i(glGetUniformLocation(instanceShader, "diffuseTexture"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, material.GetMap(0));
+	//for (int l = 0; l < 100000; ++l)
+	{
+		for (int i = 0; i < N; ++i)
+		{
+			I_Mesh m = instModels[i];
+			int nSub = m.subMeshes.size();
+
+			for (int j = 0; j < nSub; ++j)
+			{
+				//MVP = VP * instTransforms[l];
+
+				/*unsigned int mID = m.subMeshes[j].materialID;
+				assert(mID < m.materials.size());
+				Material material = m.materials[mID];
+				int nMaps = material.nMaps;
+				for (int k = 0; k < nMaps; ++k)
+				{
+					glActiveTexture(GL_TEXTURE0 + k);
+					glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
+					glUniform1i(txLocA[k], k);
+				}
+				glActiveTexture(GL_TEXTURE0);*/
+
+				glBindVertexArray(m.VAO);
+				glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
+					m.subMeshes[j].nIndices,
+					GL_UNSIGNED_INT,
+					(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
+					m.instanceCount,
+					m.subMeshes[j].vertexOffset);
+				//glDrawElementsInstanced(GL_TRIANGLES, m.subMeshes[j].nIndices, GL_UNSIGNED_INT, 0, 100000);
+			}
 		}
 	}
 	glUseProgram(0);

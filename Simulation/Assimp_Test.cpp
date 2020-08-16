@@ -3,6 +3,7 @@
 #include "Assimp_Test.h"
 #include "../Mesh/ObjParser.h"
 #include "../Graphics/Graphics.h"
+#include "../Graphics/World.h"
 #include "../Mesh/Geometry.h"
 #include "../Components/Body.h"
 #include "../Physics/Physics.h"
@@ -88,6 +89,14 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	camera.target = glm::vec3(0.0f, 2.0f, 0.0f);
 	camera.offset = glm::vec3(0.0f, 2.0f, 0.0f);
 	camera.radius = glm::length(camera.position - camera.target);
+	camera.minRadius = 2.0f;
+	camera.maxRadius = 7.0f;
+
+	CreateAstroidBelt(Graphics::GetInstance().instTransforms);
+
+	I_Mesh iMesh;
+	iMesh.LoadModelI("resources/models/rock/rock.obj");
+	Graphics::GetInstance().instModels.push_back(iMesh);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)

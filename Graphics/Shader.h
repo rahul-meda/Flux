@@ -9,5 +9,5 @@ namespace Shader
 
 	std::string ReadFile(const std::string& file);
 	
-	unsigned int CreateShader(const char* vertShaderPath, const char* fragShaderPath);
+	unsigned int CreateShader(const char* vertShaderPath, const char* fragShaderPath, const char* geomShaderPath = nullptr);
 }

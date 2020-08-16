@@ -40,8 +40,6 @@ void main()
 
 	float ambientStr = 0.2f;
 	txtColor = texture(diffuseTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
 	vec3 ambient = ambientStr * txtColor.rgb;
 
 	vec3 result = ambient;
@@ -58,8 +56,6 @@ void main()
 	result += CalcPointLight(nPointLights - 1) * lightColors[nPointLights - 1];
 
 	txtColor = texture(emissionTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
 	vec3 emission = 0.7f * lightMap.z * txtColor.rgb;// + glm::vec2(0.0f, time/10.0f)).rgb;
 
 	result += emission;
@@ -70,19 +66,15 @@ void main()
 vec3 CalcGlobalLight()
 {
 	txtColor = texture(diffuseTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
-	vec3 diffuse = lightMap.x * 0.5f * max(dot(-globalLightDir, normal), 0.0f) * txtColor.rgb;
+	vec3 diffuse = 0.5f * max(dot(-globalLightDir, normal), 0.0f) * txtColor.rgb;
 
-	float specularStr = 0.5f;
+	float specularStr = 0.25f;
 	int shininess = 64;
 	vec3 refDir = normalize(reflect(globalLightDir, normal));
 	float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
 	vec3 specular = specularStr * spec * txtColor.rgb;
 
 	txtColor = texture(specularTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
 	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
 
 	return (diffuse + specular);
@@ -92,19 +84,16 @@ vec3 CalcPointLight(int index)
 {
 	vec3 lightDir = normalize(fragPos - lightPos[index]);
 	txtColor = texture(diffuseTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
-	vec3 diffuse = lightMap.x * max(dot(-lightDir, normal), 0.0f) * txtColor.rgb;
+	
+	vec3 diffuse = max(dot(-lightDir, normal), 0.0f) * txtColor.rgb;
 
-	float specularStr = 0.5f;
+	float specularStr = 0.25f;
 	int shininess = 64;
 	vec3 refDir = normalize(reflect(lightDir, normal));
 	float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
 	vec3 specular = specularStr * spec * txtColor.rgb;
 
 	txtColor = texture(specularTexture, fragTexCoord);
-	if(txtColor.a < 0.1f)
-		discard;
 	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
 
 	// attenuation

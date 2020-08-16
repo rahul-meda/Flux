@@ -25,14 +25,18 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 2000.0f);
 	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().Initialize();
 	Physics::GetInstance().Initialize();
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", "Resources/WorldFragmentShader.frag");
-	Graphics::GetInstance().animShader = Shader::CreateShader("Resources/AnimVertexShader.vert", "Resources/WorldFragmentShader.frag");
+	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", 
+										  "Resources/WorldFragmentShader.frag");
+	Graphics::GetInstance().animShader = Shader::CreateShader("Resources/AnimVertexShader.vert",
+										 "Resources/WorldFragmentShader.frag");
+	Graphics::GetInstance().instanceShader = Shader::CreateShader("Resources/InstanceVertexShader.vert",
+										 "Resources/WorldFragmentShader.frag");
 	Graphics::GetInstance().skyboxShader = Shader::CreateShader("Resources/Skybox.vert", "Resources/Skybox.frag");
 
 	HMesh mesh;
@@ -226,7 +230,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 1000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 2000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)

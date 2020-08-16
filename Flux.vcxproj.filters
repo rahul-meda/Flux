@@ -458,5 +458,14 @@
     <None Include="Resources\Skybox.frag">
       <Filter>Resources</Filter>
     </None>
+    <None Include="Resources\WorldGeometryShader.geom">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\InstanceVertexShader.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\InstanceFragmentShader.frag">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>
