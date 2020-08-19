@@ -40,6 +40,8 @@ void Graphics::Initialize()
 	glEnable(GL_DEPTH_TEST); // enables depth-testing
 	glDepthFunc(GL_LESS);    // interpret smaller values as closer
 	//glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	std::vector<R_Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -60,9 +62,9 @@ void Graphics::Initialize()
 	hingeMaterial.specularMap = hingeTexture;
 	hingeMaterial.nMaps = 2;
 
-	lightColors[0] = glm::vec3(1.0f, 0.0f, 0.0f);
-	lightColors[1] = glm::vec3(0.0f, 1.0f, 0.0f);
-	lightColors[2] = glm::vec3(0.0f, 0.0f, 1.0f);
+	lightColors[0] = glm::vec3(0.99f, 0.1f, 0.1f);
+	lightColors[1] = glm::vec3(0.1f, 0.99f, 0.1f);
+	lightColors[2] = glm::vec3(0.1f, 0.1f, 0.99f);
 	lightColors[3] = glm::vec3(1.0f, 1.0f, 0.0f);
 
 	stbExtensions = {"jpg", "png", "tga", "bmp", "psd"};
@@ -75,6 +77,8 @@ void Graphics::PostInit()
 	std::cout << max_attribs << std::endl;
 
 	CreateSkybox(skyboxVAO, skyboxTexture);
+
+	AddPointLight(glm::vec3(0.0f));
 
 	glUseProgram(skyboxShader);
 	vpLocS = glGetUniformLocation(skyboxShader, "VP");
@@ -110,8 +114,6 @@ void Graphics::PostInit()
 	glUseProgram(instanceShader);
 	vpLocI = glGetUniformLocation(instanceShader, "VP");
 	glUseProgram(0);
-
-	AddPointLight(glm::vec3(0.0f));
 
 	glUseProgram(animShader);
 	for (unsigned int i = 0; i < MAX_BONES; ++i)
@@ -157,13 +159,16 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 	// set the vertex attribute pointers
 	// vertex Positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::position)));
 	// vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(3 * sizeof(float)));
-	// vertex texture coords
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::normal)));
+	// vertex tangents
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::tangent)));
+	// vertex texture coords
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::textureCoords)));
 
 	glBindVertexArray(0);
 
@@ -191,25 +196,26 @@ unsigned int Graphics::CreateModel(const std::vector<BoneVertex>& vertices, cons
 	// set the vertex attribute pointers
 	// vertex Positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::position));
 	// vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(3 * sizeof(float)));
-	// vertex texture coords
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::normal));
+	// vertex tangents
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::tangent));
 	// bone weights
-	for (int i = 0; i < MAX_WEIGHTS; ++i)
-	{
-		glEnableVertexAttribArray(3 + i);
-		glVertexAttribPointer(3 + i, 1, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)((8 + i) * sizeof(float)));
-	}
-	// bone ids
-	for (int i = 0; i < MAX_WEIGHTS; ++i)
-	{
-		glEnableVertexAttribArray(9 + i);
-		glVertexAttribIPointer(9 + i, 1, GL_INT, sizeof(BoneVertex), (void*)(14 * sizeof(float) + i * sizeof(int)));
-	}
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneWeights));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneWeights) + 3 * sizeof(float)));
+	// bone IDs
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 3, GL_INT, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneIDs));
+	glEnableVertexAttribArray(6);
+	glVertexAttribIPointer(6, 3, GL_INT, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneIDs) + 3 * sizeof(int)));
+	// vertex texture coords
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::textureCoords));
 
 	glBindVertexArray(0);
 
@@ -236,7 +242,8 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 	scene = importer.ReadFile(file,
 		aiProcess_Triangulate | aiProcess_GenNormals |
 	    aiProcess_FlipUVs     | aiProcess_RemoveRedundantMaterials |
-		aiProcess_JoinIdenticalVertices | aiProcess_ValidateDataStructure);
+		aiProcess_JoinIdenticalVertices | aiProcess_ValidateDataStructure |
+		aiProcess_CalcTangentSpace);
 
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -282,21 +289,6 @@ void R_Mesh::LoadModel(const std::string& file, bool flip)
 	else
 	{
 		LoadGeometry(scene, boneVerts, indices);
-		/*for (int i = 0; i < nVertices; ++i)
-		{
-			std::cout << "bone weigths: " << boneVerts[i].boneWeights[0] << "," << boneVerts[i].boneWeights[1]
-				<< "," << boneVerts[i].boneWeights[2] << "," << boneVerts[i].boneWeights[3] << std::endl;
-			std::cout << "bone IDs: " << boneVerts[i].boneIDs[0] << "," << boneVerts[i].boneIDs[1]
-					<< "," << boneVerts[i].boneIDs[2] << "," << boneVerts[i].boneIDs[3] << std::endl;
-			if (!boneVerts[i].VerifyWeights())
-			{
-				std::cout << "invalid bone weigths in vertex: " << i << std::endl;
-			}
-			if (!boneVerts[i].VerifyBoneIDs())
-			{
-				std::cout << "invalid bone IDs in vertex: " << i << std::endl;
-			}
-		}*/
 		VAO = Graphics::GetInstance().CreateModel(boneVerts, indices);
 	}
 
@@ -313,6 +305,7 @@ void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices,
 			R_Vertex v;
 			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
 			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
+			v.tangent = glm::vec3(aiMesh->mTangents[j].x, aiMesh->mTangents[j].y, aiMesh->mTangents[j].z);
 			if (aiMesh->HasTextureCoords(0))
 			{
 				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
@@ -345,6 +338,7 @@ void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertice
 			BoneVertex v;
 			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
 			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
+			v.tangent = glm::vec3(aiMesh->mTangents[j].x, aiMesh->mTangents[j].y, aiMesh->mTangents[j].z);
 			if (aiMesh->HasTextureCoords(0))
 			{
 				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
@@ -432,7 +426,7 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 				}
 				
 				std::string fullPath = dir + "/" + p;
-				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip, true);
 				nMaps = 1;
 			}
 		}
@@ -466,6 +460,44 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 				std::string fullPath = dir + "/" + p;
 				m.emissionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
 				nMaps = 3;
+			}
+		}
+		if (pMaterial->GetTextureCount(aiTextureType_NORMALS) > 0)
+		{
+			if (pMaterial->GetTexture(aiTextureType_NORMALS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				std::string p(path.data);
+
+				if (p.substr(0, 2) == ".\\")
+				{
+					p = p.substr(2, p.size() - 2);
+				}
+
+				if (p.substr(1, 2) == ":\\")
+				{
+					slashIndex = p.find_last_of("\\");
+					if (slashIndex != std::string::npos)
+					{
+						p = p.substr(slashIndex + 1, p.size() - 2);
+					}
+				}
+
+				slashIndex = p.find_last_of("/");
+				if (slashIndex != std::string::npos)
+				{
+					p = p.substr(slashIndex + 1, p.size() - 2);
+				}
+				std::string::size_type dotIndex = p.find_last_of(".");
+				std::string ext = p.substr(dotIndex + 1, p.size() - 2);
+				bool stb_supported = false;
+				if (!Graphics::GetInstance().STBI_Supported(ext))
+				{
+					p.replace(dotIndex + 1, ext.size(), "jpg");	// force-load jpg
+				}
+
+				std::string fullPath = dir + "/" + p;
+				m.normalMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				nMaps = 1;
 			}
 		}
 
@@ -567,7 +599,7 @@ void Grass::Init()
 	}
 }
 
-unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
+unsigned int Graphics::CreateTexture(const char* filePath, bool flip, bool gammaCorrection)
 {
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -590,7 +622,7 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip)
 		format = GL_RGBA;
 
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, gammaCorrection ? GL_SRGB : format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
@@ -611,6 +643,9 @@ void Graphics::AddPointLight(glm::vec3 pos)
 
 	glUseProgram(worldShader);
 	glUniform3fv(glGetUniformLocation(worldShader, loc.c_str()), 1, glm::value_ptr(lightPos[i]));
+	glUseProgram(0);
+	glUseProgram(animShader);
+	glUniform3fv(glGetUniformLocation(animShader, loc.c_str()), 1, glm::value_ptr(lightPos[i]));
 	glUseProgram(0);
 }
 
@@ -673,6 +708,12 @@ void Graphics::Update()
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
 				glUniform1i(txLocW[k], k);
 			}
+			if (material.normalMap != 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + 1);
+				glBindTexture(GL_TEXTURE_2D, material.normalMap);
+				glUniform1i(glGetUniformLocation(worldShader, "normalMap"), 1);
+			}
 			glActiveTexture(GL_TEXTURE0);
 
 			glm::vec3 lightMap(1.0f);
@@ -725,6 +766,12 @@ void Graphics::Update()
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
 				glUniform1i(txLocA[k], k);
 			}
+			if (material.normalMap != 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + 1);
+				glBindTexture(GL_TEXTURE_2D, material.normalMap);
+				glUniform1i(glGetUniformLocation(animShader, "normalMap"), 1);
+			}
 			glActiveTexture(GL_TEXTURE0);
 
 			glm::vec3 lightMap(1.0f);
@@ -755,38 +802,20 @@ void Graphics::Update()
 	glUniform1i(glGetUniformLocation(instanceShader, "diffuseTexture"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, material.GetMap(0));
-	//for (int l = 0; l < 100000; ++l)
+	for (int i = 0; i < N; ++i)
 	{
-		for (int i = 0; i < N; ++i)
+		I_Mesh m = instModels[i];
+		int nSub = m.subMeshes.size();
+
+		for (int j = 0; j < nSub; ++j)
 		{
-			I_Mesh m = instModels[i];
-			int nSub = m.subMeshes.size();
-
-			for (int j = 0; j < nSub; ++j)
-			{
-				//MVP = VP * instTransforms[l];
-
-				/*unsigned int mID = m.subMeshes[j].materialID;
-				assert(mID < m.materials.size());
-				Material material = m.materials[mID];
-				int nMaps = material.nMaps;
-				for (int k = 0; k < nMaps; ++k)
-				{
-					glActiveTexture(GL_TEXTURE0 + k);
-					glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
-					glUniform1i(txLocA[k], k);
-				}
-				glActiveTexture(GL_TEXTURE0);*/
-
-				glBindVertexArray(m.VAO);
-				glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
-					m.subMeshes[j].nIndices,
-					GL_UNSIGNED_INT,
-					(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
-					m.instanceCount,
-					m.subMeshes[j].vertexOffset);
-				//glDrawElementsInstanced(GL_TRIANGLES, m.subMeshes[j].nIndices, GL_UNSIGNED_INT, 0, 100000);
-			}
+			glBindVertexArray(m.VAO);
+			glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
+				m.subMeshes[j].nIndices,
+				GL_UNSIGNED_INT,
+				(void*)(sizeof(unsigned int) * m.subMeshes[j].indexOffset),
+				m.instanceCount,
+				m.subMeshes[j].vertexOffset);
 		}
 	}
 	glUseProgram(0);

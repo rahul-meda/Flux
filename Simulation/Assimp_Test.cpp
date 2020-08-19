@@ -92,11 +92,28 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	camera.minRadius = 2.0f;
 	camera.maxRadius = 7.0f;
 
-	CreateAstroidBelt(Graphics::GetInstance().instTransforms);
+	const unsigned int asteroidCount = 1000;
+	CreateAsteroidBelt(Graphics::GetInstance().instTransforms, asteroidCount);
 
-	I_Mesh iMesh;
-	iMesh.LoadModelI("resources/models/rock/rock.obj");
+	I_Mesh iMesh(asteroidCount);
+	iMesh.LoadModel("resources/models/asteroid/asteroid.obj");
 	Graphics::GetInstance().instModels.push_back(iMesh);
+
+	p = glm::vec3(0.0f, 10.0f, -50.0f);
+	tx = Transform(p, glm::angleAxis(PI * 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	bd.tx = tx;
+	bd.isStatic = true;
+	bd.angularVelocity = glm::vec3(0.0f, 0.1f, 0.0f);
+	bID = Physics::GetInstance().AddBody(bd);
+	SphereCollider* sphereCollider = new SphereCollider();
+	sphereCollider->Scale(10.0f);
+	Physics::GetInstance().AddCollider(bID, sphereCollider);
+	obj.pos = tx.position;
+	obj.rot = tx.R;
+	obj.txID = bID;
+	obj.scale = glm::vec3(10.0f, 10.0f, 1.0f);
+	obj.LoadModel("resources/models/wall/box.obj");
+	Graphics::GetInstance().objects.push_back(obj);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)

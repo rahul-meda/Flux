@@ -7,7 +7,7 @@ void CreateSkybox (unsigned int& VAO, unsigned int& textureID);
 void CreateGrass  (unsigned int& VAO, unsigned int& textureID);
 void CreateTerrain(unsigned int& VAO, unsigned int& textureID);
 void CreateTrees  (unsigned int& VAO, unsigned int& textureID);
-void CreateAstroidBelt(std::vector<glm::mat4>& transforms, const unsigned int count);
+void CreateAsteroidBelt(std::vector<glm::mat4>& transforms, const unsigned int count);
 
 class SubMesh; class Material; class aiScene; class R_Vertex;
 class I_Mesh

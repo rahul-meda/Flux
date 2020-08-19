@@ -25,7 +25,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 2000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 10000.0f);
 	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Graphics::GetInstance().Initialize();
@@ -36,7 +36,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().animShader = Shader::CreateShader("Resources/AnimVertexShader.vert",
 										 "Resources/WorldFragmentShader.frag");
 	Graphics::GetInstance().instanceShader = Shader::CreateShader("Resources/InstanceVertexShader.vert",
-										 "Resources/WorldFragmentShader.frag");
+										 "Resources/InstanceFragmentShader.frag");
 	Graphics::GetInstance().skyboxShader = Shader::CreateShader("Resources/Skybox.vert", "Resources/Skybox.frag");
 
 	HMesh mesh;
@@ -160,10 +160,10 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									 "Resources/FragmentShader.frag");
 
-	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 2.5f,  50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3( 50.0f, 0.5f,  50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3(-50.0f, 0.5f, -50.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3( 50.0f, 0.5f, -50.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(-25.0f, 2.5f,  25.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f,  25.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(-25.0f, 0.5f, -25.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f, -25.0f));
 }
 
 void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -185,7 +185,7 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		Graphics::GetInstance().lines.clear();
 		Graphics::GetInstance().aabbs.clear();
 	}
-	if (keyboard.IsKeyDown(GLFW_KEY_F))
+	if (keyboard.IsKeyDown(GLFW_KEY_R))
 	{
 		Transform tx = Transform(camera.position + 3.0f*camera.fwd);
 		BodyDef bd;
@@ -230,7 +230,7 @@ void Simulation::OnWindowResize(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 	glViewport(0, 0, width, height);
-	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 2000.0f);
+	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width/(float)height, 0.1f, 10000.0f);
 }
 
 void Simulation::OnMouseMove(GLFWwindow* window, double x, double y)

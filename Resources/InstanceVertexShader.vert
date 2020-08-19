@@ -2,8 +2,9 @@
 
 layout (location = 0) in vec3 vertPos;
 layout (location = 1) in vec3 vertNormal;
-layout (location = 2) in vec2 texCoord;
-layout (location = 3) in mat4 M;
+layout (location = 2) in vec3 vertTangent;
+layout (location = 3) in vec2 texCoord;
+layout (location = 4) in mat4 M;
 
 out vec3 vNormal;
 out vec3 fragPos;

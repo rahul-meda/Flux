@@ -16,6 +16,7 @@ struct R_Vertex
 {
 	glm::vec3 position;
 	glm::vec3 normal;
+	glm::vec3 tangent;
 	glm::vec2 textureCoords;
 };
 
@@ -23,9 +24,10 @@ struct BoneVertex
 {
 	glm::vec3 position;
 	glm::vec3 normal;
-	glm::vec2 textureCoords;
+	glm::vec3 tangent;
 	float boneWeights[MAX_WEIGHTS];
 	int boneIDs[MAX_WEIGHTS];
+	glm::vec2 textureCoords;
 
 	BoneVertex() 
 	{
@@ -77,11 +79,12 @@ struct BoneVertex
 struct Material
 {
 	Material()
-	 : diffuseMap(0), specularMap(0), emissionMap(0), nMaps(0){}
+	 : diffuseMap(0), specularMap(0), emissionMap(0), normalMap(0), nMaps(0){}
 
 	unsigned int diffuseMap;
 	unsigned int specularMap;
 	unsigned int emissionMap;
+	unsigned int normalMap;
 	unsigned int nMaps;
 
 	unsigned int GetMap(const int i) const
@@ -228,7 +231,7 @@ public:
 	void PostInit();	// init stuff after all objects are added
 	unsigned int CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateModel(const std::vector<BoneVertex>& vertices, const std::vector<unsigned int>& indices);
-	unsigned int CreateTexture(const char* filePath, bool flip = false);
+	unsigned int CreateTexture(const char* filePath, bool flip = false, bool gammaCorrection = false);
 	void AddPointLight(glm::vec3 pos);
 	void SetBoneTransform(const int i, const glm::mat4& transform);
 	void Update();

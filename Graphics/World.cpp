@@ -93,7 +93,7 @@ void CreateSkybox(unsigned int& VAO, unsigned int& textureID)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void CreateAstroidBelt(std::vector<glm::mat4>& transforms, const unsigned int count)
+void CreateAsteroidBelt(std::vector<glm::mat4>& transforms, const unsigned int count)
 {
 	glm::mat4 tx;
 	transforms = std::vector<glm::mat4>(count);
@@ -102,10 +102,10 @@ void CreateAstroidBelt(std::vector<glm::mat4>& transforms, const unsigned int co
 	{
 		glm::vec3 pos;
 		pos.y = 100.0f;
-		glm::vec2 c = glm::circularRand(500.0f);
+		glm::vec2 c = glm::circularRand(5000.0f);
 		pos.x = c.x;
 		pos.z = c.y;
-		float offset = 100.0f;
+		float offset = 1000.0f;
 		pos.x += glm::linearRand(-offset, offset);
 		pos.z += glm::linearRand(-offset, offset);
 		pos.y += glm::linearRand(-offset * 0.2f, offset * 0.2f);
@@ -116,7 +116,7 @@ void CreateAstroidBelt(std::vector<glm::mat4>& transforms, const unsigned int co
 		glm::quat q = glm::angleAxis(angle, axis);
 		glm::mat4 R = glm::mat4(q);
 
-		float scale = glm::linearRand(0.1f, 0.5f);
+		float scale = glm::linearRand(0.005f, 0.1f);
 		glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
 
 		tx = T * R * S;
@@ -177,19 +177,19 @@ void I_Mesh::LoadModel(const std::string & file, bool flip)
 	glBufferData(GL_ARRAY_BUFFER, instanceCount * sizeof(glm::mat4), &(Graphics::GetInstance().instTransforms[0]), GL_STATIC_DRAW);
 	glBindVertexArray(VAO);
 	// set attribute pointers for matrix (4 times vec4)
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
 	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
 
-	glVertexAttribDivisor(3, 1);
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
 	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
 	glBindVertexArray(0);
 
 	LoadTextures(scene, file, flip);

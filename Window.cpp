@@ -13,6 +13,7 @@ GLFWwindow * Window::CreateWindow(int& width, int& height)
 
 	width = WIDTH;
 	height = HEIGHT;
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", nullptr, nullptr);
 
 	//GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Flux", glfwGetPrimaryMonitor(), nullptr);

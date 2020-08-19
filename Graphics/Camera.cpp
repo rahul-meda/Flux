@@ -54,7 +54,7 @@ void Camera::Translate(DIR mode)
 		break;
 	}
 
-	velocity += 10.0f * deltaT * dir;
+	velocity += 20.0f * deltaT * dir;
 
 	position += velocity * deltaT;
 
