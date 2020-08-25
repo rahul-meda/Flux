@@ -32,21 +32,12 @@ void Skeletal_Animation::Init(GLFWwindow* window, int width, int height)
 	unsigned int boxEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/border2_em.jpg");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/sci_fi1.jpg");
 	unsigned int carTxt = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
-	Material material;
-	material.diffuseMap = ballTxt;
-	material.specularMap = ballTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 	R_Mesh obj;
-
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.emissionMap = boxEmTxt;
-	material.nMaps = 3;
 
 	unsigned int objId = Graphics::GetInstance().objects.size() - 1;
 

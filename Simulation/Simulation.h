@@ -51,7 +51,11 @@ public:
 	Keyboard keyboard;
 	std::map<int, std::pair<int, int>> bufferIDmap;
 	MouseInfo mouseData;
-	Material material;
+	Material mat_cobbleStone;
+	Material mat_titanium;
+	Material brushed_metal;
+	std::vector<std::string> envMaps;
+	unsigned int envID;
 
 	AnimFSM animFSM;
 };

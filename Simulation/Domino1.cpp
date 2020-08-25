@@ -25,9 +25,6 @@ void Domino1::Init()
 	unsigned int rampTxt = Graphics::GetInstance().CreateTexture("resources/textures/wood3.jpg");
 	unsigned int hingeTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 	Material material;
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -71,9 +68,6 @@ void Domino1::Init()
 		}
 	}
 
-	material.diffuseMap = hingeTxt;
-	material.specularMap = hingeTxt;
-	material.nMaps = 2;
 	glm::vec3 p(12.0f + s.x + 1.0f - 0.25f, 2.0f * s.y - 0.1f, s.z + 0.1f);
 	for (int j = 0; j < 5; ++j)
 	{
@@ -140,9 +134,6 @@ void Domino1::Init()
 		Physics::GetInstance().hingeJoints.push_back(hj);
 	}
 
-	material.diffuseMap = rampTxt;
-	material.specularMap = rampTxt;
-	material.nMaps = 2;
 	p = glm::vec3(12.0f + s.x + 1.0f - 0.25f - 1.0f, 2.0f * s.y - 0.1f + 3.0f, s.z + 0.1f + 5.0f);
 	tx = Transform(p, glm::angleAxis(-PI * 0.1f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;

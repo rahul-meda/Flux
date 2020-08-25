@@ -467,5 +467,23 @@
     <None Include="Resources\InstanceFragmentShader.frag">
       <Filter>Resources</Filter>
     </None>
+    <None Include="Resources\Cubemap.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\Irradiance.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\Cubemap.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\Prefilter.frag">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\brdf.vert">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Resources\brdf.frag">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -23,9 +23,6 @@ void DoorHinge::Init()
 	unsigned int emissionTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
 	unsigned int metalDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/wood2.jpg");
 	Material material;
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -50,9 +47,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = metalDfTxt;
-	material.specularMap = metalDfTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
@@ -74,9 +68,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
@@ -112,9 +103,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = metalDfTxt;
-	material.specularMap = metalDfTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
@@ -136,9 +124,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
@@ -171,9 +156,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s1);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = metalDfTxt;
-	material.specularMap = metalDfTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));
@@ -195,9 +177,6 @@ void DoorHinge::Init()
 	mesh.GetColliderData(boxCollider);
 	boxCollider->Scale(s2);
 	Physics::GetInstance().AddCollider(bID, boxCollider);
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 	obj.pos = tx.position;
 	obj.rot = tx.R;
 	obj.posOffsets.push_back(glm::vec3(0.0f));

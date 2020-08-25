@@ -13,6 +13,7 @@
 #define MARGIN 30
 
 Simulation::Simulation()
+	: envID(0)
 {}
 
 Simulation::~Simulation()
@@ -22,22 +23,25 @@ Simulation::~Simulation()
 
 void Simulation::Init(GLFWwindow* window, int w, int h)
 {
+	Graphics::GetInstance().Initialize();
+
 	width = w;
 	height = h;
+	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 	Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 10000.0f);
 	camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	Graphics::GetInstance().Initialize();
-	Physics::GetInstance().Initialize();
+	envMaps.push_back("resources/textures/hdr/milkyway/Milkyway_small.hdr");
+	envMaps.push_back("resources/textures/hdr/Newport_Loft/Newport_Loft_Ref.hdr");
+	envMaps.push_back("resources/textures/hdr/Topanga_Forest/Topanga_Forest_B_3k.hdr");
+	envMaps.push_back("resources/textures/hdr/Tropical_Beach/Tropical_Beach_3k.hdr");
+	envMaps.push_back("resources/textures/hdr/mono_lake_b/Mono_Lake_B_Ref.hdr");
+	envMaps.push_back("resources/textures/hdr/Malibu_Overlook/Malibu_Overlook_3k.hdr");
+	envMaps.push_back("resources/textures/hdr/Frozen_Waterfall/Frozen_Waterfall_Ref.hdr");
+	envMaps.push_back("resources/textures/hdr/EtniesPark_Center/Etnies_Park_Center_3k.hdr");
 
-	Graphics::GetInstance().worldShader = Shader::CreateShader("Resources/WorldVertexShader.vert", 
-										  "Resources/WorldFragmentShader.frag");
-	Graphics::GetInstance().animShader = Shader::CreateShader("Resources/AnimVertexShader.vert",
-										 "Resources/WorldFragmentShader.frag");
-	Graphics::GetInstance().instanceShader = Shader::CreateShader("Resources/InstanceVertexShader.vert",
-										 "Resources/InstanceFragmentShader.frag");
-	Graphics::GetInstance().skyboxShader = Shader::CreateShader("Resources/Skybox.vert", "Resources/Skybox.frag");
+	Physics::GetInstance().Initialize();
 
 	HMesh mesh;
 	ParseObj("Resources/Models/Box.obj", mesh);
@@ -45,18 +49,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	unsigned int floorDfTexture = Graphics::GetInstance().CreateTexture("resources/textures/chess2.jpg");
 	unsigned int floorSpTexture = Graphics::GetInstance().CreateTexture("resources/textures/carbon_fiber3_sp.jpg");
 	unsigned int floorEmTexture = Graphics::GetInstance().CreateTexture("resources/textures/lightning2_em.jpg");
-	Material floorMaterial;
-	floorMaterial.diffuseMap = floorDfTexture;
-	floorMaterial.specularMap = floorDfTexture;
-	floorMaterial.emissionMap = floorEmTexture;
-	floorMaterial.nMaps = 3;
 
 	unsigned int ballDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 	unsigned int ballEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/matrix.jpg");
-	material.diffuseMap = ballDfTxt;
-	material.specularMap = ballDfTxt;
-	material.emissionMap = ballEmTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -64,6 +59,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	HullCollider* boxCollider;
 	R_Mesh obj;
 	glm::vec3 s1(50.0f, 0.5f, 50.0f);
+	Material material;
 
 	tx = Transform(glm::vec3(0.0f, -0.5f, 0.0f), glm::angleAxis(PI, glm::vec3(1.0f, 0.0f, 0.0f)));
 	bd.tx = tx;
@@ -78,15 +74,14 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scale = s1;
 	obj.LoadModel("resources/models/floor/floor.obj");
+	mat_cobbleStone = Graphics::GetInstance().CreateMaterial("resources/textures/cobble_stone");
+	obj.materials.clear();
+	obj.materials.push_back(mat_cobbleStone);
 	Graphics::GetInstance().objects.push_back(obj);
 	obj.Clear();
 
 	unsigned int wallTexture = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
 	Material wallMaterial;
-	wallMaterial.diffuseMap = wallTexture;
-	wallMaterial.specularMap = wallTexture;
-	wallMaterial.emissionMap = ballEmTxt;
-	wallMaterial.nMaps = 3;
 
 	glm::vec3 s2(0.5f, 100.0f, 50.0f);
 	tx = Transform(glm::vec3(-s1.x, s2.z, 0.0f), glm::angleAxis(PI * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -164,6 +159,9 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f,  25.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3(-25.0f, 0.5f, -25.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f, -25.0f));
+
+	mat_titanium = Graphics::GetInstance().CreateMaterial("resources/textures/titanium", ".png");
+	brushed_metal = Graphics::GetInstance().CreateMaterial("resources/textures/brushed_metal", ".png");
 }
 
 void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -185,6 +183,18 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		Graphics::GetInstance().lines.clear();
 		Graphics::GetInstance().aabbs.clear();
 	}
+	if (keyboard.IsKeyDown(GLFW_KEY_C))
+	{
+		++envID;
+		if (envID == envMaps.size())
+		{
+			envID = 0;
+		}
+		Graphics::GetInstance().CreateEnvironment(envMaps[envID]);
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+		Graphics::GetInstance().P = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 10000.0f);
+	}
 	if (keyboard.IsKeyDown(GLFW_KEY_R))
 	{
 		Transform tx = Transform(camera.position + 3.0f*camera.fwd);
@@ -203,6 +213,8 @@ void Simulation::OnKeyTap(GLFWwindow* window, int key, int scanCode, int action,
 		obj.posOffsets.push_back(glm::vec3(0.0f));
 		obj.rotOffsets.push_back(glm::mat3(1.0f));
 		obj.LoadModel(Graphics::GetInstance().dSphere);
+		obj.materials.clear();
+		obj.materials.push_back(brushed_metal);
 		Graphics::GetInstance().objects.push_back(obj);
 	}
 }

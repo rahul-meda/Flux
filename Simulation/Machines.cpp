@@ -20,10 +20,6 @@ void Machines::Init()
 	unsigned int boxDfTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_df.png");
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
-	Material material;
-	material.diffuseMap = metalTxt;
-	material.specularMap = metalTxt;
-	material.nMaps = 2;
 
 	HMesh mesh;
 	Transform tx;
@@ -56,7 +52,6 @@ void Machines::Init()
 	obj.scales.push_back(s);
 	obj.LoadModel("resources/models/cylinder/cylinder.obj");
 	
-
 	int N = 4;
 	for (int i = 1; i < N; ++i)
 	{
@@ -175,9 +170,6 @@ void Machines::Init()
 	HingeJoint hj(&hjd);
 	Physics::GetInstance().hingeJoints.push_back(hj);
 
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 	float step = (2.0f * PI) / (4 * (N - 1));
 
 	for (int i = 0; i < 4 * (N - 1); ++i)

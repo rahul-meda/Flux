@@ -31,21 +31,12 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	unsigned int boxEmTxt = Graphics::GetInstance().CreateTexture("resources/textures/border2_em.jpg");
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/sci_fi1.jpg");
 	unsigned int carTxt = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
-	Material material;
-	material.diffuseMap = ballTxt;
-	material.specularMap = ballTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
 	HullCollider* boxCollider;
 	R_Mesh obj;
-
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.emissionMap = boxEmTxt;
-	material.nMaps = 3;
 
 	glm::vec3 p(0.0f, 0.0f, 0.0f);
 	tx = Transform(p, glm::angleAxis(PI * 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -71,7 +62,7 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scales.push_back(glm::vec3(0.025f));
 	obj.scale = glm::vec3(1.0f);
-	std::string path = "Resources/Models/sandy/sandy.fbx";
+	std::string path = "Resources/Models/morak/morak.fbx";
 	obj.LoadModel(path);
 	Graphics::GetInstance().animModels.push_back(obj);
 	obj.Clear();
@@ -92,12 +83,12 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	camera.minRadius = 2.0f;
 	camera.maxRadius = 7.0f;
 
-	const unsigned int asteroidCount = 1000;
+	const unsigned int asteroidCount = 100000;
 	CreateAsteroidBelt(Graphics::GetInstance().instTransforms, asteroidCount);
 
 	I_Mesh iMesh(asteroidCount);
 	iMesh.LoadModel("resources/models/asteroid/asteroid.obj");
-	Graphics::GetInstance().instModels.push_back(iMesh);
+	//Graphics::GetInstance().instModels.push_back(iMesh);
 
 	p = glm::vec3(0.0f, 10.0f, -50.0f);
 	tx = Transform(p, glm::angleAxis(PI * 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -113,14 +104,14 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.txID = bID;
 	obj.scale = glm::vec3(10.0f, 10.0f, 1.0f);
 	obj.LoadModel("resources/models/wall/box.obj");
-	Graphics::GetInstance().objects.push_back(obj);
+	//Graphics::GetInstance().objects.push_back(obj);
 }
 
 void Assimp_Test::OnKeyTap(GLFWwindow * window, int key, int scanCode, int action, int mods)
 {
 	Simulation::OnKeyTap(window, key, scanCode, action, mods);
 
-	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
 	{
 		int i = animation.GetAnimIndex();
 		++i;

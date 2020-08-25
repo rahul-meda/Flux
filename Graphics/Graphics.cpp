@@ -16,6 +16,7 @@
 #include <string>
 
 #include "Graphics.h"
+#include "Shader.h"
 #include "../Simulation/Simulation.h"
 #include "../Physics/Physics.h"
 #include "../Components/Transform.h"
@@ -38,7 +39,7 @@ void Graphics::Initialize()
 {
 	// draw the pixel only if the object is closer to the viewer
 	glEnable(GL_DEPTH_TEST); // enables depth-testing
-	glDepthFunc(GL_LESS);    // interpret smaller values as closer
+	glDepthFunc(GL_LEQUAL);    // interpret smaller values as closer
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 	//glEnable(GL_FRAMEBUFFER_SRGB);
@@ -52,22 +53,30 @@ void Graphics::Initialize()
 	dCylinder.LoadModel("resources/models/cylinder/cylinder.obj");
 	dCapsule.LoadModel("resources/models/capsule/capsule.obj");
 
-	textureLocs[0] = "diffuseTexture";
-	textureLocs[1] = "specularTexture";
-	textureLocs[2] = "emissionTexture";
+	boxVAO  = CreateBox();
+	quadVAO = CreateQuad();
+	const std::string path = "resources/textures/hdr/Topanga_Forest/Topanga_Forest_B_3k.hdr";
+	CreateEnvironmentMap(path, envCubeMap, irradianceMap, prefilterMap, brdfLUTTexture);
+
+	textureLocs[0] = "albedoMap";
+	textureLocs[1] = "specularMap";
+	textureLocs[2] = "normalMap";
+	textureLocs[3] = "glossMap";
+	textureLocs[4] = "occlusionMap";
 
 	unsigned int hingeTexture = CreateTexture("resources/textures/metal2.jpg");
 
-	hingeMaterial.diffuseMap = hingeTexture;
-	hingeMaterial.specularMap = hingeTexture;
-	hingeMaterial.nMaps = 2;
-
-	lightColors[0] = glm::vec3(0.99f, 0.1f, 0.1f);
-	lightColors[1] = glm::vec3(0.1f, 0.99f, 0.1f);
-	lightColors[2] = glm::vec3(0.1f, 0.1f, 0.99f);
-	lightColors[3] = glm::vec3(1.0f, 1.0f, 0.0f);
+	lightColors[0] = glm::vec3(1.0f);
+	lightColors[1] = glm::vec3(1.0f);
+	lightColors[2] = glm::vec3(1.0f);
+	lightColors[3] = glm::vec3(1.0f);
 
 	stbExtensions = {"jpg", "png", "tga", "bmp", "psd"};
+
+	worldShader    = Shader::CreateShader("Resources/WorldVertexShader.vert", "Resources/WorldFragmentShader.frag");
+	animShader     = Shader::CreateShader("Resources/AnimVertexShader.vert", "Resources/WorldFragmentShader.frag");
+	instanceShader = Shader::CreateShader("Resources/InstanceVertexShader.vert", "Resources/InstanceFragmentShader.frag");
+	skyboxShader   = Shader::CreateShader("Resources/Skybox.vert", "Resources/Skybox.frag");
 }
 
 void Graphics::PostInit()
@@ -76,39 +85,51 @@ void Graphics::PostInit()
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
 	std::cout << max_attribs << std::endl;
 
+	glUseProgram(skyboxShader);
+	glUniform1i(glGetUniformLocation(skyboxShader, "environmentMap"), 0);
+	glUseProgram(0);
+
 	CreateSkybox(skyboxVAO, skyboxTexture);
 
 	AddPointLight(glm::vec3(0.0f));
 
 	glUseProgram(skyboxShader);
 	vpLocS = glGetUniformLocation(skyboxShader, "VP");
-	glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+	glUniform1i(glGetUniformLocation(skyboxShader, "environmentMap"), 0);
 	glUseProgram(0);
 
 	glUseProgram(worldShader);
 	mvpLocW = glGetUniformLocation(worldShader, "MVP");
 	mLocW = glGetUniformLocation(worldShader, "M");
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		txLocW[i] = glGetUniformLocation(worldShader, textureLocs[i]);
 	}
 	eyeLocW = glGetUniformLocation(worldShader, "eyePos");
-	lightMapLocW = glGetUniformLocation(worldShader, "lightMap");
 	camLightLocW = glGetUniformLocation(worldShader, "lightPos[4]");
-	timeLocW = glGetUniformLocation(worldShader, "time");
 	glUseProgram(0);
 
 	glUseProgram(animShader);
 	mvpLocA = glGetUniformLocation(animShader, "MVP");
 	mLocA = glGetUniformLocation(animShader, "M");
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		txLocA[i] = glGetUniformLocation(animShader, textureLocs[i]);
 	}
 	eyeLocA = glGetUniformLocation(animShader, "eyePos");
-	lightMapLocA = glGetUniformLocation(animShader, "lightMap");
 	camLightLocA = glGetUniformLocation(animShader, "lightPos[4]");
-	timeLocA = glGetUniformLocation(animShader, "time");
+	glUseProgram(0);
+
+	glUseProgram(worldShader);
+	glUniform1i(glGetUniformLocation(worldShader, "irradianceMap"), 5);
+	glUniform1i(glGetUniformLocation(worldShader, "prefilterMap"), 6);
+	glUniform1i(glGetUniformLocation(worldShader, "brdfLUT"), 7);
+	glUseProgram(0);
+
+	glUseProgram(animShader);
+	glUniform1i(glGetUniformLocation(animShader, "irradianceMap"), 5);
+	glUniform1i(glGetUniformLocation(animShader, "prefilterMap"), 6);
+	glUniform1i(glGetUniformLocation(animShader, "brdfLUT"), 7);
 	glUseProgram(0);
 
 	glUseProgram(instanceShader);
@@ -166,9 +187,12 @@ unsigned int Graphics::CreateModel(const std::vector<R_Vertex>& vertices, const 
 	// vertex tangents
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::tangent)));
-	// vertex texture coords
+	// vertex bi-tangents
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::textureCoords)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::biTangent)));
+	// vertex texture coords
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(R_Vertex), (void*)(offsetof(R_Vertex, R_Vertex::textureCoords)));
 
 	glBindVertexArray(0);
 
@@ -203,19 +227,22 @@ unsigned int Graphics::CreateModel(const std::vector<BoneVertex>& vertices, cons
 	// vertex tangents
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::tangent));
-	// bone weights
+	// vertex bi-tangents
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneWeights));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::biTangent));
+	// bone weights
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneWeights) + 3 * sizeof(float)));
-	// bone IDs
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneWeights));
 	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, 3, GL_INT, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneIDs));
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneWeights) + 3 * sizeof(float)));
+	// bone IDs
 	glEnableVertexAttribArray(6);
-	glVertexAttribIPointer(6, 3, GL_INT, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneIDs) + 3 * sizeof(int)));
-	// vertex texture coords
+	glVertexAttribIPointer(6, 3, GL_INT, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::boneIDs));
 	glEnableVertexAttribArray(7);
-	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::textureCoords));
+	glVertexAttribIPointer(7, 3, GL_INT, sizeof(BoneVertex), (void*)(offsetof(BoneVertex, BoneVertex::boneIDs) + 3 * sizeof(int)));
+	// vertex texture coords
+	glEnableVertexAttribArray(8);
+	glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, sizeof(BoneVertex), (void*)offsetof(BoneVertex, BoneVertex::textureCoords));
 
 	glBindVertexArray(0);
 
@@ -306,6 +333,7 @@ void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices,
 			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
 			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
 			v.tangent = glm::vec3(aiMesh->mTangents[j].x, aiMesh->mTangents[j].y, aiMesh->mTangents[j].z);
+			v.biTangent = glm::vec3(aiMesh->mBitangents[j].x, aiMesh->mBitangents[j].y, aiMesh->mBitangents[j].z);
 			if (aiMesh->HasTextureCoords(0))
 			{
 				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
@@ -339,6 +367,7 @@ void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertice
 			v.position = glm::vec3(aiMesh->mVertices[j].x, aiMesh->mVertices[j].y, aiMesh->mVertices[j].z);
 			v.normal = glm::vec3(aiMesh->mNormals[j].x, aiMesh->mNormals[j].y, aiMesh->mNormals[j].z);
 			v.tangent = glm::vec3(aiMesh->mTangents[j].x, aiMesh->mTangents[j].y, aiMesh->mTangents[j].z);
+			v.biTangent = glm::vec3(aiMesh->mBitangents[j].x, aiMesh->mBitangents[j].y, aiMesh->mBitangents[j].z);
 			if (aiMesh->HasTextureCoords(0))
 			{
 				v.textureCoords = glm::vec2(aiMesh->mTextureCoords[0][j].x, aiMesh->mTextureCoords[0][j].y);
@@ -361,6 +390,38 @@ void R_Mesh::LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertice
 
 		LoadBones(i, aiMesh, vertices);
 	}
+}
+
+std::string R_Mesh::GetTexturePath(std::string& file)
+{
+	if (file.substr(0, 2) == ".\\")
+	{
+		file = file.substr(2, file.size() - 2);
+	}
+	unsigned int slashIndex;
+	if (file.substr(1, 2) == ":\\")
+	{
+		slashIndex = file.find_last_of("\\");
+		if (slashIndex != std::string::npos)
+		{
+			file = file.substr(slashIndex + 1, file.size() - 2);
+		}
+	}
+
+	slashIndex = file.find_last_of("/");
+	if (slashIndex != std::string::npos)
+	{
+		file = file.substr(slashIndex + 1, file.size() - 2);
+	}
+	std::string::size_type dotIndex = file.find_last_of(".");
+	std::string ext = file.substr(dotIndex + 1, file.size() - 2);
+	bool stb_supported = false;
+	if (!Graphics::GetInstance().STBI_Supported(ext))
+	{
+		file.replace(dotIndex + 1, ext.size(), "jpg");	// force-load jpg
+	}
+
+	return file;
 }
 
 void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool flip)
@@ -392,116 +453,72 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 		unsigned int nMaps = 0;
 		aiString path;
 		
-		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0 || pMaterial->GetTextureCount(aiTextureType_BASE_COLOR) > 0)
 		{
-			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			if ( (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+			     (pMaterial->GetTexture(aiTextureType_BASE_COLOR, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) )
 			{
-				std::string p(path.data);
-
-				if (p.substr(0, 2) == ".\\") 
-				{
-					p = p.substr(2, p.size() - 2);
-				}
-
-				if (p.substr(1, 2) == ":\\")
-				{
-					slashIndex = p.find_last_of("\\");
-					if (slashIndex != std::string::npos)
-					{
-						p = p.substr(slashIndex + 1, p.size() - 2);
-					}
-				}
-
-				slashIndex = p.find_last_of("/");
-				if (slashIndex != std::string::npos)
-				{
-					p = p.substr(slashIndex + 1, p.size() - 2);
-				}
-				std::string::size_type dotIndex = p.find_last_of(".");
-				std::string ext = p.substr(dotIndex + 1, p.size() - 2);
-				bool stb_supported = false;
-				if (!Graphics::GetInstance().STBI_Supported(ext))
-				{
-					p.replace(dotIndex + 1, ext.size(), "jpg");	// force-load jpg
-				}
-				
+				std::string p = GetTexturePath(std::string(path.data));
 				std::string fullPath = dir + "/" + p;
-				m.diffuseMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip, true);
-				nMaps = 1;
+				m.albedoMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				++nMaps;
 			}
 		}
-		if (pMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0)
+		if (pMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0 || pMaterial->GetTextureCount(aiTextureType_METALNESS))
 		{
-			if (pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			if ( (pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+				 (pMaterial->GetTexture(aiTextureType_METALNESS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) )
 			{
-				std::string p(path.data);
-
-				if (p.substr(0, 2) == ".\\")
-				{
-					p = p.substr(2, p.size() - 2);
-				}
-
+				std::string p = GetTexturePath(std::string(path.data));
 				std::string fullPath = dir + "/" + p;
 				m.specularMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps = 2;
+				++nMaps;
 			}
 		}
-		if (pMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0)
+		if (pMaterial->GetTextureCount(aiTextureType_NORMALS) > 0 || pMaterial->GetTextureCount(aiTextureType_NORMAL_CAMERA) > 0)
 		{
-			if (pMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			if ( (pMaterial->GetTexture(aiTextureType_NORMALS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+				 (pMaterial->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) )
 			{
-				std::string p(path.data);
-
-				if (p.substr(0, 2) == ".\\")
-				{
-					p = p.substr(2, p.size() - 2);
-				}
-
-				std::string fullPath = dir + "/" + p;
-				m.emissionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps = 3;
-			}
-		}
-		if (pMaterial->GetTextureCount(aiTextureType_NORMALS) > 0)
-		{
-			if (pMaterial->GetTexture(aiTextureType_NORMALS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
-			{
-				std::string p(path.data);
-
-				if (p.substr(0, 2) == ".\\")
-				{
-					p = p.substr(2, p.size() - 2);
-				}
-
-				if (p.substr(1, 2) == ":\\")
-				{
-					slashIndex = p.find_last_of("\\");
-					if (slashIndex != std::string::npos)
-					{
-						p = p.substr(slashIndex + 1, p.size() - 2);
-					}
-				}
-
-				slashIndex = p.find_last_of("/");
-				if (slashIndex != std::string::npos)
-				{
-					p = p.substr(slashIndex + 1, p.size() - 2);
-				}
-				std::string::size_type dotIndex = p.find_last_of(".");
-				std::string ext = p.substr(dotIndex + 1, p.size() - 2);
-				bool stb_supported = false;
-				if (!Graphics::GetInstance().STBI_Supported(ext))
-				{
-					p.replace(dotIndex + 1, ext.size(), "jpg");	// force-load jpg
-				}
-
+				std::string p = GetTexturePath(std::string(path.data));
 				std::string fullPath = dir + "/" + p;
 				m.normalMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
-				nMaps = 1;
+				++nMaps;
 			}
 		}
-
-		m.nMaps = nMaps;
+		if (pMaterial->GetTextureCount(aiTextureType_SHININESS) > 0 || pMaterial->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) > 0)
+		{
+			if ((pMaterial->GetTexture(aiTextureType_SHININESS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+				(pMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS))
+			{
+				std::string p = GetTexturePath(std::string(path.data));
+				std::string fullPath = dir + "/" + p;
+				m.glossMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				++nMaps;
+			}
+		}
+		if (pMaterial->GetTextureCount(aiTextureType_LIGHTMAP) > 0 || pMaterial->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) > 0)
+		{
+			if ((pMaterial->GetTexture(aiTextureType_LIGHTMAP, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+				(pMaterial->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS))
+			{
+				std::string p = GetTexturePath(std::string(path.data));
+				std::string fullPath = dir + "/" + p;
+				m.occlusionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				++nMaps;
+			}
+		}
+		if (pMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0 || pMaterial->GetTextureCount(aiTextureType_EMISSION_COLOR) > 0)
+		{
+			if ((pMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) ||
+				(pMaterial->GetTexture(aiTextureType_EMISSION_COLOR, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS))
+			{
+				std::string p = GetTexturePath(std::string(path.data));
+				std::string fullPath = dir + "/" + p;
+				m.emissionMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				++nMaps;
+			}
+		}
 		materials[i] = m;
 	}
 }
@@ -607,7 +624,7 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip, bool gamma
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(flip);
 
-	unsigned char *data = stbi_load(filePath, &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
 	if (!data)
 	{
 		std::cout << "Failed to load texture" << std::endl;
@@ -633,6 +650,23 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip, bool gamma
 	stbi_image_free(data);
 
 	return texture;
+}
+
+Material Graphics::CreateMaterial(const std::string & path, const char* ext)
+{
+	Material material;
+	material.albedoMap    = CreateTexture((path + "/albedo" + ext).c_str());
+	material.specularMap  = CreateTexture((path + "/specular" + ext).c_str());
+	material.normalMap    = CreateTexture((path + "/normal" + ext).c_str());
+	material.glossMap     = CreateTexture((path + "/gloss" + ext).c_str());
+	material.occlusionMap = CreateTexture((path + "/ao" + ext).c_str());
+
+	return material;
+}
+
+void Graphics::CreateEnvironment(const std::string & envPath)
+{
+	CreateEnvironmentMap(envPath, envCubeMap, irradianceMap, prefilterMap, brdfLUTTexture);
 }
 
 void Graphics::AddPointLight(glm::vec3 pos)
@@ -676,7 +710,14 @@ void Graphics::Update()
 	glUseProgram(worldShader);
 	glUniform3fv(eyeLocW, 1, glm::value_ptr(eye));
 	glUniform3fv(camLightLocW, 1, glm::value_ptr(eye));
-	glUniform1f(timeLocW, glfwGetTime());
+
+	// bind pre-computed IBL data
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
 	std::vector<Transform>* transforms = &Physics::GetInstance().transforms;
 
@@ -701,28 +742,14 @@ void Graphics::Update()
 			unsigned int mID = m.subMeshes[j].materialID;
 			assert(mID < m.materials.size());
 			Material material = m.materials[mID];
-			int nMaps = material.nMaps;
-			for (int k = 0; k < nMaps; ++k)
+			for (int k = 0; k < 5; ++k)
 			{
 				glActiveTexture(GL_TEXTURE0 + k);
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
 				glUniform1i(txLocW[k], k);
 			}
-			if (material.normalMap != 0)
-			{
-				glActiveTexture(GL_TEXTURE0 + 1);
-				glBindTexture(GL_TEXTURE_2D, material.normalMap);
-				glUniform1i(glGetUniformLocation(worldShader, "normalMap"), 1);
-			}
 			glActiveTexture(GL_TEXTURE0);
 
-			glm::vec3 lightMap(1.0f);
-			if (nMaps == 1)
-				lightMap.y = lightMap.z = 0.0f;
-			else if (nMaps == 2)
-				lightMap.z = 0.0f;
-
-			glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
 			glBindVertexArray(m.VAO);
 			glDrawElementsBaseVertex(GL_TRIANGLES,
 									m.subMeshes[j].nIndices, 
@@ -736,7 +763,13 @@ void Graphics::Update()
 	glUseProgram(animShader);
 	glUniform3fv(eyeLocA, 1, glm::value_ptr(eye));
 	glUniform3fv(camLightLocA, 1, glm::value_ptr(eye));
-	glUniform1f(timeLocA, glfwGetTime());
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
 	N = animModels.size();
 	for (int i = 0; i < N; i++)
@@ -759,28 +792,14 @@ void Graphics::Update()
 			unsigned int mID = m.subMeshes[j].materialID;
 			assert(mID < m.materials.size());
 			Material material = m.materials[mID];
-			int nMaps = material.nMaps;
-			for (int k = 0; k < nMaps; ++k)
+			for (int k = 0; k < 5; ++k)
 			{
 				glActiveTexture(GL_TEXTURE0 + k);
 				glBindTexture(GL_TEXTURE_2D, material.GetMap(k));
 				glUniform1i(txLocA[k], k);
 			}
-			if (material.normalMap != 0)
-			{
-				glActiveTexture(GL_TEXTURE0 + 1);
-				glBindTexture(GL_TEXTURE_2D, material.normalMap);
-				glUniform1i(glGetUniformLocation(animShader, "normalMap"), 1);
-			}
 			glActiveTexture(GL_TEXTURE0);
 
-			glm::vec3 lightMap(1.0f);
-			if (nMaps == 1)
-				lightMap.y = lightMap.z = 0.0f;
-			else if (nMaps == 2)
-				lightMap.z = 0.0f;
-
-			glUniform3fv(lightMapLocA, 1, glm::value_ptr(lightMap));
 			glBindVertexArray(m.VAO);
 			glDrawElementsBaseVertex(GL_TRIANGLES,
 									m.subMeshes[j].nIndices,
@@ -796,16 +815,15 @@ void Graphics::Update()
 	glUniform3fv(glGetUniformLocation(instanceShader, "lightPos[4]"), 1, glm::value_ptr(eye));
 	glUniformMatrix4fv(vpLocI, 1, GL_FALSE, glm::value_ptr(VP));
 	N = instModels.size();
-	I_Mesh m = instModels[0];
-	unsigned int mID = m.subMeshes[0].materialID;
-	Material material = m.materials[mID];
-	glUniform1i(glGetUniformLocation(instanceShader, "diffuseTexture"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, material.GetMap(0));
 	for (int i = 0; i < N; ++i)
 	{
 		I_Mesh m = instModels[i];
 		int nSub = m.subMeshes.size();
+		unsigned int mID = m.subMeshes[i].materialID;
+		Material material = m.materials[mID];
+		glUniform1i(glGetUniformLocation(instanceShader, "diffuseTexture"), 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, material.GetMap(0));
 
 		for (int j = 0; j < nSub; ++j)
 		{
@@ -823,7 +841,7 @@ void Graphics::Update()
 	glUseProgram(worldShader);
 	glBindVertexArray(grass.VAO);
 	glBindTexture(GL_TEXTURE_2D, grass.texture);
-	glUniform1i(txLocA[0], grass.texture - 1);
+	glUniform1i(txLocA[0], 0);
 	glm::vec3 lightMap(1.0f, 0.0f, 0.0f);
 	glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
 	N = grass.transforms.size();
@@ -848,25 +866,9 @@ void Graphics::Update()
 
 		glUniformMatrix4fv(mvpLocW, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(mLocW, 1, GL_FALSE, glm::value_ptr(M));
-	
-		unsigned int* mapID = &hingeMaterial.diffuseMap;
-		int C = hingeMaterial.nMaps;
-		for (unsigned int c = 0; c < C; ++c)
-		{
-			unsigned int tID = *(mapID + c);
-			glActiveTexture(GL_TEXTURE0 + tID - 1);
-			glBindTexture(GL_TEXTURE_2D, tID);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUniform1i(glGetUniformLocation(worldShader, textureLocs[0]), 0);
 
-			glUniform1i(glGetUniformLocation(worldShader, textureLocs[c]), tID - 1);
-		}
-
-		glm::vec3 lightMap(1.0f);
-		if (C == 1)
-			lightMap.y = lightMap.z = 0.0f;
-		else if (C == 2)
-			lightMap.z = 0.0f;
-
-		glUniform3fv(lightMapLocW, 1, glm::value_ptr(lightMap));
 		glBindVertexArray(dCylinder.VAO);
 		glLineWidth(2.0f);
 		glDrawArrays(GL_TRIANGLES, 0, dCylinder.subMeshes[0].nIndices);
@@ -940,16 +942,16 @@ void Graphics::Update()
 
 	glUseProgram(skyboxShader);
 	// draw skybox as last
-	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	//glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	VP = P * glm::mat4(glm::mat3(V)); // remove translation from the view matrix
 	glUniformMatrix4fv(vpLocS, 1, GL_FALSE, glm::value_ptr(VP));
 	// skybox cube
-	glBindVertexArray(skyboxVAO);
+	glBindVertexArray(boxVAO);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
-	glDepthFunc(GL_LESS); // set depth function back to default
+	//glDepthFunc(GL_LESS); // set depth function back to default
 	glUseProgram(0);
 
 	points.clear();

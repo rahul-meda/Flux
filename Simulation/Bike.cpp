@@ -25,9 +25,6 @@ void Bike::Init()
 	unsigned int hingeTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 
 	Material material;
-	material.diffuseMap = hingeTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;

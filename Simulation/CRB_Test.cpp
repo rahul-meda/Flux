@@ -26,9 +26,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	unsigned int ballTxt = Graphics::GetInstance().CreateTexture("resources/textures/sci_fi1.jpg");
 	unsigned int carTxt = Graphics::GetInstance().CreateTexture("resources/textures/batman1.jpg");
 	Material material;
-	material.diffuseMap = ballTxt;
-	material.specularMap = ballTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -84,9 +81,6 @@ void CRB_Test::Init(GLFWwindow* window, int width, int height)
 	glm::vec3 yellowGreen(0.5f, 1.0f, 0.3f);
 	glm::vec3 disco(0.2f, 0.7f, 1.0f);
 
-	material.diffuseMap = ballTxt;
-	material.specularMap = ballTxt;
-	material.nMaps = 2;
 	glm::vec3 p2 = glm::vec3(0.0f, 4.0f, 0.0f);
 	tx = Transform(p2);
 	SphereCollider* sphereCollider = new SphereCollider();

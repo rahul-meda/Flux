@@ -156,8 +156,14 @@
     <None Include="Mesh\Geometry.inl" />
     <None Include="Resources\AnimFragmentShader.frag" />
     <None Include="Resources\AnimVertexShader.vert" />
+    <None Include="Resources\brdf.frag" />
+    <None Include="Resources\brdf.vert" />
+    <None Include="Resources\Cubemap.frag" />
+    <None Include="Resources\Cubemap.vert" />
     <None Include="Resources\InstanceFragmentShader.frag" />
     <None Include="Resources\InstanceVertexShader.vert" />
+    <None Include="Resources\Irradiance.frag" />
+    <None Include="Resources\Prefilter.frag" />
     <None Include="Resources\Skybox.frag" />
     <None Include="Resources\Skybox.vert" />
     <None Include="Resources\WorldFragmentShader.frag" />

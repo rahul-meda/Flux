@@ -21,9 +21,6 @@ void BridgeHinge::Init()
 	unsigned int boxSpTxt = Graphics::GetInstance().CreateTexture("resources/textures/container2_sp.png");
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
 	Material material;
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;

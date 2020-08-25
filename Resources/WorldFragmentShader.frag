@@ -1,117 +1,174 @@
- #version 330 core
+#version 330 core
 
-#define nPointLights 5
+out vec4 fragColor;
 
-in vec2 fragTexCoord;
-in vec3 fragPosT;	// tangent space
-in vec3 eyePosT;
-in vec3 lightPosT[5];
+in vec2 fragTexCoords;
+in vec3 fragPos;
+in vec3 normal;
 
-out vec4 outColor;
+uniform vec3 eyePos;
+uniform vec3 lightPos[5];
 
-uniform sampler2D diffuseTexture;
-uniform sampler2D specularTexture;
-uniform sampler2D emissionTexture;
+// materials
+uniform sampler2D albedoMap;
+uniform sampler2D specularMap;
 uniform sampler2D normalMap;
-uniform vec3 lightMap;	// strengths of lighting maps
-uniform float time;
+uniform sampler2D glossMap;
+uniform sampler2D occlusionMap;
 
-vec3 normal;
-vec3 viewDir;
-vec3 globalLightDir;
+// IBL
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
+
 vec3 lightColors[5];
-vec4 txtColor;
 
-vec3 CalcGlobalLight();
-vec3 CalcPointLight(int index);
- 
+const float PI = 3.14159265359f;
+
+vec3 getNormalFromMap()
+{
+    vec3 tangentNormal = texture(normalMap, fragTexCoords).rgb * 2.0f - 1.0f;
+
+    vec3 Q1  = dFdx(fragPos);
+    vec3 Q2  = dFdy(fragPos);
+    vec2 st1 = dFdx(fragTexCoords);
+    vec2 st2 = dFdy(fragTexCoords);
+
+    vec3 N   = normalize(normal);
+    vec3 T   = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B   = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0f);
+    float NdotH2 = NdotH*NdotH;
+
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0f) + 1.0f);
+    denom = PI * denom * denom;
+
+    return nom / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0f);
+    float k = (r*r) / 8.0f;
+
+    float nom   = NdotV;
+    float denom = NdotV * (1.0f - k) + k;
+
+    return nom / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0f);
+    float NdotL = max(dot(N, L), 0.0f);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0f - F0) * pow(max(1.0f - cosTheta, 0.0f), 5.0f);	// apparently (1 - cos0) can be negative! (numerically)
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(max(1.0f - cosTheta, 0.0f), 5.0);
+} 
+
 void main()
-{
-	normal = texture(normalMap, fragTexCoord).rgb;
-	normal = normalize(normal * 2.0 - 1.0);     
+{		
+    vec3 albedo     = pow(texture(albedoMap, fragTexCoords).rgb, vec3(2.2f));
+    float metallic  = texture(specularMap, fragTexCoords).r;
+    float roughness = texture(glossMap, fragTexCoords).r;
+    float ao        = 1.0f; // texture(occlusionMap, fragTexCoords).r;
+	lightColors[0] = vec3(300.0f);
+	lightColors[1] = vec3(300.0f);
+	lightColors[2] = vec3(300.0f);
+	lightColors[3] = vec3(300.0f);
+	lightColors[4] = vec3(300.0f);
 
-	viewDir = normalize(eyePosT - fragPosT);
-	globalLightDir = normalize(vec3(-1.0f, -1.0f, -1.0f));
+    vec3 N = getNormalFromMap();
+    vec3 V = normalize(eyePos - fragPos);
+	vec3 R = reflect(-V, N);
 
-	lightColors[0] = vec3(1.0f, 0.0f, 0.0f);
-	lightColors[1] = vec3(0.0f, 1.0f, 0.0f);
-	lightColors[2] = vec3(0.0f, 0.0f, 1.0f);
-	lightColors[3] = vec3(1.0f, 1.0f, 0.0f);
-	lightColors[4] = vec3(1.0f);
+    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
+    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
+    vec3 F0 = vec3(0.04f); 
+    F0 = mix(F0, albedo, metallic);
 
-	float ambientStr = 0.2f;
-	txtColor = texture(diffuseTexture, fragTexCoord);
-	vec3 ambient = ambientStr * txtColor.rgb;
+    // reflectance equation
+    vec3 Lo = vec3(0.0);
+    for(int i = 0; i < 5; ++i) 
+    {
+        // calculate per-light radiance
+		vec3 ray = lightPos[i] - fragPos;
+		float dist = length(ray);
+        vec3 L = ray / dist;
+        vec3 H = normalize(V + L);
+        float attenuation = 1.0f / (dist * dist);
+        vec3 radiance = lightColors[i] * attenuation;
 
-	vec3 result = ambient;
-	
-	result += CalcGlobalLight();
+        // Cook-Torrance BRDF
+        float NDF = DistributionGGX(N, H, roughness);   
+        float G   = GeometrySmith(N, V, L, roughness);      
+        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0f), F0);
+           
+        vec3 nominator    = NDF * G * F; 
+        float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.001f; // 0.001 to prevent divide by zero.
+        vec3 specular = nominator / denominator;
+        
+        // kS is equal to Fresnel
+        vec3 kS = F;
+        // energy conservation
+        vec3 kD = vec3(1.0f) - kS;
+        // multiply kD by the inverse metalness such that only non-metals 
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
+        kD *= 1.0f - metallic;	  
 
-	float sin_time = sin(time); 
+        // scale light by NdotL
+        float NdotL = max(dot(N, L), 0.0f);        
 
-	for(int i = 0; i < nPointLights - 1; ++i)
-	{
-		result += CalcPointLight(i) * lightColors[i];// * abs(sin_time);
-	}
-	
-	result += CalcPointLight(nPointLights - 1) * lightColors[nPointLights - 1];
+        // add to outgoing radiance Lo
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    }   
 
-	txtColor = texture(emissionTexture, fragTexCoord);
-	vec3 emission = 0.7f * lightMap.z * txtColor.rgb;
+    // ambient lighting
+    //vec3 ambient = vec3(0.03f) * albedo * ao;
+	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+	vec3 kS = F;
+    vec3 kD = vec3(1.0f) - kS;
+    kD *= 1.0f - metallic;	  
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 diffuse = irradiance * albedo;
 
-	result += emission;
+	// sample both the pre-filter map and the BRDF lut and combine them together 
+	// as per the Split-Sum approximation to get the IBL specular part.
+    const float MAX_REFLECTION_LOD = 4.0f;
+    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	result = pow(result.rgb, vec3(1.0/2.2f));
+    vec3 ambient = (kD * diffuse + specular) * ao;
 
-    outColor = vec4(result, 1.0f);
-}
+    vec3 color = ambient + Lo;
 
-vec3 CalcGlobalLight()
-{
-	txtColor = texture(diffuseTexture, fragTexCoord);
-	vec3 diffuse = 0.5f * max(dot(-globalLightDir, normal), 0.0f) * txtColor.rgb;
+    // HDR tonemapping
+    color = color / (color + vec3(1.0f));
+    // gamma correction
+    color = pow(color, vec3(1.0f/2.2f)); 
 
-	float specularStr = 0.25f;
-	int shininess = 128;
-	//vec3 refDir = normalize(reflect(globalLightDir, normal));
-	//float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
-	//vec3 specular = specularStr * spec * txtColor.rgb;
-	vec3 halfwayDir = normalize(-globalLightDir + viewDir);  
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 64);
-	vec3 specular = specularStr * spec * txtColor.rgb;
-
-	txtColor = texture(specularTexture, fragTexCoord);
-	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
-
-	return (diffuse + specular);
-}
-
-vec3 CalcPointLight(int index)
-{
-	vec3 lightDir = normalize(fragPosT - lightPosT[index]);
-	txtColor = texture(diffuseTexture, fragTexCoord);
-	
-	vec3 diffuse = max(dot(-lightDir, normal), 0.0f) * txtColor.rgb;
-
-	float specularStr = 0.5f;
-	int shininess = 128;
-	//vec3 refDir = normalize(reflect(lightDir, normal));
-	//float spec = pow(max(dot(viewDir, refDir), 0.0), shininess);
-	//vec3 specular = specularStr * spec * txtColor.rgb;
-	vec3 halfwayDir = normalize(-lightDir + viewDir);  
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 64);
-	vec3 specular = specularStr * spec * txtColor.rgb;
-
-	txtColor = texture(specularTexture, fragTexCoord);
-	specular += 0.5f * lightMap.y * spec * txtColor.rgb;
-
-	// attenuation
-	float Kc = 1.0f;
-	float Kl = 0.014f; //0.022f; //0.014;//0.022f;
-	float Kq = 0.0007f; //0.0019f; //0.0007;//0.0019f;
-	float dist = length(fragPosT - lightPosT[index]);
-	float dist2 = dist * dist;
-	float attenuation = 1.0f / (Kc + Kl * dist + Kq * dist2);
-
-	return (diffuse + specular) * attenuation;
+    fragColor = vec4(color, 1.0f);
 }

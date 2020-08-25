@@ -17,6 +17,7 @@ struct R_Vertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec3 tangent;
+	glm::vec3 biTangent;
 	glm::vec2 textureCoords;
 };
 
@@ -25,6 +26,7 @@ struct BoneVertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec3 tangent;
+	glm::vec3 biTangent;
 	float boneWeights[MAX_WEIGHTS];
 	int boneIDs[MAX_WEIGHTS];
 	glm::vec2 textureCoords;
@@ -79,23 +81,30 @@ struct BoneVertex
 struct Material
 {
 	Material()
-	 : diffuseMap(0), specularMap(0), emissionMap(0), normalMap(0), nMaps(0){}
+	 : albedoMap(0), normalMap(0), specularMap(0), glossMap(0), occlusionMap(0), emissionMap(0){}
 
-	unsigned int diffuseMap;
+	unsigned int albedoMap;
 	unsigned int specularMap;
-	unsigned int emissionMap;
 	unsigned int normalMap;
-	unsigned int nMaps;
+	unsigned int glossMap;
+	unsigned int occlusionMap;
+	unsigned int emissionMap;
 
 	unsigned int GetMap(const int i) const
 	{
 		switch (i)
 		{
 		case 0:
-			return diffuseMap;
+			return albedoMap;
 		case 1:
 			return specularMap;
 		case 2:
+			return normalMap;
+		case 3:
+			return glossMap;
+		case 4:
+			return occlusionMap;
+		case 5:
 			return emissionMap;
 		}
 	}
@@ -197,6 +206,7 @@ public:
 	void LoadGeometry(const aiScene* scene, std::vector<R_Vertex>& vertices, std::vector<unsigned int>& indices);
 	void LoadGeometry(const aiScene* scene, std::vector<BoneVertex>& vertices, std::vector<unsigned int>& indices);
 	void LoadTextures(const aiScene* scene, const std::string& file, bool flip = false);
+	std::string GetTexturePath(std::string& file);
 	void LoadBones(unsigned int meshIndex, const aiMesh* aiMesh, std::vector<BoneVertex>& vertices);
 
 	void Clear()
@@ -232,6 +242,8 @@ public:
 	unsigned int CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateModel(const std::vector<BoneVertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateTexture(const char* filePath, bool flip = false, bool gammaCorrection = false);
+	Material CreateMaterial(const std::string& path, const char* ext = ".jpg");
+	void CreateEnvironment(const std::string& envPath);
 	void AddPointLight(glm::vec3 pos);
 	void SetBoneTransform(const int i, const glm::mat4& transform);
 	void Update();
@@ -244,9 +256,7 @@ public:
 	std::vector<R_Mesh> animModels;
 	std::vector<I_Mesh> instModels;
 	std::vector<glm::mat4> instTransforms;
-
 	Grass grass;
-
 	std::vector<glm::vec3> lightPos;
 
 	// debug draw
@@ -259,6 +269,9 @@ public:
 	unsigned int animShader;
 	unsigned int instanceShader;
 	unsigned int skyboxShader;
+	unsigned int cubemapShader;
+	unsigned int prefilterShader;
+	unsigned int brdfShader;
 
 	unsigned int skyboxVAO;
 	unsigned int skyboxTexture;
@@ -268,11 +281,17 @@ public:
 	R_Mesh dCylinder;
 	R_Mesh dCapsule;
 	R_Mesh dSoup;
+	unsigned int boxVAO;
+	unsigned int quadVAO;
+	unsigned int envCubeMap;
+	unsigned int irradianceMap;
+	unsigned int prefilterMap;
+	unsigned int brdfLUTTexture;
 
 	Material hingeMaterial;
 	std::vector<R_Hinge> hinges;
 
-	char* textureLocs[3];
+	char* textureLocs[5];
 	glm::vec3 lightColors[4];
 
 	unsigned int boneLocs[MAX_BONES];
@@ -283,14 +302,14 @@ public:
 	unsigned int vpLocS;
 	unsigned int mvpLocW;
 	unsigned int mLocW;
-	unsigned int txLocW[3];
+	unsigned int txLocW[5];
 	unsigned int eyeLocW;
 	unsigned int lightMapLocW;
 	unsigned int camLightLocW;
 	unsigned int timeLocW;
 	unsigned int mvpLocA;
 	unsigned int mLocA;
-	unsigned int txLocA[3];
+	unsigned int txLocA[5];
 	unsigned int eyeLocA;
 	unsigned int lightMapLocA;
 	unsigned int camLightLocA;

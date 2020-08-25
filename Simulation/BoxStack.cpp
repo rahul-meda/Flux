@@ -23,9 +23,6 @@ void BoxStack::Init()
 	unsigned int metalTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
 	unsigned int linkTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal1.jpeg");
 	Material material;
-	material.diffuseMap = boxDfTxt;
-	material.specularMap = boxDfTxt;
-	material.nMaps = 2;
 
 	Transform tx;
 	BodyDef bd;
@@ -97,9 +94,6 @@ void BoxStack::Init()
 	glm::vec3 p;
 	float gap = 0.1f;
 	int NL = 10;
-	material.diffuseMap = linkTxt;
-	material.specularMap = linkTxt;
-	material.nMaps = 2;
 
 	for (int i = 0; i < NL; ++i)
 	{
@@ -144,9 +138,6 @@ void BoxStack::Init()
 		Physics::GetInstance().posJoints.push_back(pj);
 	}
 
-	material.diffuseMap = metalTxt;
-	material.specularMap = metalTxt;
-	material.nMaps = 2;
 	p.z += 3.75f + gap + 4.0f;
 	tx = Transform(p);
 	bd.tx = tx;

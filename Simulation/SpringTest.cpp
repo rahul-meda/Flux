@@ -22,11 +22,6 @@ void SpringTest::Init(GLFWwindow* window, int width, int height)
 	unsigned int wheelTxt = Graphics::GetInstance().CreateTexture("resources/textures/leather1.jpg");
 	unsigned int carTxt = Graphics::GetInstance().CreateTexture("resources/textures/metal2.jpg");
 
-	Material material;
-	material.diffuseMap = wheelTxt;
-	material.specularMap = boxSpTxt;
-	material.nMaps = 2;
-
 	Transform tx;
 	BodyDef bd;
 	unsigned int bID = 0;
