@@ -3,6 +3,7 @@
 #include <glm/mat4x4.hpp>
 #include <vector>
 
+unsigned int CreateTerrain();
 void CreateEnvironmentMap(const std::string& path, unsigned int& envMap, unsigned int& irradianceMap, unsigned int& prefilterMap, unsigned int& brdfLUTTexture);
 void CreateSkybox (unsigned int& VAO, unsigned int& textureID);
 unsigned int CreateBox();

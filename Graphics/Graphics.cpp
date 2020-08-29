@@ -1,4 +1,7 @@
 
+#ifndef GLFW_INCLUDE_GLEXT
+#define GLFW_INCLUDE_GLEXT
+#endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -57,6 +60,9 @@ void Graphics::Initialize()
 	quadVAO = CreateQuad();
 	const std::string path = "resources/textures/hdr/Topanga_Forest/Topanga_Forest_B_3k.hdr";
 	CreateEnvironmentMap(path, envCubeMap, irradianceMap, prefilterMap, brdfLUTTexture);
+
+	terrainVAO = CreateTerrain();
+	terrainMaterial = CreateMaterial("resources/textures/grass1");
 
 	textureLocs[0] = "albedoMap";
 	textureLocs[1] = "specularMap";
@@ -460,7 +466,7 @@ void R_Mesh::LoadTextures(const aiScene* scene, const std::string& file, bool fl
 			{
 				std::string p = GetTexturePath(std::string(path.data));
 				std::string fullPath = dir + "/" + p;
-				m.albedoMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip);
+				m.albedoMap = Graphics::GetInstance().CreateTexture(fullPath.c_str(), flip, true);
 				++nMaps;
 			}
 		}
@@ -636,7 +642,7 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip, bool gamma
 	else if (nrChannels == 3)
 		format = GL_RGB;
 	else if (nrChannels == 4)
-		format = GL_RGBA;
+		format = GL_RGBA; 
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, gammaCorrection ? GL_SRGB : format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -646,20 +652,29 @@ unsigned int Graphics::CreateTexture(const char* filePath, bool flip, bool gamma
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f);
+
+	if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+	{
+		std::cout << "Anisotropic filtering not supported" << std::endl;
+	}
+	GLfloat maxAF;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAF);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAF);
 
 	stbi_image_free(data);
 
 	return texture;
 }
 
-Material Graphics::CreateMaterial(const std::string & path, const char* ext)
+Material Graphics::CreateMaterial(const std::string & path, const char* ext, bool flip)
 {
 	Material material;
-	material.albedoMap    = CreateTexture((path + "/albedo" + ext).c_str());
-	material.specularMap  = CreateTexture((path + "/specular" + ext).c_str());
-	material.normalMap    = CreateTexture((path + "/normal" + ext).c_str());
-	material.glossMap     = CreateTexture((path + "/gloss" + ext).c_str());
-	material.occlusionMap = CreateTexture((path + "/ao" + ext).c_str());
+	material.albedoMap    = CreateTexture((path + "/albedo" + ext).c_str(), flip, true);
+	material.specularMap  = CreateTexture((path + "/specular" + ext).c_str(), flip);
+	material.normalMap    = CreateTexture((path + "/normal" + ext).c_str(), flip);
+	material.glossMap     = CreateTexture((path + "/gloss" + ext).c_str(), flip);
+	material.occlusionMap = CreateTexture((path + "/ao" + ext).c_str(), flip);
 
 	return material;
 }
@@ -719,8 +734,19 @@ void Graphics::Update()
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
-	std::vector<Transform>* transforms = &Physics::GetInstance().transforms;
+	M = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(mvpLocW, 1, GL_FALSE, glm::value_ptr(VP * M));
+	glUniformMatrix4fv(mLocW, 1, GL_FALSE, glm::value_ptr(M));
+	for (int k = 0; k < 5; ++k)
+	{
+		glActiveTexture(GL_TEXTURE0 + k);
+		glBindTexture(GL_TEXTURE_2D, terrainMaterial.GetMap(k));
+		glUniform1i(txLocW[k], k);
+	}
+	glBindVertexArray(terrainVAO);
+	glDrawElements(GL_TRIANGLES, 6 * 255 * 255, GL_UNSIGNED_INT, (void*)(0));
 
+	std::vector<Transform>* transforms = &Physics::GetInstance().transforms;
 	int N = objects.size();
 	for (int i = 0; i < N; i++)
 	{

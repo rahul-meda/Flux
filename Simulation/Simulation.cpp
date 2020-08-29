@@ -74,7 +74,7 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 	obj.rotOffsets.push_back(glm::mat3(1.0f));
 	obj.scale = s1;
 	obj.LoadModel("resources/models/floor/floor.obj");
-	mat_cobbleStone = Graphics::GetInstance().CreateMaterial("resources/textures/cobble_stone");
+	mat_cobbleStone = Graphics::GetInstance().CreateMaterial("resources/textures/grass1");
 	obj.materials.clear();
 	obj.materials.push_back(mat_cobbleStone);
 	Graphics::GetInstance().objects.push_back(obj);
@@ -155,8 +155,8 @@ void Simulation::Init(GLFWwindow* window, int w, int h)
 
 	Graphics::GetInstance().lightShader = Shader::CreateShader("Resources/WorldVertexShader.vert",																									 "Resources/FragmentShader.frag");
 
-	Graphics::GetInstance().AddPointLight(glm::vec3(-25.0f, 2.5f,  25.0f));
-	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f,  25.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3(425.0f, 25.0f, 400.0f));
+	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f, 25.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3(-25.0f, 0.5f, -25.0f));
 	Graphics::GetInstance().AddPointLight(glm::vec3( 25.0f, 0.5f, -25.0f));
 

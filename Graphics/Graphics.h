@@ -242,7 +242,7 @@ public:
 	unsigned int CreateModel(const std::vector<R_Vertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateModel(const std::vector<BoneVertex>& vertices, const std::vector<unsigned int>& indices);
 	unsigned int CreateTexture(const char* filePath, bool flip = false, bool gammaCorrection = false);
-	Material CreateMaterial(const std::string& path, const char* ext = ".jpg");
+	Material CreateMaterial(const std::string& path, const char* ext = ".jpg", bool flip = flase);
 	void CreateEnvironment(const std::string& envPath);
 	void AddPointLight(glm::vec3 pos);
 	void SetBoneTransform(const int i, const glm::mat4& transform);
@@ -252,6 +252,8 @@ public:
 	glm::mat4 V;
 	glm::vec3 eye;
 
+	unsigned int terrainVAO;
+	Material terrainMaterial;
 	std::vector<R_Mesh> objects;
 	std::vector<R_Mesh> animModels;
 	std::vector<I_Mesh> instModels;

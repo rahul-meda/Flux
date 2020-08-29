@@ -63,8 +63,8 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.scales.push_back(glm::vec3(0.025f));
 	obj.scale = glm::vec3(1.0f);
 	std::string path = "Resources/Models/morak/morak.fbx";
-	obj.LoadModel(path);
-	Graphics::GetInstance().animModels.push_back(obj);
+	//obj.LoadModel(path);
+	//Graphics::GetInstance().animModels.push_back(obj);
 	obj.Clear();
 
 	objID = Graphics::GetInstance().animModels.size() - 1;
@@ -87,7 +87,7 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	CreateAsteroidBelt(Graphics::GetInstance().instTransforms, asteroidCount);
 
 	I_Mesh iMesh(asteroidCount);
-	iMesh.LoadModel("resources/models/asteroid/asteroid.obj");
+	//iMesh.LoadModel("resources/models/asteroid/asteroid.obj");
 	//Graphics::GetInstance().instModels.push_back(iMesh);
 
 	p = glm::vec3(0.0f, 10.0f, -50.0f);
@@ -103,7 +103,7 @@ void Assimp_Test::Init(GLFWwindow* window, int width, int height)
 	obj.rot = tx.R;
 	obj.txID = bID;
 	obj.scale = glm::vec3(10.0f, 10.0f, 1.0f);
-	obj.LoadModel("resources/models/wall/box.obj");
+	//obj.LoadModel("resources/models/wall/box.obj");
 	//Graphics::GetInstance().objects.push_back(obj);
 }
 

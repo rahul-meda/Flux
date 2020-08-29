@@ -9,6 +9,52 @@
 #include "World.h"
 #include "Shader.h"
 
+#define TILE_LOD 256
+#define TILE_SIZE 800.0f
+
+unsigned int CreateTerrain()
+{
+	std::vector<R_Vertex> vertices;
+	std::vector<unsigned int> indices;
+	vertices.reserve(TILE_LOD * TILE_LOD);
+	indices.reserve(6 * (TILE_LOD - 1) * (TILE_LOD - 1));
+
+	for (int i = 0; i < TILE_LOD; ++i)
+	{
+		for (int j = 0; j < TILE_LOD; ++j)
+		{
+			R_Vertex v;
+			float x = (float)j / ((float)(TILE_LOD - 1.0f)) * TILE_SIZE;
+			float z = (float)i / ((float)(TILE_LOD - 1.0f)) * TILE_SIZE;
+			v.position  = glm::vec3(x, 0.0f, z);
+			v.normal    = glm::vec3(0.0f, 1.0f, 0.0f);
+			v.tangent   = glm::vec3(1.0f, 0.0f, 0.0f);
+			v.biTangent = glm::vec3(0.0f, 0.0f, 1.0f);
+			v.textureCoords = glm::vec2((float)j / ((float)(TILE_LOD - 1.0f)), (float)i / ((float)(TILE_LOD - 1.0f)));
+			vertices.push_back(v);
+		}
+	}
+
+	for (int i = 0; i < TILE_LOD - 1; ++i)
+	{
+		for (int j = 0; j < TILE_LOD - 1; ++j)
+		{
+			unsigned int i1 = i * TILE_LOD + j;
+			unsigned int i2 = i1 + 1;
+			unsigned int i3 = (i + 1) * TILE_LOD + j;
+			unsigned int i4 = i3 + 1;
+			indices.push_back(i1);
+			indices.push_back(i3);
+			indices.push_back(i2);
+			indices.push_back(i2);
+			indices.push_back(i3);
+			indices.push_back(i4);
+		}
+	}
+
+	return Graphics::GetInstance().CreateModel(vertices, indices);
+}
+
 void CreateEnvironmentMap(const std::string& path, unsigned int& envCubemap, unsigned int& irradianceMap, unsigned int& prefilterMap, unsigned int& brdfLUTTexture)
 {
 	// pbr: setup framebuffer
